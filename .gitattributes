@@ -1,0 +1,4 @@
+image/statement/1.9.png filter=lfs diff=lfs merge=lfs -text
+image/statement/1.10.png filter=lfs diff=lfs merge=lfs -text
+image/statement/1.11.png filter=lfs diff=lfs merge=lfs -text
+image/statement/1.12.png filter=lfs diff=lfs merge=lfs -text
