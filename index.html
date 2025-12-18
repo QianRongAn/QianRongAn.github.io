@@ -47,6 +47,15 @@
             font-style: italic;
             font-display: swap;
         }
+        @font-face {
+            font-family: 'MingLiU_HKSCS-ExtB';
+            src: url('font/mingliub.ttc') format('collection'),
+                 url('font/mingliub.ttc') format('truetype'),
+                 local('MingLiU_HKSCS-ExtB');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preload" href="wall.jpg" as="image">
@@ -73,7 +82,7 @@
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.2);
             --shadow-float: 0 15px 40px rgba(0, 0, 0, 0.25); 
-            --serif-font: 'MingLiU_HKSCS-ExtB', 'Noto Serif SC', serif;
+            --serif-font: 'MingLiU_HKSCS-ExtB', 'Songti SC', 'STSong', 'Noto Serif SC', serif;
             --sans-font: 'Inter', sans-serif; 
         }
         html {
@@ -585,8 +594,9 @@
             will-change: transform;
         }
         .cube-page section:hover {
-            transform: translateY(-5px) rotateX(2deg);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            /* 保持静止，移除卡片整体的浮动效果 */
+            transform: none;
+            box-shadow: var(--shadow-float);
         }
         /* 禁用 thesis 内 section 的 hover 效果 */
         #thesis.cube-page section:hover {
@@ -693,10 +703,6 @@
             background: transparent;
             mix-blend-mode: normal;
         }
-        .education-icon-img:hover {
-            transform: translateY(-2px) scale(1.05);
-            opacity: 1;
-        }
         /* Practical Experience - 浅绿到浅蓝渐变 */
         #experience .section-title i {
             background: linear-gradient(135deg, rgba(144, 238, 144, 0.25) 0%, rgba(173, 216, 230, 0.25) 100%);
@@ -716,10 +722,6 @@
             background: transparent;
             mix-blend-mode: normal;
         }
-        .practice-icon-img:hover {
-            transform: translateY(-2px) scale(1.05);
-            opacity: 1;
-        }
         /* Academic Activities - 浅蓝到浅绿渐变 */
         #extracurricular .section-title i {
             background: linear-gradient(135deg, rgba(173, 216, 230, 0.25) 0%, rgba(144, 238, 144, 0.25) 100%);
@@ -738,10 +740,6 @@
             z-index: 100;
             background: transparent;
             mix-blend-mode: normal;
-        }
-        .activity-icon-img:hover {
-            transform: translateY(-2px) scale(1.05);
-            opacity: 1;
         }
         /* Technical Skills & Methods - 浅橙到浅粉渐变 */
         #skills .section-title i {
@@ -810,10 +808,6 @@
         #thesis .section-title i {
             background: linear-gradient(135deg, rgba(255, 192, 203, 0.25) 0%, rgba(221, 160, 221, 0.25) 100%);
         }
-        .section-title i:hover {
-            transform: translateY(-2px) scale(1.05);
-            opacity: 1;
-        }
         .content-item {
             margin-bottom: 30px;
             padding-bottom: 15px;
@@ -836,21 +830,11 @@
             pointer-events: auto !important;
             margin-bottom: 40px !important;
         }
-        /* 确保content-item的hover效果不会覆盖activities-gallery */
-        #extracurricular .content-item:hover {
-            box-shadow: none !important;
-            transform: none !important;
-            z-index: 1 !important;
-            pointer-events: none !important;
-        }
-        #extracurricular .content-item:hover .details {
-            pointer-events: auto !important;
-        }
         .content-item:hover {
-            background-color: rgba(145, 4, 12, 0.05); 
-            border-left: 5px solid var(--primary-color);
-            transform: translateX(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            /* 保持静止，移除所有 hover 效果 */
+            transform: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
         }
         /* 确保content-item的hover效果不会覆盖activities-gallery */
         #extracurricular .content-item:hover {
@@ -884,9 +868,17 @@
             padding: 2px 4px;
             border-radius: 3px;
         }
-        /* Practical Experience 部分不要有内容加粗 */
+        /* Practical Experience 部分移除所有红色强调，改为普通文本 */
         #experience .details strong {
-            font-weight: 400;
+            font-weight: inherit;
+            color: inherit;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+        /* Experience 职位标题改为深蓝色 */
+        #experience .details h3 {
+            color: var(--nan-wang-blue) !important;
         }
         .cube-page[data-index="6"] .details strong {
             font-weight: 500;
@@ -904,9 +896,32 @@
         .details p {
             font-family: var(--sans-font) !important;
         }
+        /* 移除列表项的 hover 效果 */
         .details ul li:hover {
-            color: var(--primary-color); 
-            transform: translateX(5px);
+            color: inherit !important;
+            transform: none !important;
+        }
+        
+        /* 彻底移除 Education, Experience, Activity 部分的所有 hover 动画和位移 */
+        #education .content-item:hover,
+        #experience .content-item:hover,
+        #extracurricular .content-item:hover {
+            transform: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            border-left: 2px solid var(--line-color) !important;
+        }
+        
+        #education .details ul li:hover,
+        #experience .details ul li:hover,
+        #extracurricular .details ul li:hover,
+        #extracurricular .footnote-item:hover {
+            transform: none !important;
+            color: inherit !important;
+        }
+        
+        #extracurricular .content-item:hover {
+            border-left: none !important; /* Activity 这里的 content-item 本身就没有左边框 */
         }
         .pub-item {
             margin-bottom: 15px;
@@ -1645,10 +1660,6 @@
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        .activity-image:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
         
         /* ========== 交互式动画效果 ========== */
         /* 3D 卡片效果 */
@@ -1711,8 +1722,9 @@
         .content-item {
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+        /* 移除 content-item 的 hover 位移效果 */
         .content-item:hover {
-            transform: translateX(10px);
+            transform: none !important;
         }
         /* 禁用 thesis 内的 content-item hover 效果 */
         #thesis .content-item:hover {
@@ -1728,8 +1740,9 @@
         .activity-image, .profile-photo {
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .activity-image:hover {
-            transform: translateY(-5px) scale(1.02);
+        .profile-photo:hover {
+            transform: scale(1.1) rotateY(15deg) rotateX(5deg); 
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4); 
         }
         
         /* 平滑滚动增强 */

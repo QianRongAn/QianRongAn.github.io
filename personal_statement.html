@@ -23,11 +23,20 @@
         }
         @font-face {
             font-family: 'Aboreto-Regular';
-            src: url('fonts/Aboreto-Regular.woff2') format('woff2'),
-                 url('fonts/Aboreto-Regular.woff') format('woff'),
-                 url('fonts/Aboreto-Regular.ttf') format('truetype'),
+            src: url('font/Aboreto-Regular.woff2') format('woff2'),
+                 url('font/Aboreto-Regular.woff') format('woff'),
+                 url('font/Aboreto-Regular.ttf') format('truetype'),
                  local('Aboreto-Regular'),
                  local('Aboreto Regular');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'MingLiU_HKSCS-ExtB';
+            src: url('font/mingliub.ttc') format('collection'),
+                 url('font/mingliub.ttc') format('truetype'),
+                 local('MingLiU_HKSCS-ExtB');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
@@ -47,7 +56,7 @@
             --glass-bg-content: rgba(255, 255, 255, 0.6); 
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.2);
-            --serif-font: 'MingLiU_HKSCS-ExtB', 'Noto Serif SC', serif;
+            --serif-font: 'MingLiU_HKSCS-ExtB', 'Songti SC', 'STSong', 'Noto Serif SC', serif;
             --sans-font: 'Inter', sans-serif; 
         }
         html {
@@ -259,7 +268,7 @@
 </head>
 <body>
     <div id="container">
-        <a href="page_13.1.html" class="back-button" style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
+        <a href="index.html" class="back-button" style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
             Back to Home
         </a>
         
