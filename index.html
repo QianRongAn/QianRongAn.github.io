@@ -8,21 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300&display=swap" rel="stylesheet">
     <style>
         @font-face {
-            font-family: 'lvyPresto Display';
-            src: url('fonts/lvyPrestoDisplay.woff2') format('woff2'),
-                 url('fonts/lvyPrestoDisplay.woff') format('woff'),
-                 url('fonts/lvyPrestoDisplay.ttf') format('truetype'),
-                 local('lvyPresto Display'),
-                 local('lvyPrestoDisplay');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
             font-family: 'BodoniFLF-Italic';
-            src: url('fonts/BodoniFLF-Italic.woff2') format('woff2'),
-                 url('fonts/BodoniFLF-Italic.woff') format('woff'),
-                 url('fonts/BodoniFLF-Italic.ttf') format('truetype'),
+            src: url('font/BodoniFLF-Italic.woff2') format('woff2'),
+                 url('font/BodoniFLF-Italic.woff') format('woff'),
+                 url('font/BodoniFLF-Italic.ttf') format('truetype'),
                  local('BodoniFLF-Italic'),
                  local('BodoniFLF Italic');
             font-weight: normal;
@@ -31,9 +20,9 @@
         }
         @font-face {
             font-family: 'Aboreto-Regular';
-            src: url('fonts/Aboreto-Regular.woff2') format('woff2'),
-                 url('fonts/Aboreto-Regular.woff') format('woff'),
-                 url('fonts/Aboreto-Regular.ttf') format('truetype'),
+            src: url('font/Aboreto-Regular.woff2') format('woff2'),
+                 url('font/Aboreto-Regular.woff') format('woff'),
+                 url('font/Aboreto-Regular.ttf') format('truetype'),
                  local('Aboreto-Regular'),
                  local('Aboreto Regular');
             font-weight: normal;
@@ -42,9 +31,9 @@
         }
         @font-face {
             font-family: 'Aleo-Light';
-            src: url('fonts/Aleo-Light.woff2') format('woff2'),
-                 url('fonts/Aleo-Light.woff') format('woff'),
-                 url('fonts/Aleo-Light.ttf') format('truetype'),
+            src: url('font/Aleo-Light.woff2') format('woff2'),
+                 url('font/Aleo-Light.woff') format('woff'),
+                 url('font/Aleo-Light.ttf') format('truetype'),
                  local('Aleo-Light'),
                  local('Aleo Light');
             font-weight: 300;
@@ -197,7 +186,8 @@
                 opacity: 0.95;
             }
         }
-        /* 所有同级 section 的文本使用 lvyPresto Display（排除 About Me 标题，因为它有单独设置） */
+        /* 所有同级 section 的文本使用 Inter（排除 About Me 标题，因为它有单独设置） */
+        /* 所有同级 section 的文本使用 Inter（排除 About Me 标题，因为它有单独设置） */
         #about section *:not(i):not(.section-title):not(h2):not(h3):not(h4):not(.thesis-chapter-title),
         #about .about-paragraph,
         #education section *:not(i):not(.section-title):not(h3):not(h4):not(.thesis-chapter-title),
@@ -211,7 +201,7 @@
         #thesis section *:not(i):not(.section-title):not(h3):not(h4):not(.thesis-chapter-title),
         #thesis .details *:not(i):not(h3):not(h4),
         #thesis .tech-description {
-            font-family: 'lvyPresto Display', var(--sans-font) !important;
+            font-family: var(--sans-font) !important;
         }
         /* 标题使用 Aboreto-Regular 字体 */
         #education .section-title,
@@ -904,10 +894,10 @@
             transition: color 0.3s, transform 0.2s;
             font-weight: 300;
             margin-bottom: 5px;
-            font-family: 'lvyPresto Display', var(--sans-font) !important;
+            font-family: var(--sans-font) !important;
         }
         .details p {
-            font-family: 'lvyPresto Display', var(--sans-font) !important;
+            font-family: var(--sans-font) !important;
         }
         .details ul li:hover {
             color: var(--primary-color); 
@@ -1389,7 +1379,7 @@
 .about-paragraph {
     text-indent: 2em;
     margin-bottom: 1em;
-    font-family: 'lvyPresto Display', var(--sans-font);
+    font-family: var(--sans-font);
 }
         /* Justify body text in About & Experience */
         #about .about-paragraph,
@@ -1421,7 +1411,7 @@
         #thesis .details p,
         #thesis .details ul li,
         #thesis .tech-description {
-            font-family: 'lvyPresto Display', var(--sans-font);
+            font-family: var(--sans-font);
         }
         /* 确保按钮不被上面的规则覆盖 */
         #about .btn-learn-more,
@@ -1446,7 +1436,7 @@
             margin-bottom: 12px;
             padding-left: 25px;
             text-indent: -25px;
-            font-family: 'lvyPresto Display', var(--sans-font) !important;
+            font-family: var(--sans-font) !important;
             font-size: 0.85em;
             line-height: 1.8;
             text-align: justify;
@@ -1522,7 +1512,7 @@
             line-height: 1.6;
             margin: 0;
             padding-top: 10px;
-            font-family: 'lvyPresto Display', var(--sans-font);
+            font-family: var(--sans-font);
         }
         @media (max-width: 768px) {
             .education-item {
@@ -2010,7 +2000,7 @@
             margin-bottom: 20px;
         }
         .mobile-warning-content p {
-            font-family: 'lvyPresto Display', var(--sans-font);
+            font-family: var(--sans-font);
             font-size: 1.5em;
             color: #000000;
             line-height: 1.8;
