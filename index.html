@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nan Wang | Bioinformatics & Immunology</title>
-    <link rel="icon" type="image/png" href="image/favicon.png">
+    <link rel="icon" type="image/jpeg" href="image/favicon.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300&family=Aboreto&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -71,7 +71,7 @@
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.2);
             --shadow-float: 0 15px 40px rgba(0, 0, 0, 0.25); 
-            --serif-font: 'Aboreto', 'Georgia', 'Times New Roman', 'MingLiU_HKSCS-ExtB', 'Noto Serif SC', serif;
+            --serif-font: 'MingLiU_HKSCS-ExtB', 'Noto Serif SC', serif;
             --sans-font: 'Inter', sans-serif; 
         }
         html {
@@ -88,8 +88,12 @@
             background-image: url('wall.jpg');
             background-repeat: no-repeat;
             background-size: cover; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
             background-attachment: fixed; 
-            color: var(--text-primary);
+            /* Fix for Safari background-attachment: fixed */
+            background-position: center center;
             line-height: 1.8;
             font-size: 16px;
             scroll-behavior: smooth; 
@@ -112,8 +116,9 @@
             background-image: url('wall.jpg');
             background-repeat: no-repeat;
             background-size: cover;
+            -webkit-background-size: cover;
             background-attachment: fixed;
-            background-position: center;
+            background-position: center center;
             pointer-events: none;
             z-index: -2;
             mask-image: 
@@ -207,7 +212,7 @@
         #extracurricular .section-title,
         #skills .section-title,
         #thesis .section-title {
-            font-family: 'Aboreto', var(--serif-font) !important;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
         /* 子标题保持原有字体 */
         .details h3,
@@ -384,7 +389,7 @@
         .nav-links li a {
             color: var(--text-secondary);
             text-decoration: none;
-            font-family: 'Aboreto', var(--serif-font) !important; 
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important; 
             font-weight: normal;
             font-size: 0.95em;
             letter-spacing: 0.5px;
@@ -424,7 +429,7 @@
         }
         /* 导航栏中所有链接的 span 也使用相同字体 */
         .nav-links li a span {
-            font-family: 'Aboreto', var(--serif-font) !important;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
         #container {
             max-width: var(--max-content-width);
@@ -588,7 +593,7 @@
             background-color: var(--glass-bg-content) !important;
         }
         .section-title {
-            font-family: 'Aboreto', var(--serif-font) !important;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
             font-size: 2em;
             font-weight: 400;
             color: var(--primary-color); 
@@ -600,7 +605,7 @@
         /* About Me 标题使用 Aboreto-Regular 字体，与 Practical Experience 一致 */
         #about .section-title,
         #about h2.section-title {
-            font-family: 'Aboreto', var(--serif-font) !important;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
             font-size: 2em !important;
             font-weight: 400 !important;
             color: var(--primary-color) !important;
@@ -615,7 +620,7 @@
         }
         /* 确保 About Me 标题内的文本也使用相同字体（排除图标） */
         #about .section-title span {
-            font-family: 'Aboreto', var(--serif-font) !important;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
         /* 确保图标不影响字体 */
         #about .section-title i {
@@ -1778,7 +1783,8 @@
         /* 视差背景 */
         body {
             background-attachment: fixed;
-            background-position: center;
+            -webkit-background-size: cover;
+            background-position: center center;
             background-size: cover;
         }
         
@@ -1992,7 +1998,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .mobile-warning-content h1 {
-            font-family: 'Aboreto', var(--serif-font);
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font);
             font-size: 1.5em;
             color: #000000;
             margin-bottom: 20px;
@@ -2109,7 +2115,7 @@
                     </div>
                     <div class="education-gallery">
                         <div class="education-item">
-                            <img src="image/edu1.png" alt="Education 1" class="education-image">
+                            <img src="image/edu1.jpg" alt="Education 1" class="education-image">
                             <p class="education-caption">The second person from the right in the first row. All the staff in the laboratory and some undergraduate students.</p>
                         </div>
                         <div class="education-item">
@@ -2301,7 +2307,7 @@
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/2-1.png" alt="Paper 2 image 1" class="pub-image">
                                 <img src="image/paper/2-2.png" alt="Paper 2 image 2" class="pub-image">
-                                <img src="image/paper/2-3.png" alt="Paper 2 image 3" class="pub-image">
+                                <img src="image/paper/2-3.jpg" alt="Paper 2 image 3" class="pub-image">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Ccl2-Induced Regulatory T Cells Balance Inflammation Through Macrophage Polarization During Liver Reconstitution</h3>
@@ -2450,7 +2456,7 @@
                                 <strong>Classifier construction method:</strong> For each TCR pair, we calculated its frequency across different groups and used Fisher's exact test on a 2×2 contingency table to assess the association between TCRs and phenotypic status, resulting in the COVID-19-associated TCR summary table shown. A P-value threshold was manually set, and sequences below the threshold were considered virus-related and classified as 1, while others were classified as 0 for model training.
                             </div>
                             <div class="thesis-image-container">
-                                <img src="image/Tumor Neoantigen Prediction Pipeline Flowchart.png" alt="Tumor neoantigen prediction pipeline flowchart" class="thesis-image thesis-image-large">
+                                <img src="image/Tumor Neoantigen Prediction Pipeline Flowchart.jpg" alt="Tumor neoantigen prediction pipeline flowchart" class="thesis-image thesis-image-large">
                                 <span class="image-caption">Tumor neoantigen prediction pipeline flowchart</span>
                             </div>
                             <p><strong>Tumor neoantigen prediction pipeline</strong></p>
@@ -2983,7 +2989,7 @@
                 <i class="fab fa-weibo"></i>
             </a>
         </div>
-        <img src="image/foot3.png" alt="Footer" class="footer-image">
+        <img src="image/foot3.jpg" alt="Footer" class="footer-image">
         <div class="footer-links">
             <a href="#" class="footer-link">Privacy Policy</a>
             <span class="footer-link-separator">|</span>
