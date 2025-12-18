@@ -56,10 +56,21 @@
             font-style: normal;
             font-display: swap;
         }
+        
+        /* 针对苹果/Safari 设备的图片性能优化 */
+        @supports (-webkit-overflow-scrolling: touch) or (-webkit-hyphens:none) {
+            .profile-photo, .footer-image, .activity-image, .pub-image {
+                will-change: transform;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+                image-rendering: -webkit-optimize-contrast;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preload" href="wall.jpg" as="image">
-    <link rel="preload" href="image/foot3.jpg" as="image">
+    <link rel="preload" href="wall.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="me.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="image/foot3.jpg" as="image" fetchpriority="high">
     <link rel="preload" href="image/3.11.jpg" as="image">
     <link rel="preload" href="image/3.20.jpg" as="image">
     <link rel="preload" href="image/3.23.jpg" as="image">
@@ -96,15 +107,6 @@
             font-weight: 300; 
             margin: 0;
             padding: 0;
-            background-image: url('wall.jpg');
-            background-repeat: no-repeat;
-            background-size: cover; 
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-attachment: fixed; 
-            /* Fix for Safari background-attachment: fixed */
-            background-position: center center;
             line-height: 1.8;
             font-size: 16px;
             scroll-behavior: smooth; 
@@ -114,6 +116,23 @@
             max-width: 100vw;
             position: relative;
             height: auto;
+        }
+
+        /* 针对 Safari 优化的固定背景方式 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('wall.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            -webkit-background-size: cover;
+            background-position: center center;
+            z-index: -1;
+            will-change: transform;
         }
         /* 邮箱下方背景模糊效果 - 延伸到全屏 */
         body::after {
@@ -2034,7 +2053,7 @@
     </header>
     <div id="container">
         <section id="intro" class="reveal">
-            <img src="me.jpg" alt="Nan Wang Profile Photo" class="profile-photo">
+            <img src="me.jpg" alt="Nan Wang Profile Photo" class="profile-photo" fetchpriority="high" decoding="sync">
             <h1>Nan Wang</h1>
             <p>Bioinformatics Analyst & Immunologist</p>
             <div class="contact-info">
@@ -2279,9 +2298,9 @@
                     <div class="publications-grid">
                         <div class="publication-card" data-pub-id="1">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/1-1.png" alt="Paper 1 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/1-2.png" alt="Paper 1 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/1-3.png" alt="Paper 1 image 3" class="pub-image" loading="lazy">
+                                <img src="image/paper/1-1.jpg" alt="Paper 1 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/1-2.jpg" alt="Paper 1 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/1-3.jpg" alt="Paper 1 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Identification of SARS-CoV-2-specific T cell and its receptor</h3>
@@ -2293,8 +2312,8 @@
                         
                         <div class="publication-card" data-pub-id="2">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/2-1.png" alt="Paper 2 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/2-2.png" alt="Paper 2 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/2-1.jpg" alt="Paper 2 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/2-2.jpg" alt="Paper 2 image 2" class="pub-image" loading="lazy">
                                 <img src="image/paper/2-3.jpg" alt="Paper 2 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
@@ -2307,9 +2326,9 @@
                         
                         <div class="publication-card" data-pub-id="3">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/3-1.png" alt="Paper 3 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/3-2.png" alt="Paper 3 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/3-3.png" alt="Paper 3 image 3" class="pub-image" loading="lazy">
+                                <img src="image/paper/3-1.jpg" alt="Paper 3 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/3-2.jpg" alt="Paper 3 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/3-3.jpg" alt="Paper 3 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">The intrarenal landscape of T cell receptor repertoire in clear cell renal cell cancer</h3>
@@ -2321,9 +2340,9 @@
                         
                         <div class="publication-card" data-pub-id="4">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/4-1.png" alt="Paper 4 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/4-2.png" alt="Paper 4 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/4-3.png" alt="Paper 4 image 3" class="pub-image" loading="lazy">
+                                <img src="image/paper/4-1.jpg" alt="Paper 4 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/4-2.jpg" alt="Paper 4 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/4-3.jpg" alt="Paper 4 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Identification of the immune repertoire of γδ T-cell receptors in psoriasis</h3>
@@ -2334,9 +2353,9 @@
                         
                         <div class="publication-card" data-pub-id="5">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/5-1.png" alt="Paper 5 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/5-2.png" alt="Paper 5 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/5-3.png" alt="Paper 5 image 3" class="pub-image" loading="lazy">
+                                <img src="image/paper/5-1.jpg" alt="Paper 5 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/5-2.jpg" alt="Paper 5 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/5-3.jpg" alt="Paper 5 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Molecular and Clinicopathological Characteristics Profiling of Macrotrabecular Massive HCC Subtype Reveals Key Features Related to Early Reccurence</h3>
@@ -2347,9 +2366,9 @@
                         
                         <div class="publication-card" data-pub-id="6">
                             <div class="pub-image-wrapper">
-                                <img src="image/paper/6-1.png" alt="Paper 6 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/6-2.png" alt="Paper 6 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/6-3.png" alt="Paper 6 image 3" class="pub-image" loading="lazy">
+                                <img src="image/paper/6-1.jpg" alt="Paper 6 image 1" class="pub-image" loading="lazy">
+                                <img src="image/paper/6-2.jpg" alt="Paper 6 image 2" class="pub-image" loading="lazy">
+                                <img src="image/paper/6-3.jpg" alt="Paper 6 image 3" class="pub-image" loading="lazy">
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">A multi-omics features-based approach integrating immunogenicity and inflammation enhances immunotherapy benefit in clear cell renal cell carcinoma</h3>
@@ -2369,7 +2388,7 @@
                             <h4>1.1 Immunomics Background</h4>
                             <p><strong>Immune System:</strong> The immune system is divided into two components: <strong>innate immunity</strong> and <strong>adaptive immunity</strong>. Adaptive immunity primarily involves <strong>T cells (TCR)</strong>, <strong>B cells</strong>, and <strong>MHC molecules</strong>.</p>
                             <div class="thesis-image-container">
-                                <img src="image/1.1.png" alt="Innate and adaptive branches of the immune system" class="thesis-image" loading="lazy">
+                                <img src="image/1.1.jpg" alt="Innate and adaptive branches of the immune system" class="thesis-image" loading="lazy">
                                 <span class="image-caption">Innate and adaptive branches of the immune system</span>
                             </div>
                             <h4>1.2 Immune Repertoire and Tumor Neoantigens</h4>
@@ -2479,15 +2498,15 @@
                                 <li><strong>Overlapping sequences:</strong> Venn diagrams displayed the <strong>normalized number of overlapping sequences</strong> between disease groups and healthy individuals, with color depth reflecting abundance.</li>
                             </ul>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.2.png" alt="PCA clustering plots (A-C)" class="thesis-image thesis-image-large">
+                                <img data-src="image/3.2.jpg" alt="PCA clustering plots (A-C)" class="thesis-image thesis-image-large">
                                 <span class="image-caption">PCA plots. (A) Acute phase, transition phase, recovery phase patients and healthy individuals; (B) Acute phase patients, healthy individuals, and vaccinated healthy individuals; (C) Venn diagram showing normalized number of <strong>overlapping sequences</strong> between disease groups and healthy individuals, with darker colors indicating higher abundance.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.3.png" alt="PCA clustering plots (D-G)" class="thesis-image thesis-image-large">
+                                <img data-src="image/3.3.jpg" alt="PCA clustering plots (D-G)" class="thesis-image thesis-image-large">
                                 <span class="image-caption">PCA plots. (D) Day 1 post-vaccination vs. transition phase patients; (E) Day 28 post-vaccination vs. transition phase patients; (F) Day 1 post-vaccination vs. recovery phase patients; (G) Day 28 post-vaccination vs. recovery phase patients.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.4.png" alt="PCA clustering plots (H-I)" class="thesis-image thesis-image-large">
+                                <img data-src="image/3.4.jpg" alt="PCA clustering plots (H-I)" class="thesis-image thesis-image-large">
                                 <span class="image-caption">PCA plots. (H) PCA plot of acute phase, transition phase, recovery phase patients, healthy individuals, day 1 and day 28 post-vaccination; (I) t-SNE plot of acute phase, transition phase, recovery phase patients, healthy individuals, day 1 and day 28 post-vaccination.</span>
                             </div>
                             <p>Quantitative assessment of TCR repertoire similarity between different groups was performed through <strong>repertoire overlap</strong> and <strong>Jensen-Shannon (JS) divergence</strong> analysis:</p>
@@ -2496,11 +2515,11 @@
                                 <li><strong>Discrimination:</strong> Results indicated that JS divergence can effectively distinguish repertoires under different conditions.</li>
                             </ul>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.5.png" alt="Repertoire overlap and JS divergence plots (A-C)" class="thesis-image thesis-image-large">
+                                <img data-src="image/3.5.jpg" alt="Repertoire overlap and JS divergence plots (A-C)" class="thesis-image thesis-image-large">
                                 <span class="image-caption">Repertoire overlap and JS divergence plots. (A) Overlap plot of COVID-19 patients, vaccinated populations, and healthy populations; (B) JS divergence plot of COVID-19 patients, vaccinated populations, and healthy populations; (C) Overlap plot of COVID-19 patients and vaccinated populations</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.6.png" alt="Repertoire overlap and JS divergence plots (D-E)" class="thesis-image thesis-image-small">
+                                <img data-src="image/3.6.jpg" alt="Repertoire overlap and JS divergence plots (D-E)" class="thesis-image thesis-image-small">
                                 <span class="image-caption">Repertoire overlap and JS divergence plots. (D) Overlap plot of COVID-19 patients and healthy populations; (E) JS divergence plot of COVID-19 patients and healthy populations.</span>
                             </div>
                             <p>Detailed analysis of TCRβ chain V and J region gene usage frequency and preferences across groups:</p>
@@ -2513,11 +2532,11 @@
                                 <span class="image-caption">V/J gene usage preferences. (A) Gene usage of <strong>TCRβV region</strong> across four groups (top 15); (B) Bar chart showing <strong>TCRβV region</strong> gene usage for each sample; (D) Heatmap showing <strong>TCRβJ region</strong> gene usage across four groups; (C) Heatmap showing <strong>TCRβV region</strong> gene usage; (E) Sankey diagram showing interactions between TCRβ in acute phase patients; (F) Chord diagram showing interactions between TCRβ in acute phase patients; (G) Pie chart showing <strong>TCRβV region</strong> gene usage percentages.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.8.png" alt="Volcano plots showing V/J gene differences between groups (A-C)" class="thesis-image thesis-image-xlarge">
+                                <img data-src="image/3.8.jpg" alt="Volcano plots showing V/J gene differences between groups (A-C)" class="thesis-image thesis-image-xlarge">
                                 <span class="image-caption">Volcano plots showing <strong>V/J gene</strong> differences between groups. (A) Acute phase vs. healthy individuals; (B) Transition phase vs. healthy individuals; (C) Recovery phase vs. healthy individuals.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.9.png" alt="Volcano plots showing V/J gene differences between groups (D-F)" class="thesis-image thesis-image-xlarge">
+                                <img data-src="image/3.9.jpg" alt="Volcano plots showing V/J gene differences between groups (D-F)" class="thesis-image thesis-image-xlarge">
                                 <span class="image-caption">Volcano plots showing <strong>V/J gene</strong> differences between groups. (D) Acute phase vs. transition phase; (E) Acute phase vs. recovery phase; (F) Transition phase vs. recovery phase.</span>
                             </div>
                             <p>Rank-abundance curves displayed the distribution of TCR clone abundance across the four groups. Additionally, specific TCR sequences were filtered and clustered using <strong>VDJmatch</strong> and <strong>GLIPH</strong> tools:</p>
@@ -2528,11 +2547,11 @@
                                 <li><strong>Sequence Logo:</strong> Logo plots of differential TCR sequences between acute phase patients and healthy individuals, highlighting key amino acid residues.</li>
                             </ul>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.10.png" alt="Rank-abundance plots across four groups" class="thesis-image thesis-image-small">
+                                <img data-src="image/3.10.jpg" alt="Rank-abundance plots across four groups" class="thesis-image thesis-image-small">
                                 <span class="image-caption">Rank-abundance plots across four groups</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.11.png" alt="VDJmatch results table (acute phase)" class="thesis-image">
+                                <img data-src="image/3.11.jpg" alt="VDJmatch results table (acute phase)" class="thesis-image">
                                 <span class="image-caption">Table 3-1: VDJmatch results table (acute phase): Shows matching of acute phase patient TCR sequences with antigen epitopes in the VDJdb database, including number of matched sequences, frequency, and read counts</span>
                             </div>
                             <div class="thesis-image-container">
@@ -2556,7 +2575,7 @@
                                 <li><strong>Performance evaluation:</strong> Scatter plots and <strong>ROC curves</strong> demonstrated the accuracy, sensitivity, and specificity of classifiers in distinguishing different groups (e.g., acute phase vs. healthy group).</li>
                             </ul>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.14.png" alt="Scatter plots and ROC curves of classifiers between groups" class="thesis-image">
+                                <img data-src="image/3.14.jpg" alt="Scatter plots and ROC curves of classifiers between groups" class="thesis-image">
                                 <span class="image-caption">Scatter plots and ROC curves of classifiers between groups. (A) Acute phase vs. transition phase; (B) Acute phase vs. recovery phase; (C) Acute phase vs. healthy group.</span>
                             </div>
                             <div class="thesis-image-container">
@@ -2569,17 +2588,17 @@
                             <p>From the scatter plots, it can be observed that when acute phase and transition phase patients are grouped together, their immune repertoire sequences are difficult to distinguish, resulting in suboptimal classification performance in machine learning with smaller AUC values. This may be due to the similarity of their immune repertoires. In contrast, the immune repertoires of acute phase and recovery phase patients differ significantly from healthy individuals, resulting in better classifier performance that can distinguish approximately 90% of the population.</p>
                             <p>The classifier was further applied to distinguish between post-vaccination populations and COVID-19 patients:</p>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.16.png" alt="ROC curves of classifiers in post-vaccination populations vs. COVID-19 transition and recovery phase populations" class="thesis-image">
+                                <img data-src="image/3.16.jpg" alt="ROC curves of classifiers in post-vaccination populations vs. COVID-19 transition and recovery phase populations" class="thesis-image">
                                 <span class="image-caption"><strong>ROC curves</strong> of classifiers in post-vaccination populations vs. COVID-19 transition and recovery phase populations. (A) D0 group vs. transition group; (B) PB28 group vs. transition group; (C) D0 group vs. recovery group; (D) PB28 group vs. recovery group.</span>
                             </div>
                             <p>Figures A-F display the classification performance of six classification scenarios among four population groups. Subsequently, we added two post-vaccination groups for comparison with transition and recovery phase patients. Here, D0 represents the group at day 1 post-vaccination, and PB28 represents the group at day 28 post-vaccination. We found that populations 28 days post-vaccination are most similar to the recovery phase.</p>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.17.png" alt="Classification performance of classifiers in post-vaccination populations vs. healthy populations" class="thesis-image">
+                                <img data-src="image/3.17.jpg" alt="Classification performance of classifiers in post-vaccination populations vs. healthy populations" class="thesis-image">
                                 <span class="image-caption">Classification performance of classifiers in post-vaccination populations vs. healthy populations. (A) D0 group vs. healthy group; (B) PB28 group vs. healthy group.</span>
                             </div>
                             <p>Classification between vaccinated groups and healthy individuals showed moderate performance, with 82% of the D0 group distinguishable from healthy individuals, while the PB28 group showed lower performance at 76%. A possible reason is that post-vaccination populations are more similar to healthy individuals compared to COVID-19-infected patients, and 28 days post-vaccination, after immune system renewal, the immune status is more "healthy" compared to initial pathogen exposure.</p>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.18.png" alt="ROC curves and scatter plots of classifiers in vaccinated populations, healthy individuals, and COVID-19 patients" class="thesis-image">
+                                <img data-src="image/3.18.jpg" alt="ROC curves and scatter plots of classifiers in vaccinated populations, healthy individuals, and COVID-19 patients" class="thesis-image">
                                 <span class="image-caption"><strong>ROC curves</strong> and scatter plots of classifiers in vaccinated populations, healthy individuals, and COVID-19 patients. (A) COVID-19 patient group vs. vaccine group; (B) COVID-19 patient group vs. healthy group; (C) Vaccine group vs. healthy group.</span>
                             </div>
                             <p>To further validate the above conclusions, the two vaccinated groups were combined and classified separately against COVID-19 patients and healthy individuals. It can be seen that COVID-19 patients share significantly more specific TCRs with both vaccinated and healthy individuals than vaccinated and healthy individuals share with each other. Furthermore, the classification performance distinguishing COVID-19 patients from the other groups is better than that distinguishing vaccinated individuals from healthy individuals. These conclusions further confirm that post-vaccination populations have immune repertoires more similar to healthy individuals compared to COVID-19 patients.</p>
@@ -2591,7 +2610,7 @@
                                 <span class="image-caption">Contribution of different peptides to classifier described by <strong>SHAP values</strong></span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.20.png" alt="Algorithm performance comparison table" class="thesis-image">
+                                <img data-src="image/3.20.jpg" alt="Algorithm performance comparison table" class="thesis-image">
                                 <span class="image-caption">Table 3-3: Algorithm performance comparison: Compared AUC, sensitivity, specificity and other metrics of 8 machine learning algorithms including RF, SVM-rbf, XGBOOST in COVID-19 classification tasks. SVM-rbf performed optimally (AUC=0.931)</span>
                             </div>
                             <h4>3.3 Tumor Neoantigen Prediction Results</h4>
@@ -2602,15 +2621,15 @@
                                 <li><strong>Neoantigen sharing:</strong> Analyzed shared neoantigen peptides across different HLA genotypes.</li>
                             </ul>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.21.png" alt="Mutation landscape of liver cancer patient cohort" class="thesis-image">
+                                <img data-src="image/3.21.jpg" alt="Mutation landscape of liver cancer patient cohort" class="thesis-image">
                                 <span class="image-caption">Mutation landscape of liver cancer patient cohort. (A) Overall variant classification of the cohort; (B) Overall variant types of the cohort; (C) Single nucleotide variant types; (D) Number of variants per sample; (E) Cohort variant classification overview; (F) Top ten most frequently mutated genes.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.22.png" alt="Somatic mutation profile of 29 liver cancer patients" class="thesis-image">
+                                <img data-src="image/3.22.jpg" alt="Somatic mutation profile of 29 liver cancer patients" class="thesis-image">
                                 <span class="image-caption">Somatic mutation profile of 29 liver cancer patients. missense_mutation: missense mutation, frame_shift_del: frameshift deletion mutation, splice_site: splice site, frame_shift_ins: frameshift insertion mutation.</span>
                             </div>
                             <div class="thesis-image-container">
-                                <img data-src="image/3.23.png" alt="Shared neoantigens across HLA genotypes" class="thesis-image thesis-image-large">
+                                <img data-src="image/3.23.jpg" alt="Shared neoantigens across HLA genotypes" class="thesis-image thesis-image-large">
                                 <span class="image-caption">Table 3-4: Shared neoantigens across HLA genotypes: Lists high-affinity neoantigen peptides commonly recognized by different HLA genotypes in liver cancer patients, providing targets for broad-spectrum immunotherapy</span>
                             </div>
                             <p>Following preprocessing of single-cell RNA sequencing and whole-exome sequencing results from liver cancer patients, MHC class I-restricted neoantigens were predicted using HLA typing information and somatic mutations as prediction basis. Tumor neoantigens were filtered based on high affinity and high presentation, and scoring was used to evaluate the most likely neoantigens. The table also lists information such as the chromosome where the variant corresponding to each peptide is located, the variant base type, HLA typing, peptide sequence, and the frequency of the corresponding variant.</p>
@@ -2977,7 +2996,7 @@
                 <i class="fab fa-weibo"></i>
             </a>
         </div>
-        <img src="image/foot3.jpg" alt="Footer" class="footer-image">
+        <img src="image/foot3.jpg" alt="Footer" class="footer-image" fetchpriority="high" decoding="sync">
         <div class="footer-links">
             <a href="#" class="footer-link">Privacy Policy</a>
             <span class="footer-link-separator">|</span>
