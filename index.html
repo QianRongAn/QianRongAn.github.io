@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nan Wang | Bioinformatics & Immunology</title>
     <link rel="icon" type="image/jpeg" href="image/favicon.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300&family=Aboreto&display=swap" rel="stylesheet">
     <style>
         @font-face {
             font-family: 'BodoniFLF-Italic';
-            src: url('font/BodoniFLF-Italic.woff2') format('woff2'),
-                 url('font/BodoniFLF-Italic.woff') format('woff'),
+            src: url('font/BodoniFLF-Italic.woff') format('woff'),
+                 url('font/BodoniFLF-Italic.woff2') format('woff2'),
                  url('font/BodoniFLF-Italic.ttf') format('truetype'),
                  local('BodoniFLF-Italic'),
                  local('BodoniFLF Italic');
@@ -28,17 +31,6 @@
             font-display: swap;
         }
         @font-face {
-            font-family: 'Aleo-Light';
-            src: url('font/Aleo-Light.woff2') format('woff2'),
-                 url('font/Aleo-Light.woff') format('woff'),
-                 url('font/Aleo-Light.ttf') format('truetype'),
-                 local('Aleo-Light'),
-                 local('Aleo Light');
-            font-weight: 300;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
             font-family: 'Monotype Corsiva';
             src: local('Monotype Corsiva'),
                  local('MonotypeCorsiva'),
@@ -49,15 +41,17 @@
         }
         @font-face {
             font-family: 'MingLiU_HKSCS-ExtB';
-            src: url('font/mingliub.ttc') format('collection'),
-                 url('font/mingliub.ttc') format('truetype'),
-                 local('MingLiU_HKSCS-ExtB');
+            src: local('MingLiU_HKSCS-ExtB'),
+                 local('MingLiU'),
+                 local('PMingLiU'),
+                 url('font/mingliub.woff') format('woff'),
+                 url('font/mingliub.ttc') format('collection');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
         }
         
-        /* 针对苹果/Safari 设备的图片性能优化 */
+            /* 针对苹果/Safari 设备的图片性能优化 */
         @supports (-webkit-overflow-scrolling: touch) or (-webkit-hyphens:none) {
             .profile-photo, .footer-image, .activity-image, .pub-image {
                 will-change: transform;
@@ -71,9 +65,7 @@
     <link rel="preload" href="wall.jpg" as="image" fetchpriority="high">
     <link rel="preload" href="me.jpg" as="image" fetchpriority="high">
     <link rel="preload" href="image/foot3.jpg" as="image" fetchpriority="high">
-    <link rel="preload" href="image/3.11.jpg" as="image">
-    <link rel="preload" href="image/3.20.jpg" as="image">
-    <link rel="preload" href="image/3.23.jpg" as="image">
+    <!-- 移除非必要的预加载以释放带宽 -->
     <style>
         :root {
             --max-content-width: 800px;
@@ -93,7 +85,8 @@
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.2);
             --shadow-float: 0 15px 40px rgba(0, 0, 0, 0.25); 
-            --serif-font: 'MingLiU_HKSCS-ExtB', 'Songti SC', 'STSong', 'Noto Serif SC', serif;
+            /* 默认衬线字体设置：Windows 优先使用 MingLiU，Mac 优先使用 Georgia */
+            --serif-font: 'MingLiU_HKSCS-ExtB', 'Georgia', 'Songti SC', 'STSong', 'Noto Serif SC', serif;
             --sans-font: 'Inter', sans-serif; 
         }
         html {
@@ -2036,7 +2029,6 @@
         </div>
     </div>
     <div class="page-overlay"></div>
-    <canvas id="webgl-canvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none"></canvas>
     <header id="top-header">
         <div class="nav-glass-container">
             <ul class="nav-links">
@@ -2788,44 +2780,6 @@
             });
         }, { threshold: 0.15 });
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const script = document.createElement('script');
-                script.type = 'module';
-                script.textContent = `
-                    import * as THREE from 'https://cdn.skypack.dev/three@0.158.0/build/three.module.js ';
-                    const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-                    camera.position.z = 1;
-                    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true });
-                    renderer.setSize(innerWidth, innerHeight);
-                    const COUNT = 120;
-                    const geom = new THREE.BufferGeometry();
-                    const pos = new Float32Array(COUNT * 3);
-                    for (let i = 0; i < COUNT * 3; i++) pos[i] = (Math.random() - 0.5) * 3;
-                    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-                    const mat = new THREE.PointsMaterial({ color: 0x91040C, size: 0.025, transparent: true, opacity: 0.6 });
-                    const points = new THREE.Points(geom, mat);
-                    scene.add(points);
-                    addEventListener('mousemove', e => {
-                        const x = (e.clientX / innerWidth) * 2 - 1;
-                        const y = -(e.clientY / innerHeight) * 2 + 1;
-                        points.rotation.y = x * 0.3;
-                        points.rotation.x = y * 0.3;
-                    });
-                    addEventListener('resize', () => {
-                        renderer.setSize(innerWidth, innerHeight);
-                        camera.aspect = innerWidth / innerHeight;
-                        camera.updateProjectionMatrix();
-                    });
-                    (function animate() {
-                        requestAnimationFrame(animate);
-                        renderer.render(scene, camera);
-                    })();
-                `;
-                document.body.appendChild(script);
-            }, 1000);
-        });
         
         // ===== Publications Smooth Auto-Scroll on Hover - Balanced =====
         document.addEventListener('DOMContentLoaded', () => {
