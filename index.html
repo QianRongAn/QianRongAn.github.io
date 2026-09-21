@@ -2092,16 +2092,6 @@
             will-change: transform;
         }
         .hero-screen.hero-leaving .hero-bg { transform: scale(1.14); }
-        .hero-shade {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.44) 0%, rgba(0, 0, 0, 0.30) 100%);
-        }
-        .hero-vignette {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(130% 100% at 50% 28%, transparent 58%, rgba(0, 0, 0, 0.52) 100%);
-        }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -2149,14 +2139,16 @@
             letter-spacing: -0.01em;
             color: #ffffff;
             margin: 0 0 14px;
+            text-shadow: 0 1px 18px rgba(0, 0, 0, 0.55);
         }
         .hero-subtitle {
             font-family: var(--sans-font);
             font-weight: 300;
             font-size: clamp(0.9rem, 1.15vw, 1.02rem);
             line-height: 1.7;
-            color: rgba(255, 255, 255, 0.72);
+            color: rgba(255, 255, 255, 0.9);
             margin: 0 0 26px;
+            text-shadow: 0 1px 14px rgba(0, 0, 0, 0.6);
         }
         .hero-enter {
             display: inline-flex;
@@ -2235,8 +2227,6 @@
     <!-- 开场 Hero（Motrix 风格） -->
     <div class="hero-screen" id="heroScreen">
         <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-shade"></div>
-        <div class="hero-vignette"></div>
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">Nan Wang</h1>
             <div class="hero-bottom">
