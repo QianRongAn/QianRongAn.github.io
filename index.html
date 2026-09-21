@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nan Wang | Bioinformatics & Immunology</title>
     <link rel="icon" type="image/jpeg" href="image/favicon.jpg">
-    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
     <style>
         @font-face {
             font-family: 'Inter';
@@ -43,17 +42,24 @@
             font-display: swap;
         }
         @font-face {
-            font-family: 'Playfair Display';
-            src: url('font/playfair-display-latin-400-italic.woff2') format('woff2');
+            font-family: 'Poppins';
+            src: url('font/poppins-latin-400-normal.woff2') format('woff2');
             font-weight: 400;
-            font-style: italic;
+            font-style: normal;
             font-display: swap;
         }
         @font-face {
-            font-family: 'Playfair Display';
-            src: url('font/playfair-display-latin-500-italic.woff2') format('woff2');
+            font-family: 'Poppins';
+            src: url('font/poppins-latin-500-normal.woff2') format('woff2');
             font-weight: 500;
-            font-style: italic;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('font/poppins-latin-600-normal.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
             font-display: swap;
         }
         @font-face {
@@ -102,7 +108,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/fontawesome.css">
     <link rel="preload" href="wall.webp" as="image" fetchpriority="high">
     <link rel="preload" href="me.webp" as="image" fetchpriority="high">
     <link rel="preload" href="image/foot3.webp" as="image" fetchpriority="high">
@@ -2085,149 +2091,143 @@
             transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform;
         }
-        .hero-screen.hero-leaving .hero-bg {
-            transform: scale(1.14);
-        }
+        .hero-screen.hero-leaving .hero-bg { transform: scale(1.14); }
         .hero-shade {
             position: absolute;
             inset: 0;
-            background:
-                linear-gradient(180deg, rgba(12, 10, 8, 0.60) 0%, rgba(12, 10, 8, 0.18) 42%, rgba(12, 10, 8, 0.70) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.44) 0%, rgba(0, 0, 0, 0.30) 100%);
         }
         .hero-vignette {
             position: absolute;
             inset: 0;
-            background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+            background: radial-gradient(130% 100% at 50% 28%, transparent 58%, rgba(0, 0, 0, 0.52) 100%);
         }
         .hero-content {
             position: relative;
             z-index: 2;
             height: 100%;
+            width: 100%;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 0 28px;
-            color: #f6f0e7;
-            opacity: 0;
-            animation: heroRiseIn 1.25s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+            padding: clamp(92px, 15vh, 168px) clamp(26px, 6.5vw, 104px) clamp(54px, 9vh, 104px);
+            color: #ffffff;
         }
         .hero-screen.hero-leaving .hero-content {
             opacity: 0;
-            transform: translateY(-48px) scale(0.97);
-            transition: opacity 0.5s ease, transform 0.75s cubic-bezier(0.55, 0, 0.55, 0.2);
+            transition: opacity 0.5s ease;
         }
-        .hero-name {
-            font-family: var(--sans-font);
-            font-weight: 600;
-            font-size: clamp(3.2rem, 8.5vw, 7rem);
-            letter-spacing: -0.02em;
-            line-height: 1.02;
-            margin: 0 0 14px;
+        .hero-title {
+            font-family: 'Poppins', var(--sans-font);
+            font-weight: 500;
+            font-size: clamp(3.2rem, 9.5vw, 7.5rem);
+            line-height: 0.94;
+            letter-spacing: -0.03em;
+            margin: 0;
             color: #ffffff;
-            text-shadow: 0 2px 40px rgba(0, 0, 0, 0.35);
+            text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            animation: heroFadeIn 0.9s ease 0.2s forwards;
         }
-        .hero-poetic {
-            font-family: 'Playfair Display', 'Georgia', serif;
-            font-style: italic;
-            font-weight: 400;
-            font-size: clamp(1.15rem, 2.3vw, 1.7rem);
-            line-height: 1.5;
-            color: #eaddc7;
-            margin: 0 0 30px;
-            text-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
+        .hero-bottom {
+            margin-top: auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 36px;
+        }
+        .hero-left {
+            max-width: 440px;
+            opacity: 0;
+            animation: heroFadeIn 0.9s ease 0.45s forwards;
         }
         .hero-tagline {
-            font-family: var(--sans-font);
+            font-family: 'Poppins', var(--sans-font);
             font-weight: 500;
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            letter-spacing: 0.03em;
+            font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+            line-height: 1.25;
+            letter-spacing: -0.01em;
             color: #ffffff;
-            margin: 0 0 12px;
+            margin: 0 0 14px;
         }
         .hero-subtitle {
             font-family: var(--sans-font);
             font-weight: 300;
-            font-size: clamp(0.86rem, 1.35vw, 1.06rem);
-            letter-spacing: 0.07em;
-            color: rgba(246, 240, 231, 0.78);
-            margin: 0 0 44px;
-        }
-        .hero-actions {
-            margin-bottom: 40px;
+            font-size: clamp(0.9rem, 1.15vw, 1.02rem);
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.72);
+            margin: 0 0 26px;
         }
         .hero-enter {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            padding: 15px 44px;
+            gap: 10px;
+            padding: 13px 26px;
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.55);
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #ffffff;
-            font-family: var(--sans-font);
+            background: #ffffff;
+            color: #14120f;
+            font-family: 'Poppins', var(--sans-font);
             font-weight: 500;
             font-size: 0.95rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
+            letter-spacing: 0.01em;
             text-decoration: none;
             cursor: pointer;
-            transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+            transition: transform 0.3s ease, background 0.3s ease;
         }
-        .hero-enter:hover {
-            background: rgba(255, 255, 255, 0.22);
-            border-color: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.3);
-        }
-        .hero-enter i {
-            font-size: 0.9em;
-            transition: transform 0.35s ease;
-        }
+        .hero-enter:hover { background: #efe9df; transform: translateY(-2px); }
+        .hero-enter i { font-size: 0.9em; transition: transform 0.3s ease; }
         .hero-enter:hover i { transform: translateX(4px); }
         .hero-social {
             display: flex;
             align-items: center;
-            gap: 26px;
+            gap: 14px;
+            opacity: 0;
+            animation: heroFadeIn 0.9s ease 0.65s forwards;
         }
         .hero-social a {
-            color: rgba(255, 255, 255, 0.86);
-            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 1.05rem;
             text-decoration: none;
-            transition: color 0.3s ease, transform 0.3s ease;
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
         }
         .hero-social a:hover {
-            color: #ffffff;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
             transform: translateY(-3px);
         }
         .hero-scroll {
             position: absolute;
-            bottom: 32px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 7px;
-            color: rgba(255, 255, 255, 0.72);
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.6);
             font-family: var(--sans-font);
-            font-size: 0.74rem;
-            letter-spacing: 0.24em;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
             animation: heroScrollPulse 2.4s ease-in-out infinite;
         }
         .hero-scroll i { font-size: 0.9rem; }
-        @keyframes heroRiseIn {
-            from { opacity: 0; transform: translateY(42px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes heroFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         @keyframes heroScrollPulse {
-            0%, 100% { transform: translate(-50%, 0); opacity: 0.72; }
-            50% { transform: translate(-50%, 8px); opacity: 1; }
+            0%, 100% { transform: translate(-50%, 0); opacity: 0.55; }
+            50% { transform: translate(-50%, 7px); opacity: 1; }
         }
     </style>
 </head>
@@ -2238,17 +2238,18 @@
         <div class="hero-shade"></div>
         <div class="hero-vignette"></div>
         <div class="hero-content" id="heroContent">
-            <h1 class="hero-name">Nan Wang</h1>
-            <p class="hero-poetic">Decoding the immune system, one cell at a time.</p>
-            <p class="hero-tagline">Bioinformatics &amp; Immunology</p>
-            <p class="hero-subtitle">Immune repertoire &middot; Single-cell &amp; spatial transcriptomics &middot; Tumor neoantigens</p>
-            <div class="hero-actions">
-                <a href="#intro" class="hero-enter" id="heroEnter">Enter <i class="fas fa-arrow-right"></i></a>
-            </div>
-            <div class="hero-social">
-                <a href="https://github.com/QianRongAn" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/nan-wang-30a438394/" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://orcid.org/0009-0003-6304-3331" target="_blank" rel="noopener noreferrer" title="ORCID"><i class="fab fa-orcid"></i></a>
+            <h1 class="hero-title">Nan Wang</h1>
+            <div class="hero-bottom">
+                <div class="hero-left">
+                    <p class="hero-tagline">Bioinformatics &amp; Immunology</p>
+                    <p class="hero-subtitle">Immune repertoire &middot; Single-cell &amp; spatial transcriptomics &middot; Tumor neoantigens</p>
+                    <a href="#intro" class="hero-enter" id="heroEnter">Enter <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="hero-social">
+                    <a href="https://github.com/QianRongAn" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/nan-wang-30a438394/" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://orcid.org/0009-0003-6304-3331" target="_blank" rel="noopener noreferrer" title="ORCID"><i class="fab fa-orcid"></i></a>
+                </div>
             </div>
         </div>
         <div class="hero-scroll">
