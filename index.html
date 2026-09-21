@@ -2086,7 +2086,7 @@
             inset: 0;
             background-image: url('image/foot3.webp');
             background-repeat: no-repeat;
-            background-size: cover;
+            background-size: contain;
             background-position: center center;
             transform: scale(1.0);
             transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2221,19 +2221,19 @@
             pointer-events: none;
             will-change: transform;
             transform-style: preserve-3d;
+            transform-origin: center center;
             opacity: 0;
-            animation: butterflyAppear 1.6s ease 0.5s forwards;
+            animation: butterflyFadeIn 1.2s ease 0.4s forwards;
         }
         .hero-butterfly img {
             display: block;
             width: 100%;
             height: auto;
-            filter: drop-shadow(0 0 24px rgba(120, 170, 255, 0.55));
-            -webkit-filter: drop-shadow(0 0 24px rgba(120, 170, 255, 0.55));
+            backface-visibility: hidden;
         }
-        @keyframes butterflyAppear {
-            from { opacity: 0; transform: translate3d(0, 20px, 0) rotateY(0deg); }
-            to { opacity: 1; transform: translate3d(0, 0, 0) rotateY(0deg); }
+        @keyframes butterflyFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         @keyframes heroFadeIn {
             from { opacity: 0; }
@@ -2308,7 +2308,7 @@
                 if (!dismissed && e.deltaY > 0) dismiss();
             }, { passive: true });
 
-            // ---- 蝴蝶跟随鼠标做 3D 旋转（背景图保持完整不动，只有蝴蝶立体旋转） ----
+            // ---- 蝴蝶跟随鼠标做 3D 旋转（背景图完整不动，只有蝴蝶在原位立体旋转） ----
             var butterfly = document.getElementById('heroButterfly');
             var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             var tRotX = 0, tRotY = 0;   // 目标旋转角（deg）
@@ -2316,11 +2316,34 @@
             var tPosX = 0, tPosY = 0;   // 目标位置偏移
             var cPosX = 0, cPosY = 0;   // 当前位置偏移
 
-            // 蝴蝶在视口中的基准位置（居中偏右，避开左下文案区）
-            function basePos() {
+            // foot3 原图比例与蝴蝶在其中的原位（百分比）
+            var BG_RATIO = 1392 / 768;          // foot3 宽高比
+            var BFLY_CX = 763 / 1392;           // 蝴蝶中心 X（占 foot3 宽）
+            var BFLY_CY = 256 / 768;            // 蝴蝶中心 Y（占 foot3 高）
+            var BFLY_W = 216 / 1392;            // 蝴蝶宽（占 foot3 宽）
+
+            // 计算 foot3 以 contain 方式在视口中的显示区域 + 蝴蝶原位/尺寸
+            function layout() {
+                var vw = window.innerWidth, vh = window.innerHeight;
+                var vr = vw / vh;
+                var dispW, dispH, offX, offY;
+                if (vr > BG_RATIO) {
+                    // 视口更宽：foot3 按高度填满，宽度居中
+                    dispH = vh;
+                    dispW = vh * BG_RATIO;
+                    offX = (vw - dispW) / 2;
+                    offY = 0;
+                } else {
+                    // 视口更窄：foot3 按宽度填满，高度居中
+                    dispW = vw;
+                    dispH = vw / BG_RATIO;
+                    offX = 0;
+                    offY = (vh - dispH) / 2;
+                }
                 return {
-                    x: window.innerWidth * 0.62,
-                    y: window.innerHeight * 0.34
+                    x: offX + BFLY_CX * dispW,
+                    y: offY + BFLY_CY * dispH,
+                    w: BFLY_W * dispW
                 };
             }
 
@@ -2330,11 +2353,13 @@
                 cPosX += (tPosX - cPosX) * 0.06;
                 cPosY += (tPosY - cPosY) * 0.06;
                 if (butterfly && !dismissed) {
-                    var b = basePos();
-                    var tx = b.x - butterfly.offsetWidth / 2 + cPosX;
-                    var ty = b.y - butterfly.offsetHeight / 2 + cPosY;
+                    var L = layout();
+                    var w = L.w;
+                    var tx = L.x - w / 2 + cPosX;
+                    var ty = L.y - w / 2 + cPosY;
                     butterfly.style.left = '0px';
                     butterfly.style.top = '0px';
+                    butterfly.style.width = w + 'px';
                     butterfly.style.transform =
                         'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0)' +
                         ' rotateY(' + cRotY.toFixed(2) + 'deg)' +
@@ -2350,29 +2375,24 @@
                 var nx = (e.clientX - cx) / cx;   // [-1,1]
                 var ny = (e.clientY - cy) / cy;
                 // 蝴蝶朝鼠标方向 3D 旋转（rotateY 左右转，rotateX 上下转）
-                tRotY = nx * 35;
-                tRotX = -ny * 25;
+                tRotY = nx * 45;
+                tRotX = -ny * 32;
                 // 蝴蝶轻微朝鼠标方向漂移，增加立体跟随感
-                tPosX = nx * 40;
-                tPosY = ny * 30;
+                tPosX = nx * 24;
+                tPosY = ny * 18;
             }
 
             if (hasPointer && butterfly) {
-                // 初始尺寸（相对视口自适应）
-                var bsize = Math.min(window.innerWidth, window.innerHeight) * 0.32;
-                butterfly.style.width = bsize + 'px';
                 window.addEventListener('mousemove', onButterflyMove, { passive: true });
                 window.addEventListener('resize', function () {
-                    var bs2 = Math.min(window.innerWidth, window.innerHeight) * 0.32;
-                    butterfly.style.width = bs2 + 'px';
+                    if (!dismissed) butterflyRaf();
                 });
                 requestAnimationFrame(butterflyRaf);
             } else if (butterfly) {
-                // 无鼠标（触屏）：静态居中偏右显示
-                var bsize = Math.min(window.innerWidth, window.innerHeight) * 0.32;
-                butterfly.style.width = bsize + 'px';
-                var b = basePos();
-                butterfly.style.transform = 'translate3d(' + (b.x - bsize/2) + 'px,' + (b.y - bsize/2) + 'px,0)';
+                // 无鼠标（触屏）：静态停靠原位
+                var L = layout();
+                butterfly.style.width = L.w + 'px';
+                butterfly.style.transform = 'translate3d(' + (L.x - L.w/2) + 'px,' + (L.y - L.w/2) + 'px,0)';
             }
 
             var startY = 0;
