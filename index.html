@@ -43,6 +43,20 @@
             font-display: swap;
         }
         @font-face {
+            font-family: 'Playfair Display';
+            src: url('font/playfair-display-latin-400-italic.woff2') format('woff2');
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Playfair Display';
+            src: url('font/playfair-display-latin-500-italic.woff2') format('woff2');
+            font-weight: 500;
+            font-style: italic;
+            font-display: swap;
+        }
+        @font-face {
             font-family: 'BodoniFLF-Italic';
             src: local('BodoniFLF-Italic'),
                  local('BodoniFLF Italic');
@@ -275,7 +289,7 @@
         .fas, .fab, .far, .fal, .fa {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", var(--sans-font) !important;
         }
-        body > *:not(.page-overlay):not(#top-header) {
+        body > *:not(.page-overlay):not(#top-header):not(.hero-screen) {
             opacity: 0;
             filter: blur(20px);
             animation: fadeInContent 2s ease-in-out 0.3s forwards;
@@ -2041,9 +2055,254 @@
             color: #000000;
             margin-bottom: 20px;
         }
+
+        /* ================= 开场 Hero（Motrix 风格） ================= */
+        html.hero-locked { overflow-y: hidden !important; }
+        .hero-screen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100000;
+            overflow: hidden;
+            background-color: #0d0b09;
+            transition: transform 1.15s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.9s ease;
+            will-change: transform, opacity;
+        }
+        .hero-screen.hero-leaving {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: -3%;
+            background-image: url('image/foot3.webp');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            transform: scale(1.02);
+            transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+        .hero-screen.hero-leaving .hero-bg {
+            transform: scale(1.14);
+        }
+        .hero-shade {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(12, 10, 8, 0.60) 0%, rgba(12, 10, 8, 0.18) 42%, rgba(12, 10, 8, 0.70) 100%);
+        }
+        .hero-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 28px;
+            color: #f6f0e7;
+            opacity: 0;
+            animation: heroRiseIn 1.25s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+        }
+        .hero-screen.hero-leaving .hero-content {
+            opacity: 0;
+            transform: translateY(-48px) scale(0.97);
+            transition: opacity 0.5s ease, transform 0.75s cubic-bezier(0.55, 0, 0.55, 0.2);
+        }
+        .hero-name {
+            font-family: var(--sans-font);
+            font-weight: 600;
+            font-size: clamp(3.2rem, 8.5vw, 7rem);
+            letter-spacing: -0.02em;
+            line-height: 1.02;
+            margin: 0 0 14px;
+            color: #ffffff;
+            text-shadow: 0 2px 40px rgba(0, 0, 0, 0.35);
+        }
+        .hero-poetic {
+            font-family: 'Playfair Display', 'Georgia', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: clamp(1.15rem, 2.3vw, 1.7rem);
+            line-height: 1.5;
+            color: #eaddc7;
+            margin: 0 0 30px;
+            text-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
+        }
+        .hero-tagline {
+            font-family: var(--sans-font);
+            font-weight: 500;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            letter-spacing: 0.03em;
+            color: #ffffff;
+            margin: 0 0 12px;
+        }
+        .hero-subtitle {
+            font-family: var(--sans-font);
+            font-weight: 300;
+            font-size: clamp(0.86rem, 1.35vw, 1.06rem);
+            letter-spacing: 0.07em;
+            color: rgba(246, 240, 231, 0.78);
+            margin: 0 0 44px;
+        }
+        .hero-actions {
+            margin-bottom: 40px;
+        }
+        .hero-enter {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 44px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            font-family: var(--sans-font);
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .hero-enter:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.3);
+        }
+        .hero-enter i {
+            font-size: 0.9em;
+            transition: transform 0.35s ease;
+        }
+        .hero-enter:hover i { transform: translateX(4px); }
+        .hero-social {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+        .hero-social a {
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 1.4rem;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .hero-social a:hover {
+            color: #ffffff;
+            transform: translateY(-3px);
+        }
+        .hero-scroll {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            color: rgba(255, 255, 255, 0.72);
+            font-family: var(--sans-font);
+            font-size: 0.74rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            animation: heroScrollPulse 2.4s ease-in-out infinite;
+        }
+        .hero-scroll i { font-size: 0.9rem; }
+        @keyframes heroRiseIn {
+            from { opacity: 0; transform: translateY(42px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroScrollPulse {
+            0%, 100% { transform: translate(-50%, 0); opacity: 0.72; }
+            50% { transform: translate(-50%, 8px); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+    <!-- 开场 Hero（Motrix 风格） -->
+    <div class="hero-screen" id="heroScreen">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-shade"></div>
+        <div class="hero-vignette"></div>
+        <div class="hero-content" id="heroContent">
+            <h1 class="hero-name">Nan Wang</h1>
+            <p class="hero-poetic">Decoding the immune system, one cell at a time.</p>
+            <p class="hero-tagline">Bioinformatics &amp; Immunology</p>
+            <p class="hero-subtitle">Immune repertoire &middot; Single-cell &amp; spatial transcriptomics &middot; Tumor neoantigens</p>
+            <div class="hero-actions">
+                <a href="#intro" class="hero-enter" id="heroEnter">Enter <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="hero-social">
+                <a href="https://github.com/QianRongAn" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/nan-wang-30a438394/" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://orcid.org/0009-0003-6304-3331" target="_blank" rel="noopener noreferrer" title="ORCID"><i class="fab fa-orcid"></i></a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span>Scroll to explore</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var hero = document.getElementById('heroScreen');
+            if (!hero) return;
+            document.documentElement.classList.add('hero-locked');
+            var dismissed = false;
+
+            function dismiss() {
+                if (dismissed) return;
+                dismissed = true;
+                document.documentElement.classList.remove('hero-locked');
+                hero.classList.add('hero-leaving');
+                setTimeout(function () {
+                    hero.style.display = 'none';
+                }, 1250);
+            }
+
+            var enter = document.getElementById('heroEnter');
+            if (enter) {
+                enter.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    dismiss();
+                    setTimeout(function () {
+                        var target = document.getElementById('intro');
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 80);
+                });
+            }
+
+            window.addEventListener('wheel', function (e) {
+                if (!dismissed && e.deltaY > 0) dismiss();
+            }, { passive: true });
+
+            var startY = 0;
+            window.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
+            window.addEventListener('touchmove', function (e) {
+                if (!dismissed && startY - e.touches[0].clientY > 25) dismiss();
+            }, { passive: true });
+
+            window.addEventListener('keydown', function (e) {
+                if (!dismissed && (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ')) {
+                    e.preventDefault();
+                    dismiss();
+                }
+            });
+        })();
+    </script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
