@@ -2082,16 +2082,19 @@
         }
         .hero-bg {
             position: absolute;
-            inset: -3%;
+            inset: -7%;
             background-image: url('image/foot3.webp');
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center center;
-            transform: scale(1.02);
+            transform: scale(1.08);
             transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform;
         }
-        .hero-screen.hero-leaving .hero-bg { transform: scale(1.14); }
+        .hero-bg.is-tilting {
+            transition: transform 0.18s ease-out;
+        }
+        .hero-screen.hero-leaving .hero-bg { transform: scale(1.16) !important; }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -2102,6 +2105,9 @@
             flex-direction: column;
             padding: clamp(92px, 15vh, 168px) clamp(26px, 6.5vw, 104px) clamp(54px, 9vh, 104px);
             color: #ffffff;
+            transform: translate3d(0, 0, 0);
+            transition: transform 0.22s ease-out;
+            will-change: transform;
         }
         .hero-screen.hero-leaving .hero-content {
             opacity: 0;
@@ -2259,6 +2265,11 @@
                 dismissed = true;
                 document.documentElement.classList.remove('hero-locked');
                 hero.classList.add('hero-leaving');
+                // 停止鼠标视差，交还给 CSS 的离开动画
+                var bg = document.getElementById('heroBg');
+                var content = document.getElementById('heroContent');
+                if (bg) bg.style.transform = '';
+                if (content) content.style.transform = '';
                 setTimeout(function () {
                     hero.style.display = 'none';
                 }, 1250);
@@ -2279,6 +2290,49 @@
             window.addEventListener('wheel', function (e) {
                 if (!dismissed && e.deltaY > 0) dismiss();
             }, { passive: true });
+
+            // ---- 鼠标视差 3D 立体交互（背景蝴蝶像 Motrix 一样跟随鼠标产生景深） ----
+            var heroBg = document.getElementById('heroBg');
+            var heroContent = document.getElementById('heroContent');
+            var targetX = 0, targetY = 0;          // 背景目标位移（px）
+            var contentTargetX = 0, contentTargetY = 0;
+            var curX = 0, curY = 0, curCX = 0, curCY = 0;
+            var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            function heroRaf() {
+                // 背景：指数平滑逼近目标，产生顺滑拖尾
+                curX += (targetX - curX) * 0.06;
+                curY += (targetY - curY) * 0.06;
+                curCX += (contentTargetX - curCX) * 0.08;
+                curCY += (contentTargetY - curCY) * 0.08;
+                if (heroBg && !dismissed) {
+                    heroBg.style.transform = 'translate3d(' + curX.toFixed(2) + 'px,' + curY.toFixed(2) + 'px,0) scale(1.08)';
+                }
+                if (heroContent && !dismissed) {
+                    heroContent.style.transform = 'translate3d(' + curCX.toFixed(2) + 'px,' + curCY.toFixed(2) + 'px,0)';
+                }
+                if (!dismissed) requestAnimationFrame(heroRaf);
+            }
+
+            function onHeroMove(e) {
+                if (dismissed) return;
+                var cx = window.innerWidth / 2;
+                var cy = window.innerHeight / 2;
+                // 归一化到 [-1, 1]，鼠标越靠边偏移越大
+                var nx = (e.clientX - cx) / cx;
+                var ny = (e.clientY - cy) / cy;
+                // 背景往鼠标反方向轻微移动（幅度约 22px），前景往同方向移动更少（约 8px）形成层次
+                targetX = -nx * 22;
+                targetY = -ny * 22;
+                contentTargetX = nx * 8;
+                contentTargetY = ny * 8;
+            }
+
+            if (hasPointer) {
+                heroBg.classList.add('is-tilting');
+                window.addEventListener('mousemove', onHeroMove, { passive: true });
+                requestAnimationFrame(heroRaf);
+            }
 
             var startY = 0;
             window.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
