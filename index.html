@@ -2117,6 +2117,11 @@
             flex-direction: column;
             padding: clamp(92px, 15vh, 168px) clamp(26px, 6.5vw, 104px) clamp(54px, 9vh, 104px);
             color: #ffffff;
+            pointer-events: none;   /* 让出点击给下方蝴蝶；可交互子元素单独恢复 */
+        }
+        .hero-content .hero-enter,
+        .hero-content .hero-social a {
+            pointer-events: auto;
         }
         .hero-screen.hero-leaving .hero-content {
             opacity: 0;
@@ -2216,6 +2221,7 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 2;
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -2234,18 +2240,44 @@
             left: 0;
             top: 0;
             z-index: 1;
-            pointer-events: none;
+            pointer-events: auto;
+            cursor: pointer;
             will-change: transform;
             transform-style: preserve-3d;
             transform-origin: center center;
             opacity: 0;
-            animation: butterflyFadeIn 1.2s ease 0.4s forwards;
+            animation: butterflyFadeIn 1.6s ease 0.4s forwards;
         }
-        .hero-butterfly img {
-            display: block;
+        .hero-butterfly .bfly-body {
+            position: relative;
             width: 100%;
-            height: auto;
+            height: 0;
+            padding-bottom: 69.71%;   /* 504/723，保持蝴蝶宽高比 */
+            transform-style: preserve-3d;
+            animation: wingFlap 2.6s ease-in-out infinite;
+            will-change: transform;
+        }
+        .hero-butterfly img.bfly-main,
+        .hero-butterfly img.bfly-ghost {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
             backface-visibility: hidden;
+        }
+        .hero-butterfly img.bfly-ghost {
+            opacity: 0.30;
+            filter: blur(10px) brightness(1.15);
+            transform: translate3d(0, 0, -14px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+        }
+        /* 扇翅：绕中轴左右小幅摆动（rotateY），叠加在外层鼠标 3D 旋转之上 */
+        @keyframes wingFlap {
+            0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+            50%      { transform: rotateY(16deg) rotateX(-4deg); }
         }
         @keyframes butterflyFadeIn {
             from { opacity: 0; }
@@ -2254,6 +2286,27 @@
         @keyframes heroFadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        /* 粒子容器：挂在 hero-screen 全屏 */
+        .hero-particles { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+        .hero-particle {
+            position: absolute;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(150,180,255,0.9), rgba(150,180,255,0));
+            filter: blur(1.5px);
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
+        /* 文字呼吸：轻微提亮，克制不破坏静谧感 */
+        @keyframes textBreathe {
+            0%, 100% { text-shadow: 0 2px 40px rgba(0,0,0,0.40), 0 0 0px rgba(170,190,255,0); }
+            50%      { text-shadow: 0 2px 40px rgba(0,0,0,0.40), 0 0 22px rgba(170,190,255,0.55); }
+        }
+        .hero-breathe .hero-title,
+        .hero-breathe .hero-tagline,
+        .hero-breathe .hero-subtitle {
+            animation: textBreathe 2.8s ease-in-out infinite;
         }
         @keyframes heroScrollPulse {
             0%, 100% { transform: translate(-50%, 0); opacity: 0.55; }
@@ -2270,8 +2323,12 @@
         <div class="hero-fill hero-fill-b"></div>
         <div class="hero-bg" id="heroBg"></div>
         <div class="hero-butterfly" id="heroButterfly">
-            <img src="image/butterfly.webp" alt="Butterfly">
+            <div class="bfly-body" id="bflyBody">
+                <img src="image/butterfly.webp" alt="Butterfly" class="bfly-ghost" id="bflyGhost">
+                <img src="image/butterfly.webp" alt="Butterfly" class="bfly-main" id="bflyMain">
+            </div>
         </div>
+        <div class="hero-particles" id="heroParticles"></div>
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">Nan Wang</h1>
             <div class="hero-bottom">
@@ -2363,14 +2420,21 @@
             layoutFills();
             window.addEventListener('resize', layoutFills);
 
-            // ---- 蝴蝶跟随鼠标做 3D 旋转（背景完整不动，整只蝴蝶在原位立体旋转） ----
+            // ---- 蝴蝶跟随鼠标做 3D 旋转 + ghost 慢半拍 + 扇翅（背景完整不动，整只蝴蝶原位） ----
             var butterfly = document.getElementById('heroButterfly');
+            var bflyGhost = document.getElementById('bflyGhost');
+            var bflyBody = document.getElementById('bflyBody');
+            var particleBox = document.getElementById('heroParticles');
+            var heroContent = document.getElementById('heroContent');
             var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             var BF = { x: 397, y: 48, w: 723, h: 504 }; // 整只蝴蝶在 foot3 中的原位矩形
             var tRotX = 0, tRotY = 0;   // 目标旋转角（deg）
             var cRotX = 0, cRotY = 0;   // 当前旋转角
             var tPosX = 0, tPosY = 0;   // 目标位置偏移
             var cPosX = 0, cPosY = 0;   // 当前位置偏移
+            // ghost 慢半拍：独立插值，系数更小 → 永远比实蝴蝶慢一步
+            var gPosX = 0, gPosY = 0, gRotX = 0, gRotY = 0;
+            var lastMoveT = 0;          // 上次鼠标移动时间，用于粒子节流与呼吸
 
             // 计算 foot3 以 contain 方式在视口中的显示区域 + 蝴蝶原位矩形
             function layout() {
@@ -2379,13 +2443,11 @@
                 var R = IMG_W / IMG_H;
                 var dispW, dispH, offX, offY;
                 if (vr > R) {
-                    // 视口更宽：foot3 按高度填满，宽度居中
                     dispH = vh;
                     dispW = vh * R;
                     offX = (vw - dispW) / 2;
                     offY = 0;
                 } else {
-                    // 视口更窄：foot3 按宽度填满，高度居中
                     dispW = vw;
                     dispH = vw / R;
                     offX = 0;
@@ -2400,10 +2462,16 @@
             }
 
             function butterflyRaf() {
+                // 实蝴蝶：较快逼近目标
                 cRotX += (tRotX - cRotX) * 0.08;
                 cRotY += (tRotY - cRotY) * 0.08;
                 cPosX += (tPosX - cPosX) * 0.06;
                 cPosY += (tPosY - cPosY) * 0.06;
+                // ghost：更慢逼近，产生柔焦拖尾
+                gRotX += (tRotX - gRotX) * 0.035;
+                gRotY += (tRotY - gRotY) * 0.035;
+                gPosX += (tPosX - gPosX) * 0.028;
+                gPosY += (tPosY - gPosY) * 0.028;
                 if (butterfly && !dismissed) {
                     var L = layout();
                     butterfly.style.width = L.w.toFixed(1) + 'px';
@@ -2411,6 +2479,15 @@
                         'translate3d(' + (L.x + cPosX).toFixed(1) + 'px,' + (L.y + cPosY).toFixed(1) + 'px,0)' +
                         ' rotateY(' + cRotY.toFixed(2) + 'deg)' +
                         ' rotateX(' + cRotX.toFixed(2) + 'deg)';
+                }
+                // ghost 相对实蝴蝶的偏移（在原位基础上加插值差）
+                if (bflyGhost && !dismissed) {
+                    var dx = gPosX - cPosX, dy = gPosY - cPosY;
+                    var drx = gRotX - cRotX, dry = gRotY - cRotY;
+                    bflyGhost.style.transform =
+                        'translate3d(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px,-14px)' +
+                        ' rotateY(' + dry.toFixed(2) + 'deg)' +
+                        ' rotateX(' + drx.toFixed(2) + 'deg)';
                 }
                 if (!dismissed) requestAnimationFrame(butterflyRaf);
             }
@@ -2421,22 +2498,91 @@
                 var cy = window.innerHeight / 2;
                 var nx = (e.clientX - cx) / cx;   // [-1,1]
                 var ny = (e.clientY - cy) / cy;
-                // 蝴蝶朝鼠标方向 3D 旋转（rotateY 左右转，rotateX 上下转）
-                tRotY = nx * 45;
-                tRotX = -ny * 32;
-                // 蝴蝶轻微朝鼠标方向漂移，增加立体跟随感
-                tPosX = nx * 24;
-                tPosY = ny * 18;
+                tRotY = nx * 38;
+                tRotX = -ny * 26;
+                tPosX = nx * 20;
+                tPosY = ny * 15;
+                // 移动时：扇翅加快 + 文字呼吸
+                if (bflyBody) bflyBody.style.animationDuration = '1.1s';
+                if (heroContent) heroContent.classList.add('hero-breathe');
+                // 粒子节流：约每 90ms 一颗，边缘散出
+                var now = performance.now();
+                if (now - lastMoveT > 90) {
+                    lastMoveT = now;
+                    spawnParticle(e.clientX, e.clientY);
+                }
+            }
+
+            // 光标停住：振翅悬浮（扇翅回到舒缓节奏，呼吸收敛）
+            function onIdle() {
+                if (dismissed) return;
+                if (bflyBody) bflyBody.style.animationDuration = '2.6s';
+                if (heroContent) heroContent.classList.remove('hero-breathe');
+            }
+            var idleTimer = null;
+            function scheduleIdle() {
+                if (idleTimer) clearTimeout(idleTimer);
+                idleTimer = setTimeout(onIdle, 220);
+            }
+
+            // 生成一颗淡蓝紫粒子，从蝴蝶/光标处飘走
+            function spawnParticle(x, y) {
+                if (!particleBox) return;
+                var p = document.createElement('div');
+                p.className = 'hero-particle';
+                var size = 3 + Math.random() * 5;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                particleBox.appendChild(p);
+                var angle = Math.random() * Math.PI * 2;
+                var speed = 1.2 + Math.random() * 3;
+                var vx = Math.cos(angle) * speed;
+                var vy = Math.sin(angle) * speed - 0.8;   // 略向上飘
+                var px = x, py = y, life = 0, op = 1;
+                (function step() {
+                    life++;
+                    px += vx;
+                    py += vy + life * 0.05;
+                    op -= 0.016;
+                    p.style.transform = 'translate(' + (px - x) + 'px,' + (py - y) + 'px) scale(' + (0.2 + op * 0.8) + ')';
+                    p.style.opacity = Math.max(0, op).toFixed(3);
+                    if (op > 0) requestAnimationFrame(step);
+                    else p.remove();
+                })();
+            }
+
+            // 点击蝴蝶：炸开一片蓝紫光尘 + 文字柔化渐隐 + 顺滑跳转主页
+            function burstAndEnter() {
+                if (dismissed) return;
+                var L = layout();
+                var bxc = L.x + L.w / 2, byc = L.y + L.h / 2;
+                for (var i = 0; i < 34; i++) {
+                    spawnParticle(bxc + (Math.random() - 0.5) * L.w, byc + (Math.random() - 0.5) * L.h);
+                }
+                // 文字柔化渐隐
+                if (heroContent) heroContent.style.transition = 'opacity 0.6s ease, filter 0.6s ease';
+                if (heroContent) { heroContent.style.filter = 'blur(10px)'; heroContent.style.opacity = '0'; }
+                dismiss();
+                setTimeout(function () {
+                    var target = document.getElementById('intro');
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 120);
             }
 
             function parkButterfly() {
                 var L = layout();
                 butterfly.style.width = L.w.toFixed(1) + 'px';
                 butterfly.style.transform = 'translate3d(' + L.x.toFixed(1) + 'px,' + L.y.toFixed(1) + 'px,0)';
+                if (bflyGhost) bflyGhost.style.transform = 'translate3d(0,0,-14px)';
             }
 
             if (hasPointer && butterfly) {
                 window.addEventListener('mousemove', onButterflyMove, { passive: true });
+                window.addEventListener('mousemove', scheduleIdle, { passive: true });
+                butterfly.style.pointerEvents = 'auto';
+                butterfly.addEventListener('click', burstAndEnter);
                 requestAnimationFrame(butterflyRaf);
             } else if (butterfly) {
                 // 无鼠标（触屏）：静态停靠原位
