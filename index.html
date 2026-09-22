@@ -2320,6 +2320,8 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        /* 光尘：常驻氛围粒子（canvas，参数取自参考视频实测：四周密集、极淡冷蓝白、约28px/s 缓慢漂移） */
+        .hero-dust { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         /* 粒子容器：挂在 hero-screen 全屏 */
         .hero-particles { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
         .hero-particle {
@@ -2357,6 +2359,7 @@
         <div class="hero-fill hero-fill-t"></div>
         <div class="hero-fill hero-fill-b"></div>
         <div class="hero-bg" id="heroBg"></div>
+        <canvas class="hero-dust" id="heroDust" aria-hidden="true"></canvas>
         <div class="hero-butterfly" id="heroButterfly">
             <div class="bfly-body" id="bflyBody">
                 <img src="image/butterfly.webp" alt="Butterfly" class="bfly-ghost" id="bflyGhost">
@@ -2626,6 +2629,116 @@
                 window.addEventListener('resize', function () {
                     if (!dismissed) parkButterfly();
                 });
+            }
+
+            // ---- 光尘：常驻氛围粒子（参数取自参考视频实测） ----
+            // 视频帧差分析结果：~103 个持续运动光斑、84% 分布于画面四周（中心 0.4R 内为 0）、
+            // 等效半径中位 2.3px（大者 ~8px）、速度约 23px/s、单帧对比度仅 Δ3~5/255（极淡）、
+            // 颜色 B/G 略高于 R（冷蓝白）。以下按 1600 宽视口等比换算。
+            var dustCanvas = document.getElementById('heroDust');
+            if (dustCanvas && dustCanvas.getContext) {
+                var dctx = dustCanvas.getContext('2d');
+                // 三种冷色 sprite 预渲染，避免每帧建渐变
+                var dustSprites = [[190, 205, 255], [222, 226, 255], [206, 192, 255]].map(function (c) {
+                    var s = document.createElement('canvas');
+                    s.width = s.height = 48;
+                    var sc = s.getContext('2d');
+                    var g = sc.createRadialGradient(24, 24, 0, 24, 24, 24);
+                    g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.9)');
+                    g.addColorStop(0.4, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.32)');
+                    g.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+                    sc.fillStyle = g;
+                    sc.fillRect(0, 0, 48, 48);
+                    return s;
+                });
+                var dusts = [], dustW = 0, dustH = 0;
+
+                // 采样一个光尘位置：85% 落在蝴蝶/文字所在的中央椭圆之外（视频实测四周占 84%）
+                function dustPoint() {
+                    for (var t = 0; t < 24; t++) {
+                        var x = Math.random() * dustW, y = Math.random() * dustH;
+                        var d = Math.hypot((x - dustW / 2) / (dustW * 0.34),
+                                           (y - dustH * 0.42) / (dustH * 0.34));
+                        if (d > 1 || Math.random() < 0.15) return { x: x, y: y };
+                    }
+                    return { x: Math.random() * dustW, y: Math.random() * dustH };
+                }
+                function newDust() {
+                    var p = dustPoint();
+                    var ang = Math.random() * Math.PI * 2;
+                    var spd = 20 + Math.random() * 35;                     // px/s，视频实测约 28
+                    return {
+                        x: p.x, y: p.y,
+                        vx: Math.cos(ang) * spd,
+                        vy: Math.sin(ang) * spd - 6,                       // 整体轻微上浮
+                        r: 1 + Math.pow(Math.random(), 2.2) * 3.2,         // 核心半径 1~4.2px，多数偏小
+                        baseA: 0.08 + Math.random() * 0.2,                 // 极淡（对应 Δ3~5/255）
+                        twF: Math.PI * 2 / (4 + Math.random() * 5),        // 明暗呼吸周期 4~9s
+                        twP: Math.random() * Math.PI * 2,
+                        wobF: Math.PI * 2 / (6 + Math.random() * 8),       // 气流摆动周期 6~14s
+                        wobP: Math.random() * Math.PI * 2,
+                        sprite: (Math.random() * 3) | 0,
+                        depth: 0.2 + Math.random() * 0.7                   // 鼠标视差层深
+                    };
+                }
+                function resizeDust() {
+                    var w = window.innerWidth, h = window.innerHeight;
+                    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    dustW = w; dustH = h;
+                    dustCanvas.width = Math.round(w * dpr);
+                    dustCanvas.height = Math.round(h * dpr);
+                    dustCanvas.style.width = w + 'px';
+                    dustCanvas.style.height = h + 'px';
+                    dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    var n = Math.max(42, Math.min(110, Math.round(w * h / 19000)));
+                    dusts = [];
+                    for (var i = 0; i < n; i++) dusts.push(newDust());
+                }
+
+                // 鼠标视差（缓动跟随，光尘有前后层次感）
+                var dMx = 0, dMy = 0, dTx = 0, dTy = 0;
+                window.addEventListener('mousemove', function (e) {
+                    dTx = (e.clientX / window.innerWidth) * 2 - 1;
+                    dTy = (e.clientY / window.innerHeight) * 2 - 1;
+                }, { passive: true });
+
+                var dustLast = 0;
+                function dustRaf(now) {
+                    if (dismissed) return;                     // 开场页离开即停，不占性能
+                    var dt = Math.min(0.05, (now - dustLast) / 1000 || 0.016);
+                    dustLast = now;
+                    dMx += (dTx - dMx) * 0.05;
+                    dMy += (dTy - dMy) * 0.05;
+                    dctx.clearRect(0, 0, dustW, dustH);
+                    var t = now / 1000;
+                    for (var i = 0; i < dusts.length; i++) {
+                        var d = dusts[i];
+                        var wob = Math.sin(t * d.wobF + d.wobP) * 10;      // 气流横向摆动 ±10px/s
+                        d.x += (d.vx + wob) * dt;
+                        d.y += (d.vy + wob * 0.5) * dt;
+                        // 出界从对侧回来（带随机偏移，避免排队的既视感）
+                        if (d.x < -34) d.x = dustW + 30 + Math.random() * 20;
+                        else if (d.x > dustW + 34) d.x = -30 - Math.random() * 20;
+                        if (d.y < -34) d.y = dustH + 30 + Math.random() * 20;
+                        else if (d.y > dustH + 34) d.y = -30 - Math.random() * 20;
+                        var a = d.baseA * (0.72 + 0.28 * Math.sin(t * d.twF + d.twP));
+                        var s = d.r * 6;                                    // 核心 + 光晕总直径
+                        dctx.globalAlpha = a;
+                        dctx.drawImage(dustSprites[d.sprite],
+                            d.x - s / 2 + dMx * 16 * d.depth,
+                            d.y - s / 2 + dMy * 10 * d.depth, s, s);
+                    }
+                    dctx.globalAlpha = 1;
+                    requestAnimationFrame(dustRaf);
+                }
+
+                resizeDust();
+                var dustResizeT = 0;
+                window.addEventListener('resize', function () {
+                    clearTimeout(dustResizeT);
+                    dustResizeT = setTimeout(function () { if (!dismissed) resizeDust(); }, 200);
+                });
+                requestAnimationFrame(function (t) { dustLast = t; requestAnimationFrame(dustRaf); });
             }
 
             var startY = 0;
