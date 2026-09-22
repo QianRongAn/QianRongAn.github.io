@@ -111,7 +111,7 @@
     <link rel="stylesheet" href="css/fontawesome.css">
     <link rel="preload" href="wall.webp" as="image" fetchpriority="high">
     <link rel="preload" href="me.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="image/foot3.webp" as="image" fetchpriority="high">
+    <link rel="preload" href="image/foot3_clean.webp" as="image" fetchpriority="high">
     <!-- 移除非必要的预加载以释放带宽 -->
     <style>
         :root {
@@ -2071,7 +2071,7 @@
             height: 100vh;
             z-index: 100000;
             overflow: hidden;
-            background-color: #0d0b09;
+            background: linear-gradient(180deg, #8f8dc0 0%, #110946 100%);
             perspective: 1200px;
             transition: transform 1.15s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.9s ease;
             will-change: transform, opacity;
@@ -2084,7 +2084,7 @@
         .hero-bg {
             position: absolute;
             inset: 0;
-            background-image: url('image/foot3.webp');
+            background-image: url('image/foot3_clean.webp');
             background-repeat: no-repeat;
             background-size: contain;
             background-position: center center;
@@ -2093,6 +2093,18 @@
             will-change: transform;
         }
         .hero-screen.hero-leaving .hero-bg { transform: scale(1.06); }
+        /* ---- 黑边填充：背景 contain 后两侧/上下留白，用图片边缘拉伸补满 ---- */
+        .hero-edge {
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+        .hero-edge-l { left: 0; top: 0; bottom: 0; width: 50%; background-image: url('image/edge_left.png'); }
+        .hero-edge-r { right: 0; top: 0; bottom: 0; width: 50%; background-image: url('image/edge_right.png'); }
+        .hero-edge-t { left: 0; right: 0; top: 0; height: 50%; background-image: url('image/edge_top.png'); }
+        .hero-edge-b { left: 0; right: 0; bottom: 0; height: 50%; background-image: url('image/edge_bottom.png'); }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -2217,6 +2229,8 @@
         /* ---- 3D 蝴蝶图层 ---- */
         .hero-butterfly {
             position: absolute;
+            left: 0;
+            top: 0;
             z-index: 1;
             pointer-events: none;
             will-change: transform;
@@ -2248,9 +2262,13 @@
 <body>
     <!-- 开场 Hero（Motrix 风格） -->
     <div class="hero-screen" id="heroScreen">
+        <div class="hero-edge hero-edge-l"></div>
+        <div class="hero-edge hero-edge-r"></div>
+        <div class="hero-edge hero-edge-t"></div>
+        <div class="hero-edge hero-edge-b"></div>
         <div class="hero-bg" id="heroBg"></div>
         <div class="hero-butterfly" id="heroButterfly">
-            <img src="image/butterfly.png" alt="Butterfly">
+            <img src="image/butterfly.webp" alt="Butterfly">
         </div>
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">Nan Wang</h1>
@@ -2284,9 +2302,7 @@
                 dismissed = true;
                 document.documentElement.classList.remove('hero-locked');
                 hero.classList.add('hero-leaving');
-                // 停止蝴蝶跟随，交还给 CSS 的离开动画
-                var bf = document.getElementById('heroButterfly');
-                if (bf) bf.style.transform = '';
+                // 停止蝴蝶跟随（保持当前姿态，随开场页一起滑出）
                 setTimeout(function () {
                     hero.style.display = 'none';
                 }, 1250);
@@ -2308,42 +2324,40 @@
                 if (!dismissed && e.deltaY > 0) dismiss();
             }, { passive: true });
 
-            // ---- 蝴蝶跟随鼠标做 3D 旋转（背景图完整不动，只有蝴蝶在原位立体旋转） ----
+            // ---- 蝴蝶跟随鼠标做 3D 旋转（背景完整不动，整只蝴蝶在原位立体旋转） ----
             var butterfly = document.getElementById('heroButterfly');
             var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            var IMG_W = 1392, IMG_H = 768;              // foot3 原始尺寸
+            var BF = { x: 397, y: 48, w: 723, h: 504 }; // 整只蝴蝶在 foot3 中的原位矩形
             var tRotX = 0, tRotY = 0;   // 目标旋转角（deg）
             var cRotX = 0, cRotY = 0;   // 当前旋转角
             var tPosX = 0, tPosY = 0;   // 目标位置偏移
             var cPosX = 0, cPosY = 0;   // 当前位置偏移
 
-            // foot3 原图比例与蝴蝶在其中的原位（百分比）
-            var BG_RATIO = 1392 / 768;          // foot3 宽高比
-            var BFLY_CX = 763 / 1392;           // 蝴蝶中心 X（占 foot3 宽）
-            var BFLY_CY = 256 / 768;            // 蝴蝶中心 Y（占 foot3 高）
-            var BFLY_W = 216 / 1392;            // 蝴蝶宽（占 foot3 宽）
-
-            // 计算 foot3 以 contain 方式在视口中的显示区域 + 蝴蝶原位/尺寸
+            // 计算 foot3 以 contain 方式在视口中的显示区域 + 蝴蝶原位矩形
             function layout() {
                 var vw = window.innerWidth, vh = window.innerHeight;
                 var vr = vw / vh;
+                var R = IMG_W / IMG_H;
                 var dispW, dispH, offX, offY;
-                if (vr > BG_RATIO) {
+                if (vr > R) {
                     // 视口更宽：foot3 按高度填满，宽度居中
                     dispH = vh;
-                    dispW = vh * BG_RATIO;
+                    dispW = vh * R;
                     offX = (vw - dispW) / 2;
                     offY = 0;
                 } else {
                     // 视口更窄：foot3 按宽度填满，高度居中
                     dispW = vw;
-                    dispH = vw / BG_RATIO;
+                    dispH = vw / R;
                     offX = 0;
                     offY = (vh - dispH) / 2;
                 }
                 return {
-                    x: offX + BFLY_CX * dispW,
-                    y: offY + BFLY_CY * dispH,
-                    w: BFLY_W * dispW
+                    x: offX + dispW * BF.x / IMG_W,
+                    y: offY + dispH * BF.y / IMG_H,
+                    w: dispW * BF.w / IMG_W,
+                    h: dispH * BF.h / IMG_H
                 };
             }
 
@@ -2354,14 +2368,9 @@
                 cPosY += (tPosY - cPosY) * 0.06;
                 if (butterfly && !dismissed) {
                     var L = layout();
-                    var w = L.w;
-                    var tx = L.x - w / 2 + cPosX;
-                    var ty = L.y - w / 2 + cPosY;
-                    butterfly.style.left = '0px';
-                    butterfly.style.top = '0px';
-                    butterfly.style.width = w + 'px';
+                    butterfly.style.width = L.w.toFixed(1) + 'px';
                     butterfly.style.transform =
-                        'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0)' +
+                        'translate3d(' + (L.x + cPosX).toFixed(1) + 'px,' + (L.y + cPosY).toFixed(1) + 'px,0)' +
                         ' rotateY(' + cRotY.toFixed(2) + 'deg)' +
                         ' rotateX(' + cRotX.toFixed(2) + 'deg)';
                 }
@@ -2382,17 +2391,21 @@
                 tPosY = ny * 18;
             }
 
+            function parkButterfly() {
+                var L = layout();
+                butterfly.style.width = L.w.toFixed(1) + 'px';
+                butterfly.style.transform = 'translate3d(' + L.x.toFixed(1) + 'px,' + L.y.toFixed(1) + 'px,0)';
+            }
+
             if (hasPointer && butterfly) {
                 window.addEventListener('mousemove', onButterflyMove, { passive: true });
-                window.addEventListener('resize', function () {
-                    if (!dismissed) butterflyRaf();
-                });
                 requestAnimationFrame(butterflyRaf);
             } else if (butterfly) {
                 // 无鼠标（触屏）：静态停靠原位
-                var L = layout();
-                butterfly.style.width = L.w + 'px';
-                butterfly.style.transform = 'translate3d(' + (L.x - L.w/2) + 'px,' + (L.y - L.w/2) + 'px,0)';
+                parkButterfly();
+                window.addEventListener('resize', function () {
+                    if (!dismissed) parkButterfly();
+                });
             }
 
             var startY = 0;
