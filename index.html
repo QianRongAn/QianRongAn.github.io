@@ -2093,18 +2093,20 @@
             will-change: transform;
         }
         .hero-screen.hero-leaving .hero-bg { transform: scale(1.06); }
-        /* ---- 黑边填充：背景 contain 后两侧/上下留白，用图片边缘拉伸补满 ---- */
-        .hero-edge {
-            position: absolute;
-            z-index: 0;
-            pointer-events: none;
-            background-repeat: no-repeat;
-            background-size: 100% 100%;
+        /* ---- 留白填充：颜色取自背景图真实边缘像素，与图片逐点一致、无接缝 ----
+           左/右：垂直渐变（左右边缘色不同）；上/下：纯色带（该行水平均匀）
+           几何位置由 JS 按图片实际显示矩形精确切分，互不重叠、不覆盖图片 */
+        .hero-fill { position: absolute; z-index: 0; pointer-events: none; display: none; }
+        .hero-fill-l {
+            left: 0; top: 0; bottom: 0;
+            background-image: linear-gradient(180deg, rgb(149 146 197) 0%, rgb(146 145 196) 5%, rgb(142 141 191) 10%, rgb(135 135 189) 15%, rgb(123 125 183) 20%, rgb(105 111 171) 25%, rgb(86 98 162) 30%, rgb(73 84 153) 35%, rgb(58 75 144) 40%, rgb(53 62 134) 45%, rgb(43 52 124) 50%, rgb(34 38 105) 55%, rgb(28 27 92) 60%, rgb(19 20 83) 65%, rgb(16 13 77) 70%, rgb(15 10 71) 75%, rgb(16 8 70) 80%, rgb(17 10 69) 85%, rgb(17 9 71) 90%, rgb(16 8 70) 95%, rgb(17 9 71) 100%);
         }
-        .hero-edge-l { left: 0; top: 0; bottom: 0; width: 50%; background-image: url('image/edge_left.png'); }
-        .hero-edge-r { right: 0; top: 0; bottom: 0; width: 50%; background-image: url('image/edge_right.png'); }
-        .hero-edge-t { left: 0; right: 0; top: 0; height: 50%; background-image: url('image/edge_top.png'); }
-        .hero-edge-b { left: 0; right: 0; bottom: 0; height: 50%; background-image: url('image/edge_bottom.png'); }
+        .hero-fill-r {
+            right: 0; top: 0; bottom: 0;
+            background-image: linear-gradient(180deg, rgb(148 147 195) 0%, rgb(148 147 195) 5%, rgb(148 147 195) 10%, rgb(148 147 195) 15%, rgb(148 147 195) 20%, rgb(147 145 193) 25%, rgb(143 142 190) 30%, rgb(140 136 185) 35%, rgb(129 125 174) 40%, rgb(112 108 159) 45%, rgb(89 82 135) 50%, rgb(63 58 116) 55%, rgb(42 37 96) 60%, rgb(31 24 83) 65%, rgb(23 16 75) 70%, rgb(19 12 71) 75%, rgb(18 11 70) 80%, rgb(18 10 72) 85%, rgb(18 10 72) 90%, rgb(18 10 72) 95%, rgb(18 11 70) 100%);
+        }
+        .hero-fill-t { top: 0; background-color: rgb(148 146 197); }
+        .hero-fill-b { bottom: 0; background-color: rgb(17 9 70); }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -2262,10 +2264,10 @@
 <body>
     <!-- 开场 Hero（Motrix 风格） -->
     <div class="hero-screen" id="heroScreen">
-        <div class="hero-edge hero-edge-l"></div>
-        <div class="hero-edge hero-edge-r"></div>
-        <div class="hero-edge hero-edge-t"></div>
-        <div class="hero-edge hero-edge-b"></div>
+        <div class="hero-fill hero-fill-l"></div>
+        <div class="hero-fill hero-fill-r"></div>
+        <div class="hero-fill hero-fill-t"></div>
+        <div class="hero-fill hero-fill-b"></div>
         <div class="hero-bg" id="heroBg"></div>
         <div class="hero-butterfly" id="heroButterfly">
             <img src="image/butterfly.webp" alt="Butterfly">
@@ -2324,10 +2326,46 @@
                 if (!dismissed && e.deltaY > 0) dismiss();
             }, { passive: true });
 
+            var IMG_W = 1392, IMG_H = 768;              // foot3 原始尺寸
+            // ---- 留白填充：按图片 contain 后的实际显示矩形摆放四条填充块 ----
+            // 左右条占图片矩形外的整条侧边（全高），上下条只占图片矩形外的中部，
+            // 四块互不重叠；颜色取自图片真实边缘像素（CSS 里的渐变/纯色），故无接缝。
+            var fills = {
+                l: document.querySelector('.hero-fill-l'),
+                r: document.querySelector('.hero-fill-r'),
+                t: document.querySelector('.hero-fill-t'),
+                b: document.querySelector('.hero-fill-b')
+            };
+            function layoutFills() {
+                var vw = window.innerWidth, vh = window.innerHeight;
+                var R = IMG_W / IMG_H;
+                var dispW, dispH;
+                if (vw / vh > R) { dispH = vh; dispW = vh * R; }      // 视口更宽 → 左右留白
+                else { dispW = vw; dispH = vw / R; }                  // 视口更窄 → 上下留白
+                var sideW = Math.max(0, (vw - dispW) / 2);
+                var sideH = Math.max(0, (vh - dispH) / 2);
+
+                if (fills.l) { fills.l.style.display = sideW > 0.5 ? 'block' : 'none'; fills.l.style.width = Math.ceil(sideW + 1) + 'px'; }
+                if (fills.r) { fills.r.style.display = sideW > 0.5 ? 'block' : 'none'; fills.r.style.width = Math.ceil(sideW + 1) + 'px'; }
+                if (fills.t) {
+                    fills.t.style.display = sideH > 0.5 ? 'block' : 'none';
+                    fills.t.style.left = Math.floor(sideW - 1) + 'px';
+                    fills.t.style.right = Math.floor(sideW - 1) + 'px';
+                    fills.t.style.height = Math.ceil(sideH + 1) + 'px';
+                }
+                if (fills.b) {
+                    fills.b.style.display = sideH > 0.5 ? 'block' : 'none';
+                    fills.b.style.left = Math.floor(sideW - 1) + 'px';
+                    fills.b.style.right = Math.floor(sideW - 1) + 'px';
+                    fills.b.style.height = Math.ceil(sideH + 1) + 'px';
+                }
+            }
+            layoutFills();
+            window.addEventListener('resize', layoutFills);
+
             // ---- 蝴蝶跟随鼠标做 3D 旋转（背景完整不动，整只蝴蝶在原位立体旋转） ----
             var butterfly = document.getElementById('heroButterfly');
             var hasPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-            var IMG_W = 1392, IMG_H = 768;              // foot3 原始尺寸
             var BF = { x: 397, y: 48, w: 723, h: 504 }; // 整只蝴蝶在 foot3 中的原位矩形
             var tRotX = 0, tRotY = 0;   // 目标旋转角（deg）
             var cRotX = 0, cRotY = 0;   // 当前旋转角

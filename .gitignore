@@ -1,0 +1,21 @@
+# 本地标注/调试工具，绝不发布到公开仓库（隐私铁律）
+_guide.html
+_guide_server.py
+_guide_state.json
+_guide_state.json.tmp
+
+# 抠图脚本产生的中间产物（原图边缘色提取结果）
+.grad_l.txt
+.grad_r.txt
+.css_out.txt
+.solids.txt
+
+# 浏览器/测试临时目录
+.browser_test/
+.gtest/
+.shots/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
