@@ -70,6 +70,20 @@
             font-display: swap;
         }
         @font-face {
+            font-family: 'Recoleta';
+            src: url('font/recoleta-light.woff2') format('woff2');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Inter Display';
+            src: url('font/inter-latin-800-normal.woff2') format('woff2');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
             font-family: 'BodoniFLF-Italic';
             src: local('BodoniFLF-Italic'),
                  local('BodoniFLF Italic');
@@ -2135,11 +2149,11 @@
             transition: opacity 0.5s ease;
         }
         .hero-title {
-            font-family: 'Poppins', var(--sans-font);
-            font-weight: 500;
-            font-size: clamp(3.2rem, 9.5vw, 7.5rem);
-            line-height: 0.94;
-            letter-spacing: -0.03em;
+            font-family: 'Recoleta', Georgia, serif;
+            font-weight: 300;
+            font-size: clamp(3.4rem, 9.8vw, 8rem);
+            line-height: 1.0;
+            letter-spacing: -0.01em;
             margin: 0;
             color: #ffffff;
             text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
@@ -2171,11 +2185,11 @@
             animation: heroFadeIn 0.9s ease 0.45s forwards;
         }
         .hero-tagline {
-            font-family: 'Poppins', var(--sans-font);
-            font-weight: 500;
-            font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+            font-family: 'Inter Display', 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.4rem, 2.6vw, 1.9rem);
             line-height: 1.25;
-            letter-spacing: -0.01em;
+            letter-spacing: -0.02em;
             color: #ffffff;
             margin: 0 0 14px;
             text-shadow: 0 1px 18px rgba(0, 0, 0, 0.55);
