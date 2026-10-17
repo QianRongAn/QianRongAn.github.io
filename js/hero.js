@@ -1,4 +1,4 @@
-/* Opening mist, quiet light dust, and click ripples inspired by the supplied video. */
+/* Original foot3 background, quiet light dust, and click ripples inspired by the supplied video. */
 (function () {
     'use strict';
     var hero = document.getElementById('heroScreen');
@@ -12,7 +12,44 @@
     var touchY = null;
     document.documentElement.classList.add('hero-locked');
 
+            var IMG_W = 1392, IMG_H = 768;              // foot3 原始尺寸
+            // ---- 留白填充：按图片 contain 后的实际显示矩形摆放四条填充块 ----
+            // 左右条占图片矩形外的整条侧边（全高），上下条只占图片矩形外的中部，
+            // 四块互不重叠；颜色取自图片真实边缘像素（CSS 里的渐变/纯色），故无接缝。
+            var fills = {
+                l: document.querySelector('.hero-fill-l'),
+                r: document.querySelector('.hero-fill-r'),
+                t: document.querySelector('.hero-fill-t'),
+                b: document.querySelector('.hero-fill-b')
+            };
+            function layoutFills() {
+                var vw = window.innerWidth, vh = window.innerHeight;
+                var R = IMG_W / IMG_H;
+                var dispW, dispH;
+                if (vw / vh > R) { dispH = vh; dispW = vh * R; }      // 视口更宽 → 左右留白
+                else { dispW = vw; dispH = vw / R; }                  // 视口更窄 → 上下留白
+                var sideW = Math.max(0, (vw - dispW) / 2);
+                var sideH = Math.max(0, (vh - dispH) / 2);
+
+                if (fills.l) { fills.l.style.display = sideW > 0.5 ? 'block' : 'none'; fills.l.style.width = Math.ceil(sideW + 1) + 'px'; }
+                if (fills.r) { fills.r.style.display = sideW > 0.5 ? 'block' : 'none'; fills.r.style.width = Math.ceil(sideW + 1) + 'px'; }
+                if (fills.t) {
+                    fills.t.style.display = sideH > 0.5 ? 'block' : 'none';
+                    fills.t.style.left = Math.floor(sideW - 1) + 'px';
+                    fills.t.style.right = Math.floor(sideW - 1) + 'px';
+                    fills.t.style.height = Math.ceil(sideH + 1) + 'px';
+                }
+                if (fills.b) {
+                    fills.b.style.display = sideH > 0.5 ? 'block' : 'none';
+                    fills.b.style.left = Math.floor(sideW - 1) + 'px';
+                    fills.b.style.right = Math.floor(sideW - 1) + 'px';
+                    fills.b.style.height = Math.ceil(sideH + 1) + 'px';
+                }
+            }
+            layoutFills();
+
     function resize() {
+        layoutFills();
         if (!ctx || dismissed) return;
         width = hero.clientWidth; height = hero.clientHeight;
         var dpr = Math.min(window.devicePixelRatio || 1, 2);

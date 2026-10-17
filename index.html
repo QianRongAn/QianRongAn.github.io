@@ -2104,10 +2104,7 @@
         .hero-bg {
             position: absolute;
             inset: 0;
-            background:
-                radial-gradient(ellipse at 68% 38%, rgba(175, 180, 242, .34), transparent 42%),
-                radial-gradient(ellipse at 18% 45%, rgba(65, 105, 181, .6), transparent 60%),
-                linear-gradient(172deg, #9894c4 0%, #696ba7 38%, #292765 66%, #110946 100%);
+            background-image: url('image/foot3.webp');
             background-repeat: no-repeat;
             background-size: contain;
             background-position: center center;
@@ -2116,6 +2113,20 @@
             will-change: transform;
         }
         .hero-screen.hero-leaving .hero-bg { transform: scale(1.06); }
+        /* ---- 留白填充：颜色取自背景图真实边缘像素，与图片逐点一致、无接缝 ----
+           左/右：垂直渐变（左右边缘色不同）；上/下：纯色带（该行水平均匀）
+           几何位置由 JS 按图片实际显示矩形精确切分，互不重叠、不覆盖图片 */
+        .hero-fill { position: absolute; z-index: 0; pointer-events: none; display: none; }
+        .hero-fill-l {
+            left: 0; top: 0; bottom: 0;
+            background-image: linear-gradient(180deg, rgb(149 146 197) 0%, rgb(146 145 196) 5%, rgb(142 141 191) 10%, rgb(135 135 189) 15%, rgb(123 125 183) 20%, rgb(105 111 171) 25%, rgb(86 98 162) 30%, rgb(73 84 153) 35%, rgb(58 75 144) 40%, rgb(53 62 134) 45%, rgb(43 52 124) 50%, rgb(34 38 105) 55%, rgb(28 27 92) 60%, rgb(19 20 83) 65%, rgb(16 13 77) 70%, rgb(15 10 71) 75%, rgb(16 8 70) 80%, rgb(17 10 69) 85%, rgb(17 9 71) 90%, rgb(16 8 70) 95%, rgb(17 9 71) 100%);
+        }
+        .hero-fill-r {
+            right: 0; top: 0; bottom: 0;
+            background-image: linear-gradient(180deg, rgb(148 147 195) 0%, rgb(148 147 195) 5%, rgb(148 147 195) 10%, rgb(148 147 195) 15%, rgb(148 147 195) 20%, rgb(147 145 193) 25%, rgb(143 142 190) 30%, rgb(140 136 185) 35%, rgb(129 125 174) 40%, rgb(112 108 159) 45%, rgb(89 82 135) 50%, rgb(63 58 116) 55%, rgb(42 37 96) 60%, rgb(31 24 83) 65%, rgb(23 16 75) 70%, rgb(19 12 71) 75%, rgb(18 11 70) 80%, rgb(18 10 72) 85%, rgb(18 10 72) 90%, rgb(18 10 72) 95%, rgb(18 11 70) 100%);
+        }
+        .hero-fill-t { top: 0; background-color: rgb(148 146 197); }
+        .hero-fill-b { bottom: 0; background-color: rgb(17 9 70); }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -2265,12 +2276,16 @@
         }
     </style>
     <link rel="stylesheet" href="css/hero-effects.css">
+    <link rel="preload" href="image/foot3.webp" as="image" fetchpriority="high">
 </head>
 <body>
     <!-- 开场 Hero（Motrix 风格） -->
     <div class="hero-screen" id="heroScreen">
+        <div class="hero-fill hero-fill-l"></div>
+        <div class="hero-fill hero-fill-r"></div>
+        <div class="hero-fill hero-fill-t"></div>
+        <div class="hero-fill hero-fill-b"></div>
         <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
-        <div class="hero-aura" aria-hidden="true"></div>
         <canvas class="hero-effects" id="heroEffects" aria-hidden="true"></canvas>
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title">Nan Wang</h1>
