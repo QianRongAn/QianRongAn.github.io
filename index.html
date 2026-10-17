@@ -2740,10 +2740,20 @@
             visibility: visible;
             pointer-events: auto;
         }
+        .page-curtain-dna {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            z-index: 0;
+        }
         .page-curtain-count {
             position: absolute;
             right: 6vw;
             bottom: 6vh;
+            z-index: 1;
             font-family: 'Times New Roman', Times, serif;
             font-style: italic;
             font-weight: 400;
@@ -2771,6 +2781,7 @@
 </head>
 <body>
     <div class="page-curtain" id="pageCurtain" aria-hidden="true">
+        <canvas class="page-curtain-dna" id="curtain-dna" aria-hidden="true"></canvas>
         <span class="page-curtain-count" id="pageCurtainCount">00</span>
     </div>
     <!-- 开场 Hero（Motrix 风格） -->
@@ -2826,6 +2837,7 @@
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-split" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
+    <script src="js/curtain-dna.js?v=20261018-dna" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
