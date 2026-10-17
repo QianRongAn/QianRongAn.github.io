@@ -44,6 +44,15 @@
                     ease: 'expo.out',
                     onComplete: function () {
                         el.classList.add('is-settled');
+                        if (!el.classList.contains('hero-title')) return;
+                        el.querySelectorAll('.hero-mask').forEach(function (mask) {
+                            mask.style.overflow = 'visible';
+                            var clip = mask.parentElement;
+                            if (clip && clip !== el) {
+                                clip.style.overflow = 'visible';
+                                clip.style.height = 'auto';
+                            }
+                        });
                     }
                 });
             }
