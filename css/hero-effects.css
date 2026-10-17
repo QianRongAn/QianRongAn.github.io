@@ -6,5 +6,5 @@
 @media (prefers-reduced-motion: reduce) {
     .hero-screen, .hero-bg { transition: none !important; }
     .hero-screen * { animation: none !important; }
-    .hero-title, .hero-dream, .hero-left, .hero-social { opacity: 1; }
+    .hero-title, .hero-focus, .hero-left, .hero-social { opacity: 1; }
 }
