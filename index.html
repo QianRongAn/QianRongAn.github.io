@@ -177,19 +177,6 @@
             max-width: 100vw;
             height: 100%;
             scroll-padding-top: 108px;
-            scrollbar-width: thin;
-            scrollbar-color: gray transparent;
-        }
-        html::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        html::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: gray;
-            border-radius: 999px;
         }
         body {
             font-family: var(--sans-font);
@@ -810,185 +797,166 @@
             position: relative;
             transition: box-shadow 0.3s ease;
         }
-        /* 参考图：无投影，只靠模糊和半透明白分开 */
+        /* 字面复制 personal_statement.html .content-section 的毛玻璃参数 */
         #about.cube-page section,
         #education.cube-page section,
         #experience.cube-page section,
         #extracurricular.cube-page section,
         #skills.cube-page section,
         #thesis.cube-page section {
-            box-shadow: none !important;
-            background-color: rgba(255, 255, 255, 0.18) !important;
-            border: none !important;
-            border-radius: 28px !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 15px !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
             position: relative !important;
             overflow: visible !important;
             isolation: auto !important;
             transform: none !important;
             filter: none !important;
         }
-        /* Projects：参考左右分栏 — 左圆角信息卡，右立体海报 */
+        /* Projects：米黄色展板 + 立体海报 */
         #projects.cube-page section {
-            background-color: #efe6d8 !important;
+            background-color: #f3ebe0 !important;
             background-image:
-                radial-gradient(ellipse at 12% 8%, rgba(255, 255, 255, 0.65), transparent 48%),
-                radial-gradient(ellipse at 88% 92%, rgba(208, 186, 152, 0.4), transparent 52%) !important;
-            border: 1px solid rgba(208, 186, 152, 0.55) !important;
-            box-shadow: 0 14px 36px rgba(35, 20, 12, 0.14) !important;
+                radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, 0.55), transparent 55%),
+                radial-gradient(ellipse at 80% 100%, rgba(208, 186, 152, 0.35), transparent 50%) !important;
+            border: 1px solid rgba(208, 186, 152, 0.65) !important;
+            box-shadow: 0 14px 36px rgba(35, 20, 12, 0.18) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             overflow: visible !important;
             transform: none !important;
-            padding: 28px 24px 36px !important;
         }
-        #projects .project-board {
-            display: flex;
-            flex-direction: column;
-            gap: clamp(28px, 4vh, 44px);
-            margin-top: 8px;
-        }
-        .project-split {
+        .project-posters {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: clamp(18px, 2.5vw, 28px);
-            align-items: start;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(18px, 3vw, 36px);
+            margin: 8px 0 42px;
             perspective: 1400px;
         }
-        .project-info-card {
-            background: rgba(255, 252, 248, 0.96);
-            border-radius: 36px;
-            padding: clamp(22px, 3vw, 34px);
-            box-shadow:
-                0 18px 40px rgba(35, 20, 12, 0.12),
-                0 4px 12px rgba(35, 20, 12, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.85);
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-        }
-        .project-info-card .details {
-            margin: 0;
-        }
-        .project-info-card .details h3 {
-            font-size: clamp(1.15em, 2vw, 1.35em);
-            line-height: 1.35;
-            margin-bottom: 8px;
-        }
-        .project-info-card .date-location {
-            display: inline-block;
-            margin-bottom: 14px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: rgba(208, 186, 152, 0.28);
-            color: var(--text-secondary);
-            font-size: 0.86em;
-        }
-        .project-info-card .details ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-        .project-info-card .details ul li {
-            margin-bottom: 8px;
-            line-height: 1.55;
-            font-size: 0.95em;
-        }
-        .project-info-card .content-item {
-            border-left: none;
-            padding-left: 0;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .project-visual {
-            position: relative;
+        .project-poster {
+            display: block;
+            text-decoration: none;
+            color: inherit;
             transform-style: preserve-3d;
-            min-height: 100%;
+            outline: none;
         }
         .project-poster-frame {
-            height: auto;
-            border-radius: 36px;
+            position: relative;
+            border-radius: 16px;
             overflow: hidden;
             background: #fffaf4;
-            border: 1px solid rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.7);
             box-shadow:
-                0 26px 50px rgba(35, 20, 12, 0.26),
-                0 10px 18px rgba(35, 20, 12, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            transform: none;
+                0 22px 44px rgba(35, 20, 12, 0.28),
+                0 8px 16px rgba(35, 20, 12, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
+            transform: rotateX(6deg) rotateY(-4deg) translateZ(0);
             transform-origin: center center;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+            will-change: transform;
         }
-        .project-visual.is-tilting .project-poster-frame {
+        .project-poster.is-tilting .project-poster-frame {
             transition: transform 0.08s linear, box-shadow 0.2s ease;
         }
-        .project-visual:hover .project-poster-frame {
+        .project-poster:hover .project-poster-frame,
+        .project-poster:focus-visible .project-poster-frame {
             box-shadow:
-                0 34px 60px rgba(35, 20, 12, 0.32),
-                0 14px 24px rgba(35, 20, 12, 0.16),
-                inset 0 1px 0 rgba(255, 255, 255, 0.95);
+                0 30px 56px rgba(35, 20, 12, 0.34),
+                0 12px 22px rgba(35, 20, 12, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
         .project-poster-frame img {
             display: block;
             width: 100%;
-            height: auto;
-            max-height: none;
-            object-fit: contain;
-            object-position: center center;
-            background: #fffaf4;
+            height: clamp(180px, 28vw, 280px);
+            object-fit: cover;
+            object-position: top center;
+            background: #efe6d8;
         }
         .project-poster-placeholder {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            height: 100%;
-            min-height: clamp(280px, 42vh, 430px);
-            padding: 28px;
+            gap: 10px;
+            height: clamp(180px, 28vw, 280px);
+            padding: 24px;
             text-align: center;
             background:
-                linear-gradient(155deg, #fff8ef 0%, #eadcc8 52%, #d4c0a0 100%);
+                linear-gradient(145deg, #fff8ef 0%, #eadcc8 55%, #d9c4a4 100%);
             color: #5c4a37;
         }
         .project-poster-mark {
             font-family: 'Aboreto', Georgia, serif;
-            font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+            font-size: clamp(1.2rem, 2.4vw, 1.7rem);
             letter-spacing: 0.04em;
             color: #23140c;
         }
         .project-poster-soon {
             font-family: var(--sans-font);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 300;
-            opacity: 0.82;
+            opacity: 0.8;
         }
-        @media (max-width: 900px) {
-            .project-split {
+        .project-poster-caption {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px 16px;
+            background: linear-gradient(180deg, rgba(255, 250, 244, 0.96), #f7efe4);
+            border-top: 1px solid rgba(208, 186, 152, 0.45);
+        }
+        .project-poster-caption strong {
+            font-family: var(--serif-font);
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--dark-brown);
+            background: none;
+            padding: 0;
+        }
+        .project-poster-caption span {
+            font-family: var(--sans-font);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        #projects .content-item {
+            scroll-margin-top: 120px;
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+        }
+        #projects .content-item.is-spotlight {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(35, 20, 12, 0.12);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+        @media (max-width: 760px) {
+            .project-posters {
                 grid-template-columns: 1fr;
-                min-height: 0;
             }
             .project-poster-frame {
                 transform: none;
             }
-            .project-poster-placeholder {
-                min-height: 240px;
-            }
         }
         @media (prefers-reduced-motion: reduce) {
-            .project-poster-frame {
+            .project-poster-frame,
+            #projects .content-item {
                 transition: none !important;
                 transform: none !important;
             }
         }
         .cube-page section:hover {
             transform: none;
-            box-shadow: none;
+            box-shadow: var(--shadow-light);
         }
         #thesis.cube-page section:hover {
             transform: none !important;
-            box-shadow: none !important;
-            background-color: rgba(255, 255, 255, 0.18) !important;
+            box-shadow: var(--shadow-light) !important;
+            background-color: var(--glass-bg-content) !important;
         }
         .section-title {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
@@ -2715,9 +2683,9 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="js/hero-rise.js?v=20261017-rise4"></script>
-    <script src="js/zh-copy.js?v=20261018-split" defer></script>
+    <script src="js/zh-copy.js?v=20261018-poster" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
-    <script src="js/project-posters.js?v=20261018-split" defer></script>
+    <script src="js/project-posters.js?v=20261018-poster" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
@@ -2883,55 +2851,55 @@
             <div id="projects" class="cube-page reveal" data-index="3">
                 <section data-zh-slot="projects">
                     <h2 class="section-title"><span data-i18n="proj.title">Projects</span></h2>
-                    <div class="project-board">
-                        <article class="project-split" id="project-meta-acdc">
-                            <div class="project-info-card">
-                                <div class="content-item">
-                                    <div class="details">
-                                        <h3>Meta-ACDC｜TCR off-target risk prediction based on an equivariant graph neural network</h3>
-                                        <span class="date-location">Biomedical AI · Computational Immunology · Graph Deep Learning</span>
-                                        <ul>
-                                            <li>Project goal: for the potential immunotherapy safety risk caused by T-cell receptor (TCR) cross-reactivity, build a compatibility scoring model based on molecular structure, identify off-target peptides that a TCR might recognize unexpectedly, and explore a candidate-screening strategy combined with active learning.</li>
-                                            <li>Feature engineering and ablation: to address the difficulty of distinguishing structurally similar off-target peptides with traditional backbone-geometry features, design an ablation of backbone and side-chain contact features. In a specific graft-decoy discrimination task, the AUROC using backbone coordinates alone is 0.500, and rises to 0.933 after side-chain contact features are added, verifying the key role of side-chain chemical information for this task.</li>
-                                            <li>Generalization and domain adaptation: to address the distribution gap between crystal-structure training data and predicted structures in actual use, introduce predicted-complex data for domain adaptation, raising cross-instance ranking consistency in the experiment from 0.447 to 0.802.</li>
-                                            <li>Active learning and candidate screening: design a candidate sampling strategy based on expected information gain (EIG)/BALD. In a simulated screen of about 4.65 million candidate peptides, a 6% sampling budget achieves about a 2-fold positive-recall gain over baselines such as random sampling.</li>
-                                            <li>Stack: Python, PyTorch, EGNN, NumPy, SciPy, scikit-learn, structural bioinformatics.</li>
-                                        </ul>
-                                    </div>
+                    <div class="project-posters" aria-label="Project posters">
+                        <a class="project-poster" href="#project-meta-acdc" data-project-target="project-meta-acdc">
+                            <div class="project-poster-frame">
+                                <div class="project-poster-placeholder">
+                                    <span class="project-poster-mark">Meta-ACDC</span>
+                                    <span class="project-poster-soon" data-i18n="proj.posterSoon">Poster coming soon</span>
+                                </div>
+                                <div class="project-poster-caption">
+                                    <strong>Meta-ACDC</strong>
+                                    <span>TCR · EGNN</span>
                                 </div>
                             </div>
-                            <div class="project-visual" data-poster-tilt>
-                                <div class="project-poster-frame">
-                                    <div class="project-poster-placeholder">
-                                        <span class="project-poster-mark">Meta-ACDC</span>
-                                        <span class="project-poster-soon" data-i18n="proj.posterSoon">Poster coming soon</span>
-                                    </div>
+                        </a>
+                        <a class="project-poster" href="#project-medlit" data-project-target="project-medlit">
+                            <div class="project-poster-frame">
+                                <img src="image/medlit-evidence-poster.png" alt="MedLit Evidence interface" loading="lazy">
+                                <div class="project-poster-caption">
+                                    <strong>MedLit Evidence</strong>
+                                    <span>Medical NLP</span>
                                 </div>
                             </div>
-                        </article>
-                        <article class="project-split" id="project-medlit">
-                            <div class="project-info-card">
-                                <div class="content-item">
-                                    <div class="details">
-                                        <h3>MedLit Evidence｜evidence-based medical literature QA and retraction-risk modeling</h3>
-                                        <span class="date-location">Medical NLP · Evidence Retrieval · Machine Learning</span>
-                                        <ul>
-                                            <li>Project goal: for clinical researchers and medical editors, build an evidence-based analysis tool covering medical-question retrieval, evidence grading, conclusion-conflict detection, and source tracing, and develop a retraction-risk prediction model based on paper metadata.</li>
-                                            <li>Evidence retrieval and analysis: build a PubMed literature retrieval and question-answering flow on FastAPI, using BM25 retrieval, PICO (population, intervention, comparator, outcome) question structuring, study-design recognition, and five-level evidence grading. Support / oppose / neutral conclusion classification and conflict detection present disagreement in the evidence explicitly, and conclusions in an answer can be traced to a specific PMID.</li>
-                                            <li>Retraction-risk prediction: build a retraction-risk dataset from 27,978 papers, model it with LightGBM, and analyze feature contribution with SHAP. In the cross-validation experiment reported in the repository, LightGBM reaches AUROC 0.856 and PR-AUC 0.812.</li>
-                                            <li>Data-quality and leakage audit: identify and handle publication-type label leakage and the hidden leakage caused by abstracts being emptied or replaced after retraction, and evaluate generalization with a temporal holdout split by publication year. Together with the SHAP feature analysis, publication year shows a clear time-censoring bias, so apparent predictive performance is not mistaken for a real risk signal.</li>
-                                            <li>Engineering and validation: implement PubMed online retrieval, offline-corpus fallback, a TTL cache, and markers for retracted, expression-of-concern, and corrected papers. The project includes 30 unit tests. The cache-hit latency reported in the repository is about 6 ms.</li>
-                                            <li>Stack: Python, FastAPI, BM25, PICO, LightGBM, SHAP, PubMed API.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="project-visual" data-poster-tilt>
-                                <div class="project-poster-frame">
-                                    <img src="image/medlit-evidence-poster.png" alt="MedLit Evidence interface" loading="lazy">
-                                </div>
-                            </div>
-                        </article>
+                        </a>
+                    </div>
+                    <div class="content-item" id="project-meta-acdc">
+                        <div class="details">
+                            <h3>Meta-ACDC｜TCR off-target risk prediction based on an equivariant graph neural network</h3>
+                            <span class="date-location">Biomedical AI · Computational Immunology · Graph Deep Learning</span>
+                            <ul>
+                                <li>Project goal: for the potential immunotherapy safety risk caused by T-cell receptor (TCR) cross-reactivity, build a compatibility scoring model based on molecular structure, identify off-target peptides that a TCR might recognize unexpectedly, and explore a candidate-screening strategy combined with active learning.</li>
+                                <li>Feature engineering and ablation: to address the difficulty of distinguishing structurally similar off-target peptides with traditional backbone-geometry features, design an ablation of backbone and side-chain contact features. In a specific graft-decoy discrimination task, the AUROC using backbone coordinates alone is 0.500, and rises to 0.933 after side-chain contact features are added, verifying the key role of side-chain chemical information for this task.</li>
+                                <li>Generalization and domain adaptation: to address the distribution gap between crystal-structure training data and predicted structures in actual use, introduce predicted-complex data for domain adaptation, raising cross-instance ranking consistency in the experiment from 0.447 to 0.802.</li>
+                                <li>Active learning and candidate screening: design a candidate sampling strategy based on expected information gain (EIG)/BALD. In a simulated screen of about 4.65 million candidate peptides, a 6% sampling budget achieves about a 2-fold positive-recall gain over baselines such as random sampling.</li>
+                                <li>Stack: Python, PyTorch, EGNN, NumPy, SciPy, scikit-learn, structural bioinformatics.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="content-item" id="project-medlit">
+                        <div class="details">
+                            <h3>MedLit Evidence｜evidence-based medical literature QA and retraction-risk modeling</h3>
+                            <span class="date-location">Medical NLP · Evidence Retrieval · Machine Learning</span>
+                            <ul>
+                                <li>Project goal: for clinical researchers and medical editors, build an evidence-based analysis tool covering medical-question retrieval, evidence grading, conclusion-conflict detection, and source tracing, and develop a retraction-risk prediction model based on paper metadata.</li>
+                                <li>Evidence retrieval and analysis: build a PubMed literature retrieval and question-answering flow on FastAPI, using BM25 retrieval, PICO (population, intervention, comparator, outcome) question structuring, study-design recognition, and five-level evidence grading. Support / oppose / neutral conclusion classification and conflict detection present disagreement in the evidence explicitly, and conclusions in an answer can be traced to a specific PMID.</li>
+                                <li>Retraction-risk prediction: build a retraction-risk dataset from 27,978 papers, model it with LightGBM, and analyze feature contribution with SHAP. In the cross-validation experiment reported in the repository, LightGBM reaches AUROC 0.856 and PR-AUC 0.812.</li>
+                                <li>Data-quality and leakage audit: identify and handle publication-type label leakage and the hidden leakage caused by abstracts being emptied or replaced after retraction, and evaluate generalization with a temporal holdout split by publication year. Together with the SHAP feature analysis, publication year shows a clear time-censoring bias, so apparent predictive performance is not mistaken for a real risk signal.</li>
+                                <li>Engineering and validation: implement PubMed online retrieval, offline-corpus fallback, a TTL cache, and markers for retracted, expression-of-concern, and corrected papers. The project includes 30 unit tests. The cache-hit latency reported in the repository is about 6 ms.</li>
+                                <li>Stack: Python, FastAPI, BM25, PICO, LightGBM, SHAP, PubMed API.</li>
+                            </ul>
+                        </div>
                     </div>
                 </section>
             </div>
