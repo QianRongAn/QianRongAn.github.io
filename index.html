@@ -333,10 +333,14 @@
         #thesis#thesis .section-title span {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
+        /* 职位/学历等小标题恢复原来的衬线体 */
         .details h3,
         .details h4,
         .thesis-chapter-title,
         #skills .skill-category-title,
+        .pub-title {
+            font-family: var(--serif-font) !important;
+        }
         .date-location {
             font-family: var(--sans-font) !important;
         }
@@ -793,6 +797,7 @@
             position: relative;
             transition: box-shadow 0.3s ease;
         }
+        /* 字面复制 personal_statement.html .content-section 的毛玻璃参数 */
         #about.cube-page section,
         #education.cube-page section,
         #experience.cube-page section,
@@ -800,15 +805,17 @@
         #extracurricular.cube-page section,
         #skills.cube-page section,
         #thesis.cube-page section {
-            box-shadow: var(--shadow-light);
-            background-color: var(--glass-bg-content);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            position: relative;
-            overflow: visible;
-            isolation: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 15px !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            overflow: visible !important;
+            isolation: auto !important;
+            transform: none !important;
+            filter: none !important;
         }
         .cube-page section:hover {
             transform: none;
@@ -1069,7 +1076,7 @@
             z-index: 10000 !important;
         }
         .details h3, .details h4 {
-            font-family: var(--sans-font) !important;
+            font-family: var(--serif-font) !important;
             font-size: 1.25em;
             font-weight: 700;
             line-height: 1.5;
@@ -1174,7 +1181,7 @@
             margin: 0;
         }
         .skill-category-title {
-            font-family: var(--sans-font) !important;
+            font-family: var(--serif-font) !important;
             font-size: 1.1em;
             font-weight: 700;
             color: var(--dark-brown);
@@ -1190,7 +1197,7 @@
             color: var(--primary-color) !important;
             margin-top: 25px !important;
             margin-bottom: 15px !important;
-            font-family: var(--sans-font) !important;
+            font-family: var(--serif-font) !important;
             font-weight: 700 !important;
         }
         #thesis .section-title {
@@ -1527,7 +1534,7 @@
 }
 
 .pub-title {
-    font-family: var(--sans-font) !important;
+    font-family: var(--serif-font) !important;
     font-size: 1.1em;
     font-weight: 700;
     color: var(--dark-brown);
@@ -1604,38 +1611,20 @@
             text-align: justify;
             text-justify: inter-word;
         }
-        /* 所有同级 section 的文本字体 */
+        /* 正文仍用 Inter；小标题单独走衬线，不被这里覆盖 */
         #about .about-paragraph,
-        #education .details,
         #education .details p,
         #education .details ul li,
-        #education .details h3,
-        #education .details h4,
-        #experience .details,
         #experience .details p,
         #experience .details ul li,
-        #experience .details h3,
-        #experience .details h4,
-        #projects .details,
         #projects .details p,
         #projects .details ul li,
-        #projects .details h3,
-        #projects .details h4,
-        #extracurricular .details,
         #extracurricular .details p,
         #extracurricular .details ul li,
-        #extracurricular .details h3,
-        #extracurricular .details h4,
         #skills .skill-group,
-        #skills .skill-category-title,
-        #publications .details,
         #publications .details p,
-        #publications .details h3,
-        #thesis .details,
         #thesis .details p,
         #thesis .details ul li,
-        #thesis .details h3,
-        #thesis .details h4,
         #thesis .tech-description {
             font-family: var(--sans-font) !important;
         }
@@ -1652,7 +1641,7 @@
             border-top: 1px solid var(--line-color);
         }
         .footnotes h4 {
-            font-family: var(--sans-font) !important;
+            font-family: var(--serif-font);
             font-size: 1.1em;
             font-weight: 600;
             color: var(--text-primary);
