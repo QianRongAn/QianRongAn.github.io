@@ -186,7 +186,7 @@
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
         ready = true; canvas.dataset.ready = 'true'; resize();
     };
-    image.src = 'image/foot3.webp';
+    image.src = 'image/hero-background.jpg';
     fieldImage.onload = function () {
         if (stopped) return;
         gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,fieldTexture);
