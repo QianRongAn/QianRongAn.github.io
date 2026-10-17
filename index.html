@@ -601,9 +601,9 @@
             padding: 0 20px; 
             margin-top: 108px;
             padding-bottom: 40px;
-            perspective: 1200px;
-            transition: transform 0.5s ease-in-out, opacity 0.5s;
-            /* Prevent compositing edge that reads as a black frame over the wave photo */
+            /* 不用 perspective/transform，否则卡片 backdrop-filter 无法像 Statement 一样模糊墙纸 */
+            perspective: none;
+            transition: opacity 0.5s;
             isolation: auto;
             contain: none;
         }
@@ -619,12 +619,12 @@
             top: 0;
             left: 0;
             opacity: 0;
-            transform: translateY(100%) rotateX(5deg) scale(0.95); 
-            transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), 
-                        transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+            visibility: hidden;
+            pointer-events: none;
+            transform: none;
+            transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 0;
             margin: 0;
-            transform-style: preserve-3d;
         }
         /* allow publication page to overflow so hovered images aren't clipped */
         #publications.cube-page {
@@ -632,8 +632,11 @@
         }
         .cube-page.active {
             opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
             transform: none;
             position: relative;
+            animation: none;
         }
         #intro {
             text-align: center;
@@ -774,6 +777,7 @@
         .skill-group i {
             margin-right: 8px;
         }
+        /* 与 personal_statement.html .content-section 同一套毛玻璃 */
         .cube-page section {
             box-shadow: var(--shadow-light);
             background-color: var(--glass-bg-content);
@@ -783,10 +787,9 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             margin-bottom: 40px;
+            position: relative;
             transition: box-shadow 0.3s ease;
         }
-        /* Match Personal Statement frosted glass. Parent page transforms break
-           backdrop-filter, so blur a fixed wall layer inside the card instead. */
         #about.cube-page section,
         #education.cube-page section,
         #experience.cube-page section,
@@ -794,68 +797,24 @@
         #extracurricular.cube-page section,
         #skills.cube-page section,
         #thesis.cube-page section {
+            box-shadow: var(--shadow-light);
+            background-color: var(--glass-bg-content);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             position: relative;
-            overflow: hidden;
-            isolation: isolate;
-            background-color: transparent !important;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-        }
-        #about.cube-page section::before,
-        #education.cube-page section::before,
-        #experience.cube-page section::before,
-        #projects.cube-page section::before,
-        #extracurricular.cube-page section::before,
-        #skills.cube-page section::before,
-        #thesis.cube-page section::before {
-            content: "";
-            position: absolute;
-            inset: -28px;
-            z-index: 0;
-            background-image: url('wall.webp');
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            filter: blur(10px);
-            -webkit-filter: blur(10px);
-            transform: scale(1.06);
-            pointer-events: none;
-        }
-        #about.cube-page section::after,
-        #education.cube-page section::after,
-        #experience.cube-page section::after,
-        #projects.cube-page section::after,
-        #extracurricular.cube-page section::after,
-        #skills.cube-page section::after,
-        #thesis.cube-page section::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: inherit;
-            pointer-events: none;
-        }
-        #about.cube-page section > *,
-        #education.cube-page section > *,
-        #experience.cube-page section > *,
-        #projects.cube-page section > *,
-        #extracurricular.cube-page section > *,
-        #skills.cube-page section > *,
-        #thesis.cube-page section > * {
-            position: relative;
-            z-index: 1;
+            overflow: visible;
+            isolation: auto;
         }
         .cube-page section:hover {
             transform: none;
             box-shadow: var(--shadow-light);
         }
-        /* 禁用 thesis 内 section 的 hover 效果 */
         #thesis.cube-page section:hover {
             transform: none !important;
             box-shadow: var(--shadow-light) !important;
-            background-color: transparent !important;
+            background-color: var(--glass-bg-content) !important;
         }
         .section-title {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
@@ -1972,21 +1931,6 @@
         }
         .pulse-scale {
             animation: pulseScale 3s ease-in-out infinite;
-        }
-        
-        /* 页面切换增强 */
-        .cube-page.active {
-            animation: pageSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-        @keyframes pageSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: none;
-            }
         }
         
         /* 内容项效果 */
@@ -3353,43 +3297,38 @@
                 }
                 if (targetIndex === currentIndex) return; 
                 const prevIndex = currentIndex;
-                const direction = targetIndex > prevIndex ? 'down' : 'up'; 
                 cubePages.forEach(page => {
                     page.classList.remove('active');
                     page.style.position = 'absolute';
+                    page.style.transform = 'none';
+                    page.style.opacity = '0';
+                    page.style.visibility = 'hidden';
+                    page.style.pointerEvents = 'none';
                 });
                 const prevPage = document.querySelector(`.cube-page[data-index="${prevIndex}"]`);
                 if (prevPage) {
                     prevPage.style.position = 'absolute';
                     prevPage.style.zIndex = 10;
-                    prevPage.style.opacity = 1;
+                    prevPage.style.opacity = '0';
+                    prevPage.style.visibility = 'hidden';
                     prevPage.style.transform = 'none';
-                    setTimeout(() => {
-                        prevPage.style.opacity = 0;
-                        prevPage.style.transform = direction === 'down' ? 'translateY(-100%)' : 'translateY(100%)';
-                    }, 10);
                 }
                 const targetPage = document.querySelector(`.cube-page[data-index="${targetIndex}"]`);
                 if (targetPage) {
-                    targetPage.style.transform = direction === 'down' ? 'translateY(100%)' : 'translateY(-100%)';
-                    targetPage.style.opacity = 0;
-                    targetPage.style.position = 'absolute';
+                    targetPage.style.transform = 'none';
+                    targetPage.style.opacity = '0';
+                    targetPage.style.visibility = 'visible';
+                    targetPage.style.position = 'relative';
                     targetPage.style.zIndex = 20;
-                    setTimeout(() => {
-                        targetPage.style.opacity = 1;
-                        targetPage.style.transform = 'none';
-                        targetPage.classList.add('active');
+                    targetPage.style.pointerEvents = 'auto';
+                    targetPage.classList.add('active');
+                    requestAnimationFrame(() => {
+                        targetPage.style.opacity = '1';
                         setTimeout(() => {
-                            if (prevPage) {
-                                prevPage.style.position = 'absolute';
-                                prevPage.style.opacity = 0;
-                                prevPage.style.transform = 'translateY(100%)';
-                            }
-                            targetPage.style.position = 'relative';
                             targetPage.style.zIndex = 'auto';
                             targetPage.style.transform = 'none';
-                        }, 1000);
-                    }, 10);
+                        }, 700);
+                    });
                 }
                 navLinks.forEach(link => link.classList.remove('active'));
                 const targetLink = document.querySelector(`.nav-link[data-target="${targetIndex}"]`);
