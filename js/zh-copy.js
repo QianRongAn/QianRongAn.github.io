@@ -12,7 +12,6 @@ window.ZH_COPY = {
     "nav.statement": "陈述",
     "nav.thesis": "课题",
     "intro.role": "生物医学 AI / 计算生物学 / 计算免疫学",
-    "intro.place": "中国 北京 / 浙江 温州",
     "intro.zh": "中文（母语）",
     "intro.en": "英语（专业工作水平）",
     "intro.hike": "登山",
