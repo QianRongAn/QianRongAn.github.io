@@ -161,7 +161,7 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.6),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            margin-bottom: 30px;
+            margin: 48px 0 0;
         }
         .back-button,
         .back-button * {
@@ -321,10 +321,6 @@
 </head>
 <body>
     <div id="container">
-        <a href="./index.html" class="back-button" style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
-            Back to Home
-        </a>
-        
         <div class="content-section">
             <h1>Personal Statement</h1>
             
@@ -444,7 +440,17 @@
                 <p>Wang Nan</p>
                 <p>2025</p>
             </div>
+            <div style="text-align: center;">
+                <a href="./index.html?enter=about" class="back-button" id="backHome" style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
+                    Back to Home
+                </a>
+            </div>
         </div>
+        <script>
+            if (new URLSearchParams(location.search).get('lang') === 'zh') {
+                document.getElementById('backHome').href = './index.html?enter=about&lang=zh';
+            }
+        </script>
     </div>
 </body>
 </html>

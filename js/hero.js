@@ -4,6 +4,20 @@
     var hero = document.getElementById('heroScreen');
     var canvas = document.getElementById('heroEffects');
     if (!hero) return;
+    if (document.documentElement.classList.contains('skip-hero')) {
+        hero.hidden = true;
+        hero.style.display = 'none';
+        hero.setAttribute('aria-hidden', 'true');
+        var params = new URLSearchParams(location.search);
+        if (window.SiteI18n && params.get('lang') === 'zh') window.SiteI18n.apply('zh');
+        var home = document.getElementById('intro');
+        if (home) {
+            home.setAttribute('tabindex', '-1');
+            home.focus({preventScroll: true});
+            home.scrollIntoView({behavior: 'auto', block: 'start'});
+        }
+        return;
+    }
     var ctx = canvas && canvas.getContext('2d');
     var enters = document.querySelectorAll('[data-enter-lang]');
     var motion = window.matchMedia('(prefers-reduced-motion: reduce)');

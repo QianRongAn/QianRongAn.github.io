@@ -2156,6 +2156,7 @@
 
         /* ================= 开场 Hero（Motrix 风格） ================= */
         html.hero-locked { overflow-y: hidden !important; }
+        html.skip-hero .hero-screen { display: none !important; }
         .hero-screen {
             position: fixed;
             inset: 0;
@@ -2314,17 +2315,30 @@
             position: relative;
             width: 92px;
             height: 92px;
-            border: 1px solid rgba(255, 255, 255, 0.95);
             border-radius: 50%;
-            background: #ffffff;
-            color: #14120f;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            background: linear-gradient(to bottom, #f7f7f7, #e6e6e6);
+            color: #2c2c2c;
             padding: 0;
             cursor: pointer;
-            font-family: 'Poppins', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            font-weight: 500;
+            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif;
+            font-style: italic;
+            font-weight: 600;
             font-size: 1rem;
-            letter-spacing: 0.06em;
-            box-shadow: 0 10px 28px rgba(8, 6, 24, 0.18);
+            letter-spacing: 0.04em;
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+        }
+        .mag-btn:hover {
+            background: linear-gradient(to bottom, #fbfbfb, #ececec);
+            box-shadow:
+                0 6px 12px rgba(0, 0, 0, 0.2),
+                0 3px 6px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.15);
         }
         .mag-label {
             display: inline-block;
@@ -2389,6 +2403,11 @@
 </head>
 <body>
     <!-- 开场 Hero（Motrix 风格） -->
+    <script>
+        if (new URLSearchParams(location.search).get('enter') === 'about') {
+            document.documentElement.classList.add('skip-hero');
+        }
+    </script>
     <div class="hero-screen" id="heroScreen">
         <div class="hero-fill hero-fill-l"></div>
         <div class="hero-fill hero-fill-r"></div>
@@ -2435,7 +2454,7 @@
     <script src="js/zh-copy.js?v=20261017-lang" defer></script>
     <script src="js/i18n.js?v=20261017-lang" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
-    <script src="js/hero.js?v=20261017-lang" defer></script>
+    <script src="js/hero.js?v=20261017-home" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
     <!-- 移动端提示 -->
