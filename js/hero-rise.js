@@ -6,13 +6,24 @@
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     gsap.registerPlugin(SplitText);
     var nameChars = 0;
+
     nodes.forEach(function (el, index) {
+        var isFocus = el.classList.contains('hero-focus');
+        var focusFont = "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+
+        if (isFocus) {
+            el.style.setProperty('font-family', focusFont, 'important');
+            el.style.setProperty('font-style', 'italic', 'important');
+            el.style.setProperty('font-weight', '300', 'important');
+            el.style.setProperty('font-size', 'clamp(1.55rem, 2.8vw, 2.15rem)', 'important');
+        }
+
         SplitText.create(el, {
-            type: 'lines,chars',
+            type: isFocus ? 'chars' : 'lines,chars',
             linesClass: 'hero-mask',
             charsClass: 'hero-char',
-            mask: 'lines',
-            autoSplit: true,
+            mask: isFocus ? false : 'lines',
+            autoSplit: !isFocus,
             onSplit: function (self) {
                 if (index === 0) nameChars = self.chars.length;
                 if (el.classList.contains('hero-title')) {
@@ -25,12 +36,7 @@
                         }
                     });
                 }
-                if (el.classList.contains('hero-focus')) {
-                    var focusFont = "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
-                    el.style.setProperty('font-family', focusFont, 'important');
-                    el.style.setProperty('font-style', 'italic', 'important');
-                    el.style.setProperty('font-weight', '300', 'important');
-                    el.style.setProperty('font-size', 'clamp(1.55rem, 2.8vw, 2.15rem)', 'important');
+                if (isFocus) {
                     self.chars.forEach(function (char) {
                         char.style.setProperty('font-family', focusFont, 'important');
                         char.style.setProperty('font-style', 'italic', 'important');
