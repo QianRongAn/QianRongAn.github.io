@@ -84,6 +84,13 @@
             font-display: swap;
         }
         @font-face {
+            font-family: 'Cormorant Garamond';
+            src: url('font/cormorant-garamond-latin-500-italic.woff2') format('woff2');
+            font-weight: 500;
+            font-style: italic;
+            font-display: swap;
+        }
+        @font-face {
             font-family: 'BodoniFLF-Italic';
             src: local('BodoniFLF-Italic'),
                  local('BodoniFLF Italic');
@@ -2209,15 +2216,22 @@
         .hero-focus {
             max-width: min(100%, 980px);
             margin: 18px 0 0;
-            font-family: 'Inter Display', 'Inter', sans-serif;
-            font-weight: 800;
-            font-size: clamp(1.4rem, 2.6vw, 1.9rem);
-            line-height: 1.25;
-            letter-spacing: -0.02em;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 500;
+            font-style: italic;
+            font-size: clamp(1.55rem, 2.8vw, 2.15rem);
+            line-height: 1.45;
+            letter-spacing: 0.01em;
             color: #ffffff;
-            text-shadow: 0 1px 18px rgba(0, 0, 0, 0.55);
+            text-shadow: 0 1px 2px rgba(12, 8, 32, 0.28);
         }
-        .hero-mask { overflow: hidden; display: block; }
+        .hero-mask { overflow: hidden; display: block; background: transparent; }
+        .hero-focus .hero-mask {
+            overflow: hidden;
+            padding: 0.18em 0.12em;
+            margin: -0.18em -0.12em;
+        }
+        .hero-focus.is-settled .hero-mask { overflow: visible; }
         .hero-char { display: inline-block; }
         .hero-bottom {
             margin-top: auto;
@@ -2357,7 +2371,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-    <script src="js/hero-rise.js?v=20261017-rise2"></script>
+    <script src="js/hero-rise.js?v=20261017-rise3"></script>
     <script src="js/hero.js?v=20261017-wave" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav1" defer></script>

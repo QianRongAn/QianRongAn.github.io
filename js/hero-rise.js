@@ -20,7 +20,10 @@
                     duration: 1.15,
                     stagger: 0.03,
                     delay: index === 0 ? 0 : nameChars * 0.03,
-                    ease: 'expo.out'
+                    ease: 'expo.out',
+                    onComplete: function () {
+                        el.classList.add('is-settled');
+                    }
                 });
             }
         });
