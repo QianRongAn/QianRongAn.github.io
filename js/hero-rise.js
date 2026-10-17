@@ -30,10 +30,12 @@
                     el.style.setProperty('font-family', focusFont, 'important');
                     el.style.setProperty('font-style', 'italic', 'important');
                     el.style.setProperty('font-weight', '300', 'important');
+                    el.style.setProperty('font-size', 'clamp(1.55rem, 2.8vw, 2.15rem)', 'important');
                     self.chars.forEach(function (char) {
                         char.style.setProperty('font-family', focusFont, 'important');
                         char.style.setProperty('font-style', 'italic', 'important');
                         char.style.setProperty('font-weight', '300', 'important');
+                        char.style.setProperty('font-size', 'inherit', 'important');
                     });
                 }
                 return gsap.from(self.chars, {
