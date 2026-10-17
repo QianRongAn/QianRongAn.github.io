@@ -15,6 +15,16 @@
             autoSplit: true,
             onSplit: function (self) {
                 if (index === 0) nameChars = self.chars.length;
+                if (el.classList.contains('hero-title')) {
+                    el.querySelectorAll('.hero-mask').forEach(function (mask) {
+                        mask.style.paddingBottom = '0.42em';
+                        var clip = mask.parentElement;
+                        if (clip && clip !== el) {
+                            clip.style.paddingBottom = '0.42em';
+                            clip.style.height = 'auto';
+                        }
+                    });
+                }
                 if (el.classList.contains('hero-focus')) {
                     var focusFont = "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
                     el.style.setProperty('font-family', focusFont, 'important');
