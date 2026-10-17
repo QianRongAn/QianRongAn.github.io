@@ -845,7 +845,7 @@
         #thesis.cube-page section:hover {
             transform: none !important;
             box-shadow: var(--shadow-light) !important;
-            background-color: var(--glass-bg-content) !important;
+            background-color: transparent !important;
         }
         .section-title {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
@@ -2267,6 +2267,18 @@
             opacity: 0;
             pointer-events: none;
         }
+        .hero-butterfly {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .hero-butterfly-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
         .hero-bg {
             position: absolute;
             inset: 0;
@@ -2551,6 +2563,7 @@
         <div class="hero-fill hero-fill-t"></div>
         <div class="hero-fill hero-fill-b"></div>
         <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+        <div class="hero-butterfly" id="heroButterfly" aria-hidden="true"></div>
         <canvas class="hero-water" id="heroWater" aria-hidden="true"></canvas>
         <canvas class="hero-effects" id="heroEffects" aria-hidden="true"></canvas>
         <div class="hero-content" id="heroContent">
@@ -2594,6 +2607,7 @@
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
+    <script type="module" src="js/hero-butterfly/butterfly.js?v=20261018-bf1"></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
