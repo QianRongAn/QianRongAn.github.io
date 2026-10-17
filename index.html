@@ -2657,49 +2657,55 @@
         }
         .mag {
             position: relative;
-            width: 108px;
-            height: 108px;
+            width: 132px;
+            height: 72px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex: 0 0 auto;
         }
         .mag-orbit {
-            position: absolute;
-            width: 84px;
-            height: 84px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.78);
-            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.06);
-            pointer-events: none;
+            display: none;
         }
         .mag-btn {
             position: relative;
-            width: 66px;
-            height: 66px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.55);
-            background: linear-gradient(to bottom, #f7f7f7, #e6e6e6);
-            color: #2c2c2c;
-            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: auto;
+            height: auto;
+            min-width: 108px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+            color: #2c2c2c !important;
             cursor: pointer;
-            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif;
-            font-style: italic;
+            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif !important;
+            font-style: italic !important;
             font-weight: 600;
-            font-size: 0.86rem;
-            letter-spacing: 0.04em;
+            font-size: 0.95em;
+            letter-spacing: 0.02em;
+            text-shadow: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow:
                 0 4px 8px rgba(0, 0, 0, 0.15),
                 0 2px 4px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.7),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+        .mag-btn,
+        .mag-btn .mag-label {
+            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif !important;
+            font-style: italic !important;
         }
         .mag-btn:hover {
-            background: linear-gradient(to bottom, #fbfbfb, #ececec);
+            background: linear-gradient(to bottom, #f8f8f8, #ebebeb);
             box-shadow:
                 0 6px 12px rgba(0, 0, 0, 0.2),
                 0 3px 6px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.15);
         }
         .mag-label {
