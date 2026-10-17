@@ -2620,7 +2620,7 @@
             transition: opacity 0.5s ease;
         }
         .hero-head {
-            position: relative;
+            position: static;
             display: block;
         }
         .hero-title {
@@ -2630,7 +2630,7 @@
             line-height: 1.28;
             padding-bottom: 0.08em;
             letter-spacing: -0.01em;
-            margin: 0 0 0.12em;
+            margin: 0;
             color: #ffffff;
             text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
             white-space: nowrap;
@@ -2645,20 +2645,22 @@
             font-style: italic !important;
         }
         .hero-focus {
-            position: relative !important;
-            top: auto !important;
-            right: auto !important;
+            position: absolute !important;
+            top: 50% !important;
+            right: clamp(26px, 6.5vw, 104px) !important;
             left: auto !important;
-            transform: none !important;
+            bottom: auto !important;
+            transform: translateY(-50%) !important;
             width: max-content;
-            max-width: 100%;
-            margin: 0 0 0 auto !important;
+            max-width: 46%;
+            margin: 0 !important;
             text-align: right;
             font-size: clamp(1.55rem, 2.8vw, 2.15rem) !important;
             line-height: 1.45;
             letter-spacing: 0.01em;
             color: #ffffff;
             text-shadow: 0 1px 2px rgba(12, 8, 32, 0.28);
+            z-index: 2;
         }
         .hero-focus-line {
             display: block;
@@ -2672,9 +2674,13 @@
         }
         @media (max-width: 900px) {
             .hero-focus {
+                position: relative !important;
+                top: auto !important;
+                right: auto !important;
+                transform: none !important;
                 width: 100%;
                 max-width: none;
-                margin: 14px 0 0 auto;
+                margin: 18px 0 0 auto !important;
             }
         }
         .hero-mask { overflow: hidden; display: block; background: transparent; }
@@ -2723,9 +2729,9 @@
         .hero-lang {
             position: absolute;
             left: 50%;
-            top: auto;
-            bottom: 11%;
-            transform: translateX(-50%);
+            top: 62%;
+            bottom: auto;
+            transform: translate(-50%, -50%);
             z-index: 3;
             display: flex;
             align-items: center;
@@ -2929,7 +2935,7 @@
         <div class="hero-content" id="heroContent">
             <div class="hero-head">
                 <h1 class="hero-title hero-split">Nan&nbsp;Wang</h1>
-                <p class="hero-focus hero-split"><span class="hero-focus-line">Computational Immunology</span><span class="hero-focus-line">TCR Repertoire &amp; Interpretable&nbsp;ML</span><span class="hero-focus-line">Single-Cell&nbsp;&amp;</span><span class="hero-focus-line">Spatial Multi-Omics</span></p>
+                <p class="hero-focus hero-split"><span class="hero-focus-line">Computational Immunology</span><span class="hero-focus-line">TCR Repertoire</span><span class="hero-focus-line">Interpretable ML</span><span class="hero-focus-line">Single-Cell &amp; Spatial Multi-Omics</span><span class="hero-focus-line">Biomedical AI</span></p>
             </div>
             <div class="hero-bottom">
                 <div class="hero-left">
