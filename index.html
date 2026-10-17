@@ -478,15 +478,10 @@
             transition: all 0.3s ease;
         }
         .nav-glass-container {
-            --x: 50%;
-            --y: 50%;
-            --nav-angle: 0deg;
             max-width: fit-content;
             margin: 0 auto;
-            padding: 10px 30px;
+            padding: 8px 18px;
             position: relative;
-            isolation: isolate;
-            overflow: hidden;
             background-color: var(--glass-bg-header);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -494,18 +489,50 @@
             box-shadow: var(--shadow-float);
             border: 1px solid var(--glass-border);
         }
-        .nav-glass-container::before {
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-links li a {
+            --x: 50%;
+            --y: 50%;
+            --nav-angle: 0deg;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
+            font-weight: normal;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+            padding: 7px 12px;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            border-radius: 999px;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-shadow: 0 0 1px rgba(92, 74, 55, 0.7);
+        }
+        .nav-links li a::before {
             content: '';
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            background: radial-gradient(350px at var(--x) var(--y), #fff2, transparent);
+            background: radial-gradient(120px at var(--x) var(--y), #fff3, transparent 70%);
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.25s ease;
             pointer-events: none;
             z-index: 0;
         }
-        .nav-glass-container::after {
+        .nav-links li a::after {
             content: '';
             position: absolute;
             inset: 0;
@@ -531,49 +558,28 @@
             pointer-events: none;
             z-index: 2;
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.25s ease;
         }
-        .nav-glass-container:hover::before,
-        .nav-glass-container:focus-within::before,
-        .nav-glass-container.is-spotlight::before,
-        .nav-glass-container:hover::after,
-        .nav-glass-container:focus-within::after,
-        .nav-glass-container.is-spotlight::after {
+        .nav-links li a:hover::before,
+        .nav-links li a:focus-visible::before,
+        .nav-links li a.is-spotlight::before,
+        .nav-links li a:hover::after,
+        .nav-links li a:focus-visible::after,
+        .nav-links li a.is-spotlight::after {
             opacity: 1;
         }
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
+        .nav-links li a i,
+        .nav-links li a span {
             position: relative;
             z-index: 1;
-        }
-        .nav-links li a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
-            font-weight: normal;
-            font-size: 0.95em;
-            letter-spacing: 0.5px;
-            padding: 5px 0;
-            position: relative;
-            transition: color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            text-shadow: 0 0 1px rgba(92, 74, 55, 0.7);
         }
         .nav-links li a.active {
             color: var(--primary-color);
             text-shadow: 0 0 1px rgba(145, 4, 12, 0.7);
         }
         .nav-links li a span {
-            position: relative;
             display: block;
-            padding-bottom: 5px;
+            padding-bottom: 0;
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
         #container {
@@ -2387,7 +2393,7 @@
     <script src="js/hero-rise.js?v=20261017-rise4"></script>
     <script src="js/hero.js?v=20261017-wave" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
-    <script src="js/nav-spotlight.js?v=20261017-nav1" defer></script>
+    <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
