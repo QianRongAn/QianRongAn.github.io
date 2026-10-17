@@ -177,6 +177,19 @@
             max-width: 100vw;
             height: 100%;
             scroll-padding-top: 108px;
+            scrollbar-width: thin;
+            scrollbar-color: gray transparent;
+        }
+        html::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        html::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        html::-webkit-scrollbar-thumb {
+            background: gray;
+            border-radius: 999px;
         }
         body {
             font-family: var(--sans-font);
