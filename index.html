@@ -2620,7 +2620,6 @@
         .hero-head {
             position: relative;
             display: block;
-            min-height: clamp(4.2rem, 12vw, 9rem);
         }
         .hero-title {
             font-family: 'Jagers', 'Times New Roman', serif;
@@ -2633,7 +2632,6 @@
             color: #ffffff;
             text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
             white-space: nowrap;
-            max-width: calc(100% - min(48%, 520px) - 24px);
         }
         .hero-focus,
         .hero-focus .hero-mask,
@@ -2645,13 +2643,13 @@
             font-style: italic !important;
         }
         .hero-focus {
-            position: absolute;
-            top: calc(50% + 1.1rem);
-            right: 0;
-            transform: translateY(-50%);
-            width: auto;
-            max-width: min(48%, 520px);
-            margin: 0;
+            position: relative;
+            top: auto;
+            right: auto;
+            transform: none;
+            width: max-content;
+            max-width: 100%;
+            margin: 0.55em 0 0 auto;
             text-align: right;
             font-size: clamp(1.55rem, 2.8vw, 2.15rem) !important;
             line-height: 1.45;
@@ -2670,19 +2668,10 @@
             text-align: right;
         }
         @media (max-width: 900px) {
-            .hero-head {
-                min-height: 0;
-            }
-            .hero-title {
-                max-width: none;
-            }
             .hero-focus {
-                position: relative;
-                top: auto;
-                right: auto;
-                transform: none;
+                width: 100%;
                 max-width: none;
-                margin: 14px 0 0;
+                margin: 14px 0 0 auto;
             }
         }
         .hero-mask { overflow: hidden; display: block; background: transparent; }
