@@ -1,7 +1,6 @@
-/* Publications stand on the front arc of a cylinder, like a curved gallery wall:
-   the middle cards face the viewer, the outer ones turn away and rise a little.
-   Every card corner is projected analytically so the arc can grow to the largest
-   size that still keeps all cards inside the viewport. */
+/* Publications stand on the front arc of a cylinder, like a curved gallery wall.
+   Cards are landscape (2:1) and spread out so they never overlap: every card corner
+   is projected analytically and a minimum gap is enforced between neighbours. */
 (function () {
     'use strict';
 
@@ -9,7 +8,9 @@
     var PERSPECTIVE = 3600; /* keep in sync with css/pub-gallery.css */
     var TILT = 12;          /* keep in sync with css/pub-gallery.css */
     var SPAN = 120;         /* degrees of the arc the cards are spread over */
-    var SWAY = 18;          /* pointer sway, in degrees */
+    var SWAY = 8;           /* pointer sway, in degrees */
+    var RATIO = 0.5;        /* card height = card width * RATIO (landscape) */
+    var GAP = 22;           /* minimum horizontal gap between neighbours, px */
 
     function setup(grid) {
         if (!grid || grid._gallery) return;
@@ -74,7 +75,19 @@
             return { minX: minX, maxX: maxX, minY: minY, maxY: maxY, w: maxX - minX, h: maxY - minY };
         }
 
-        /* perspective is not linear in scale, so solve for the scale by bisection */
+        function minGap(width, height, radius, scale) {
+            var g = Infinity;
+            for (var p = -SWAY; p <= SWAY; p += SWAY) {
+                for (var i = 0; i < count - 1; i++) {
+                    var a = cardBox(width, height, radius, scale, angles[i] + p);
+                    var b = cardBox(width, height, radius, scale, angles[i + 1] + p);
+                    var gap = b.minX - a.maxX;
+                    if (gap < g) g = gap;
+                }
+            }
+            return g;
+        }
+
         function fitScale(width, height, radius, target, axis) {
             function measure(s) {
                 var b = ringBox(width, height, radius, s);
@@ -82,7 +95,7 @@
             }
             var lo = 0.05, hi = 2;
             if (measure(hi) <= target) return hi;
-            for (var k = 0; k < 26; k++) {
+            for (var k = 0; k < 24; k++) {
                 var mid = (lo + hi) / 2;
                 if (measure(mid) <= target) lo = mid; else hi = mid;
             }
@@ -95,35 +108,35 @@
                 ' rotateX(-' + TILT + 'deg) rotateY(' + current.toFixed(2) + 'deg)';
         }
 
-        var radius = 600;
+        var radius = 900;
 
         function layout() {
             var stageWidth = stage.clientWidth || window.innerWidth;
-            var width = Math.min(560, Math.max(320, stageWidth * 0.30));
+            var width = Math.min(500, Math.max(340, stageWidth * 0.26));
+            var height = width * RATIO;
             grid.style.width = width + 'px';
-            grid.style.setProperty('--pub-height', 'auto');
-            var height = Math.max.apply(null, cards.map(function (card) {
-                return card.querySelector('.pub-front').scrollHeight;
-            }));
             grid.style.setProperty('--pub-height', height + 'px');
 
             var availH = Math.max(520, Math.min(900, window.innerHeight - 170));
             var availW = Math.max(360, stageWidth - 40);
 
-            /* pick the radius that renders the front cards largest */
-            var bestR = Math.max(1.9 * width, 300);
+            /* find the radius that renders the front cards largest while keeping
+               a clear gap between neighbours and everything inside the viewport */
+            var bestR = width * 1.5;
             var bestS = 1;
             var bestScore = -1;
-            for (var R = bestR; R <= 1600; R *= 1.08) {
+            for (var R = width * 1.5; R <= 5000; R *= 1.06) {
                 var s = Math.min(1.15,
                     fitScale(width, height, R, availH, 'h'),
                     fitScale(width, height, R, availW, 'w'));
-                var front = cardBox(width, height, R, s, 0);
-                var score = (front.maxX - front.minX) * (front.maxY - front.minY);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestR = R;
-                    bestS = s;
+                if (minGap(width, height, R, s) >= GAP) {
+                    var f = cardBox(width, height, R, s, 0);
+                    var score = (f.maxX - f.minX) * (f.maxY - f.minY);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestR = R;
+                        bestS = s;
+                    }
                 }
             }
             radius = bestR;
