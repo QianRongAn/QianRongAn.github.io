@@ -1,4 +1,4 @@
-/* Original foot3 background, quiet light dust, and click ripples inspired by the supplied video. */
+/* Original foot3 background, quiet light dust, with a separate background refraction layer. */
 (function () {
     'use strict';
     var hero = document.getElementById('heroScreen');
@@ -8,7 +8,7 @@
     var enter = document.getElementById('heroEnter');
     var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var dismissed = false, frame = 0, last = 0;
-    var width = 0, height = 0, dust = [], ripples = [], sparks = [];
+    var width = 0, height = 0, dust = [];
     var touchY = null;
     document.documentElement.classList.add('hero-locked');
 
@@ -80,31 +80,6 @@
             ctx.fillStyle = '#e1e6ff';
             ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
         });
-        ripples = ripples.filter(function (p) { return now - p.born < 1800; });
-        ripples.forEach(function (p) {
-            var t = (now - p.born) / 1800;
-            for (var i = 0; i < 3; i++) {
-                var progress = t - i * .09;
-                if (progress <= 0) continue;
-                var radius = 8 + (1 - Math.pow(1 - progress, 2)) * Math.min(width * .28, 330);
-                ctx.globalAlpha = Math.pow(1 - t, 2) * (.32 - i * .06);
-                ctx.lineWidth = 1.5 + (1 - t) * 2;
-                ctx.strokeStyle = '#d8ddff';
-                ctx.shadowColor = '#a1b6ff'; ctx.shadowBlur = 12;
-                ctx.beginPath(); ctx.ellipse(p.x, p.y, radius, radius * .82, -.2, 0, Math.PI * 2); ctx.stroke();
-            }
-        });
-        ctx.shadowBlur = 0;
-        sparks = sparks.filter(function (p) { return now - p.born < 1200; });
-        sparks.forEach(function (p) {
-            var t = (now - p.born) / 1200, distance = 100 * (1 - Math.pow(1 - t, 3));
-            ctx.globalAlpha = .7 * (1 - t);
-            ctx.fillStyle = '#e1e6ff';
-            ctx.beginPath();
-            ctx.arc(p.x + Math.cos(p.angle) * distance * p.speed,
-                p.y + Math.sin(p.angle) * distance * p.speed - t * 18, 1.4 * (1 - t) + .3, 0, Math.PI * 2);
-            ctx.fill();
-        });
         ctx.globalAlpha = 1;
     }
 
@@ -117,21 +92,6 @@
     function resume() {
         cancelAnimationFrame(frame); frame = 0; last = 0;
         if (!dismissed && !document.hidden && !motion.matches && ctx) frame = requestAnimationFrame(animate);
-    }
-    function ripple(x, y) {
-        if (!ctx || dismissed || motion.matches) return;
-        var now = performance.now();
-        if (ripples.length >= 6) ripples.shift();
-        ripples.push({x: x, y: y, born: now});
-        for (var i = 0; i < 14; i++) sparks.push({x: x, y: y, born: now,
-            angle: Math.random() * Math.PI * 2, speed: .35 + Math.random() * .8});
-        sparks = sparks.slice(-84);
-    }
-    function onClick(e) {
-        // Preserve social link destinations; background clicks only create ripples.
-        if (e.target.closest('a, button')) return;
-        var rect = hero.getBoundingClientRect();
-        ripple(e.clientX - rect.left, e.clientY - rect.top);
     }
     function dismiss() {
         if (dismissed) return;
@@ -148,7 +108,7 @@
         window.removeEventListener('resize', resize);
         document.removeEventListener('visibilitychange', resume);
         motion.removeEventListener('change', onMotionChange);
-        hero.removeEventListener('click', onClick);
+        hero.dispatchEvent(new Event('hero:dismiss'));
         var target = document.getElementById('intro');
         if (target) {
             target.setAttribute('tabindex', '-1');
@@ -164,9 +124,8 @@
     }
     function onTouchStart(e) { touchY = e.touches[0].clientY; }
     function onTouchMove(e) { if (touchY !== null && touchY - e.touches[0].clientY > 25) dismiss(); }
-    function onMotionChange() { ripples = []; sparks = []; resize(); resume(); }
+    function onMotionChange() { resize(); resume(); }
     if (enter) enter.addEventListener('click', function (e) { e.preventDefault(); dismiss(); });
-    hero.addEventListener('click', onClick);
     window.addEventListener('wheel', onWheel, {passive: true});
     window.addEventListener('keydown', onKey);
     window.addEventListener('touchstart', onTouchStart, {passive: true});
