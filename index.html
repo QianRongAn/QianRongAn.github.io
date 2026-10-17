@@ -2637,13 +2637,22 @@
             font-style: italic !important;
         }
         .hero-focus {
-            max-width: min(100%, 980px);
-            margin: 18px 0 0;
-            font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-            line-height: 1.5;
+            position: absolute;
+            top: clamp(48px, 10vh, 120px);
+            right: clamp(26px, 6.5vw, 104px);
+            left: auto;
+            width: min(42vw, 420px);
+            max-width: min(42vw, 420px);
+            margin: 0;
+            text-align: right;
+            font-size: clamp(1.05rem, 1.7vw, 1.55rem);
+            line-height: 1.45;
             letter-spacing: 0.01em;
             color: #ffffff;
             text-shadow: 0 1px 2px rgba(12, 8, 32, 0.28);
+        }
+        .hero-focus .hero-mask {
+            text-align: right;
         }
         .hero-mask { overflow: hidden; display: block; background: transparent; }
         .hero-title .hero-mask {
@@ -2911,7 +2920,7 @@
         <canvas class="hero-effects" id="heroEffects" aria-hidden="true"></canvas>
         <div class="hero-content" id="heroContent">
             <h1 class="hero-title hero-split">Nan Wang</h1>
-            <p class="hero-focus hero-split">Computational Immunology · TCR Repertoire &amp; Interpretable ML · Single-Cell &amp; Spatial Multi-Omics</p>
+            <p class="hero-focus hero-split">Computational Immunology<br>TCR Repertoire &amp; Interpretable ML<br>Single-Cell &amp;<br>Spatial Multi-Omics</p>
             <div class="hero-bottom">
                 <div class="hero-left">
                     <div class="hero-lang" id="heroLang">
