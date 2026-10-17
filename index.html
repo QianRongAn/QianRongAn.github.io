@@ -839,22 +839,39 @@
             transform: none !important;
             filter: none !important;
         }
-        /* Projects：全屏左右分栏（左圆角大卡 / 右海报） */
+        /* Projects：Mindora 式真全屏（左圆角白卡浮在底上 / 右海报直接铺在底色上） */
+        html.projects-view,
+        html.projects-view body {
+            overflow: hidden !important;
+        }
         html.projects-view #container {
             max-width: none;
-            padding-left: 0;
-            padding-right: 0;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            margin-top: 0;
         }
         html.projects-view #content-wrapper {
-            min-height: calc(100vh - 120px) !important;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
         }
         #projects.cube-page.active {
+            position: fixed;
+            inset: 0;
             width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             max-width: none;
+            margin: 0;
             left: 0;
-            margin-left: calc(50% - 50vw);
-            margin-right: calc(50% - 50vw);
+            top: 0;
+            z-index: 40;
             transform: none;
+            background:
+                radial-gradient(ellipse at 78% 42%, rgba(255, 255, 255, 0.55), transparent 42%),
+                radial-gradient(ellipse at 92% 88%, rgba(208, 186, 152, 0.35), transparent 48%),
+                #e6e1da;
+            overflow: hidden;
         }
         #projects.cube-page section {
             background: transparent !important;
@@ -863,33 +880,42 @@
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             padding: 0 !important;
-            margin-bottom: 0 !important;
+            margin: 0 !important;
             overflow: visible !important;
             transform: none !important;
-            min-height: calc(100vh - 124px);
+            width: 100%;
+            height: 100%;
         }
         .projects-shell {
             display: grid;
-            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.9fr);
-            gap: clamp(16px, 2vw, 28px);
-            width: min(1280px, calc(100vw - 36px));
-            margin: 0 auto;
-            padding: 8px 18px 28px;
-            min-height: calc(100vh - 124px);
+            grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+            gap: clamp(8px, 1.5vw, 20px);
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            margin: 0;
+            padding:
+                calc(108px + clamp(12px, 2vh, 22px))
+                clamp(16px, 2.2vw, 28px)
+                clamp(16px, 2.4vh, 28px)
+                clamp(16px, 2.2vw, 28px);
             box-sizing: border-box;
+            align-items: stretch;
         }
         .projects-panel {
             background: #ffffff;
-            border-radius: clamp(28px, 4vw, 48px);
+            border-radius: clamp(32px, 4.5vw, 52px);
             box-shadow:
-                0 24px 60px rgba(20, 14, 8, 0.14),
-                0 4px 14px rgba(20, 14, 8, 0.06);
-            padding: clamp(28px, 3.5vw, 48px);
+                0 28px 70px rgba(20, 14, 8, 0.16),
+                0 6px 18px rgba(20, 14, 8, 0.06);
+            padding: clamp(28px, 3.6vw, 52px);
             overflow: auto;
-            max-height: calc(100vh - 140px);
+            height: 100%;
+            max-height: none;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            min-width: 0;
         }
         .projects-panel .section-title {
             margin-bottom: 22px;
@@ -901,43 +927,27 @@
         }
         .projects-visual {
             position: relative;
-            background:
-                radial-gradient(ellipse at 30% 15%, rgba(255, 255, 255, 0.7), transparent 50%),
-                radial-gradient(ellipse at 80% 85%, rgba(208, 186, 152, 0.45), transparent 55%),
-                #f3ebe0;
-            border-radius: clamp(28px, 4vw, 48px);
-            padding: clamp(22px, 2.8vw, 36px);
+            background: transparent;
+            border-radius: 0;
+            padding: clamp(8px, 1.5vh, 18px) clamp(4px, 1vw, 12px);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            min-height: 420px;
-            box-shadow:
-                0 24px 60px rgba(20, 14, 8, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.65);
+            overflow: visible;
+            min-height: 0;
+            height: 100%;
+            box-shadow: none;
         }
         .projects-visual::before {
-            content: "";
-            position: absolute;
-            inset: -20% -10%;
-            background:
-                radial-gradient(circle at 70% 40%, rgba(173, 196, 220, 0.35), transparent 42%),
-                radial-gradient(circle at 20% 70%, rgba(255, 255, 255, 0.5), transparent 40%);
-            pointer-events: none;
-            animation: projectsAura 10s ease-in-out infinite alternate;
-        }
-        @keyframes projectsAura {
-            from { transform: translate3d(0, 0, 0) scale(1); }
-            to { transform: translate3d(-2%, 3%, 0) scale(1.05); }
+            content: none;
         }
         .project-posters {
             position: relative;
             z-index: 1;
             display: grid;
             grid-template-columns: 1fr;
-            gap: clamp(16px, 2vw, 24px);
-            width: 100%;
-            max-width: 420px;
+            gap: clamp(18px, 2.4vh, 28px);
+            width: min(100%, 460px);
             margin: 0;
             perspective: 1400px;
         }
@@ -956,23 +966,23 @@
         }
         .project-poster-frame {
             position: relative;
-            border-radius: 22px;
+            border-radius: 24px;
             overflow: hidden;
             background: #fffaf4;
             border: 1px solid rgba(255, 255, 255, 0.75);
             box-shadow:
-                0 26px 48px rgba(35, 20, 12, 0.3),
-                0 10px 18px rgba(35, 20, 12, 0.14),
+                0 30px 56px rgba(35, 20, 12, 0.28),
+                0 12px 22px rgba(35, 20, 12, 0.12),
                 inset 0 1px 0 rgba(255, 255, 255, 0.85);
-            transform: rotateX(5deg) rotateY(-6deg) translateZ(0);
+            transform: rotateX(5deg) rotateY(-8deg) translateZ(0);
             transform-origin: center center;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, outline-color 0.3s ease;
             will-change: transform;
         }
         .project-poster.is-active .project-poster-frame {
             outline: 2px solid rgba(81, 109, 176, 0.55);
-            outline-offset: 4px;
-            transform: rotateX(2deg) rotateY(-2deg) translateY(-6px) scale(1.02);
+            outline-offset: 5px;
+            transform: rotateX(2deg) rotateY(-3deg) translateY(-8px) scale(1.03);
         }
         .project-poster.is-tilting .project-poster-frame {
             transition: transform 0.08s linear, box-shadow 0.2s ease;
@@ -980,14 +990,14 @@
         .project-poster:hover .project-poster-frame,
         .project-poster:focus-visible .project-poster-frame {
             box-shadow:
-                0 34px 60px rgba(35, 20, 12, 0.36),
-                0 14px 24px rgba(35, 20, 12, 0.18),
+                0 38px 68px rgba(35, 20, 12, 0.34),
+                0 16px 28px rgba(35, 20, 12, 0.16),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
         .project-poster-frame img {
             display: block;
             width: 100%;
-            height: clamp(200px, 26vh, 280px);
+            height: clamp(220px, 32vh, 340px);
             object-fit: contain;
             object-position: center top;
             background: #efe6d8;
@@ -998,7 +1008,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            height: clamp(200px, 26vh, 280px);
+            height: clamp(220px, 32vh, 340px);
             padding: 24px;
             text-align: center;
             background:
@@ -1057,21 +1067,42 @@
             to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 960px) {
+            html.projects-view,
+            html.projects-view body {
+                overflow: auto !important;
+            }
+            #projects.cube-page.active {
+                position: relative;
+                height: auto;
+                min-height: 100vh;
+                min-height: 100dvh;
+                overflow: visible;
+            }
             .projects-shell {
                 grid-template-columns: 1fr;
-                min-height: auto;
+                height: auto;
+                padding-top: calc(108px + 16px);
             }
-            .projects-panel,
-            .projects-visual {
+            .projects-panel {
+                height: auto;
                 max-height: none;
+            }
+            .projects-visual {
+                height: auto;
                 min-height: auto;
+                padding: 8px 0 24px;
             }
             .project-posters {
+                width: 100%;
                 max-width: none;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
             .project-poster-frame {
                 transform: none;
+            }
+            .project-poster-frame img,
+            .project-poster-placeholder {
+                height: clamp(180px, 28vh, 240px);
             }
         }
         @media (max-width: 640px) {
@@ -1081,8 +1112,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .project-poster-frame,
-            #projects .content-item,
-            .projects-visual::before {
+            #projects .content-item {
                 transition: none !important;
                 animation: none !important;
                 transform: none !important;
