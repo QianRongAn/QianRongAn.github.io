@@ -202,29 +202,14 @@
             max-width: 100vw;
             height: 100%;
             scroll-padding-top: 108px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(92, 74, 55, 0.45) transparent;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        html::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        html::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: rgba(92, 74, 55, 0.4);
-            border-radius: 999px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-        html::-webkit-scrollbar-thumb:hover {
-            background: rgba(92, 74, 55, 0.62);
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-        html::-webkit-scrollbar-corner {
-            background: transparent;
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
         body {
             font-family: var(--sans-font);
@@ -942,6 +927,8 @@
                 0 4px 14px rgba(0, 0, 0, 0.04);
             padding: clamp(28px, 3.8vw, 56px);
             overflow: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             height: 100%;
             max-height: none;
             display: flex;
@@ -949,6 +936,11 @@
             min-height: 0;
             min-width: 0;
             color: #111111;
+        }
+        .projects-panel::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
         .projects-panel .section-title {
             margin-bottom: 22px;
