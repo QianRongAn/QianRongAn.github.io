@@ -315,10 +315,17 @@
         .fas, .fab, .far, .fal, .fa {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", var(--sans-font) !important;
         }
+        /* Opacity-only fade: filter:blur on #container paints a 1px black edge over wall.webp */
         body > *:not(.page-overlay):not(#top-header):not(.hero-screen) {
             opacity: 0;
-            filter: blur(20px);
             animation: fadeInContent 2s ease-in-out 0.3s forwards;
+        }
+        #container,
+        #footer {
+            filter: none !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
         }
         #top-header {
             opacity: 1 !important;
@@ -327,11 +334,9 @@
         @keyframes fadeInContent {
             0% {
                 opacity: 0;
-                filter: blur(20px);
             }
             100% {
                 opacity: 1;
-                filter: blur(0px);
             }
         }
         /* 文字水波纹效果 */
@@ -427,15 +432,15 @@
             }
         }
         .page-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000000;
+            background-color: transparent;
             z-index: 9999;
-            opacity: 1;
-            animation: fadeOutOverlay 2s ease-in-out forwards;
+            opacity: 0;
             pointer-events: none;
         }
         @keyframes fadeOutOverlay {
@@ -529,6 +534,9 @@
             padding-bottom: 40px;
             perspective: 1200px;
             transition: transform 0.5s ease-in-out, opacity 0.5s;
+            /* Prevent compositing edge that reads as a black frame over the wave photo */
+            isolation: auto;
+            contain: none;
         }
         #content-wrapper {
             position: relative;
@@ -560,7 +568,13 @@
         }
         #intro {
             text-align: center;
-            box-shadow: none; background: none; backdrop-filter: none; border: none; padding-top: 0;
+            box-shadow: none;
+            background: none;
+            backdrop-filter: none;
+            border: none !important;
+            outline: none !important;
+            filter: none !important;
+            padding-top: 0;
             margin-bottom: 30px;
             position: relative; 
             z-index: 10;
@@ -2275,7 +2289,7 @@
             50% { transform: translate(-50%, 7px); opacity: 1; }
         }
     </style>
-    <link rel="stylesheet" href="css/hero-effects.css?v=20261017-refraction">
+    <link rel="stylesheet" href="css/hero-effects.css?v=20261017-wave">
     <link rel="preload" href="image/hero-background.jpg" as="image" fetchpriority="high">
 </head>
 <body>
@@ -2309,8 +2323,8 @@
             <i class="fas fa-chevron-down"></i>
         </div>
     </div>
-    <script src="js/hero.js?v=20261017-refraction" defer></script>
-    <script src="js/hero-water.js?v=20261017-user-background" defer></script>
+    <script src="js/hero.js?v=20261017-wave" defer></script>
+    <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">

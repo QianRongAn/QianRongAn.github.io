@@ -27,7 +27,10 @@
         'void main(){',
         '  vec2 p=vec2(gl_FragCoord.x/uRatio,uSize.y-gl_FragCoord.y/uRatio);',
         '  vec2 uv=(p-uRect.xy)/uRect.zw;',
-        '  if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0) discard;',
+        '  if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){',
+        '    gl_FragColor=vec4(0.0);',
+        '    return;',
+        '  }',
         '  vec2 offset=vec2(0.0); float light=0.0;',
         '  vec4 field=texture2D(uField,uv);',
         '  float signedDistance=((field.r*65280.0+field.g*255.0)/65535.0*1024.0-512.0)*uRect.z/1392.0;',
@@ -39,10 +42,14 @@
         '      vec2 delta=p-uDrops[i].xy;',
         '      float radius=length(delta);',
         '      vec2 direction=delta/max(radius,0.001);',
-        '      float contourWeight=uContours[i];',
-        '      radius=mix(radius,abs(signedDistance),contourWeight);',
-        '      vec2 inwardNormal=contourNormal*(signedDistance<0.0?-1.0:1.0);',
-        '      direction=mix(direction,inwardNormal,contourWeight);',
+        '      float dropSdf=uContours[i];',
+        '      float shaped=abs(signedDistance-dropSdf);',
+        '      float nearShape=1.0-smoothstep(36.0,240.0,abs(dropSdf));',
+        '      float bend=nearShape*smoothstep(0.10,1.05,age);',
+        '      radius=mix(radius,shaped,bend);',
+        '      float side=signedDistance-dropSdf;',
+        '      vec2 shapeDir=contourNormal*(side<0.0?-1.0:1.0);',
+        '      direction=normalize(mix(direction,shapeDir,bend));',
         '      float behind=age*165.0-radius;',
         '      float envelope=smoothstep(-12.0,4.0,behind)*exp(-max(behind,0.0)*0.016);',
         '      float lifetime=uDrops[i].w<0.6?1.05:2.8;',
@@ -130,29 +137,30 @@
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         frame = requestAnimationFrame(draw);
     }
-    function contourAmount(x, y) {
-        if (!outline) return 0;
+    function contourSigned(x, y) {
+        if (!outline || !imageRect.scale) return 400;
         x = (x-imageRect.x)/imageRect.scale; y = (y-imageRect.y)/imageRect.scale;
         var inside = false, nearest = Infinity, points = outline.points;
         for (var i=0; i<points.length; i++) {
             var a=points[i], b=points[(i+1)%points.length];
             var vx=b[0]-a[0], vy=b[1]-a[1];
-            var t=Math.max(0,Math.min(1,((x-a[0])*vx+(y-a[1])*vy)/(vx*vx+vy*vy)));
+            var len2=vx*vx+vy*vy;
+            var t=len2>0?Math.max(0,Math.min(1,((x-a[0])*vx+(y-a[1])*vy)/len2)):0;
             nearest=Math.min(nearest,Math.hypot(x-a[0]-t*vx,y-a[1]-t*vy));
             if ((a[1]>y)!==(b[1]>y) && x<a[0]+(y-a[1])*vx/vy) inside=!inside;
         }
-        if (inside) return 1;
-        return Math.max(0,1-nearest/160);
+        var screen=nearest*imageRect.scale;
+        return inside?-screen:screen;
     }
     function emit(e, strength) {
         if (!ready || !fieldReady || !outline || stopped || motion.matches || e.target.closest('a, button')) return;
         var bounds = hero.getBoundingClientRect();
         var x=e.clientX-bounds.left, y=e.clientY-bounds.top;
         if (drops.length === 6) drops.shift();
-        var contour=contourAmount(x,y);
+        var contour=contourSigned(x,y);
         drops.push([x,y,performance.now()/1000,strength,contour]);
         canvas.dataset.lastTrigger=e.type;
-        canvas.dataset.contourInfluence=contour.toFixed(2);
+        canvas.dataset.contourInfluence=contour.toFixed(1);
         if (e.type==='pointermove') canvas.dataset.moveWaves=String(Number(canvas.dataset.moveWaves||0)+1);
         if (!frame) frame = requestAnimationFrame(draw);
     }
