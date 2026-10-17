@@ -1765,33 +1765,28 @@
 }
 
 /* 2. 扩展容器宽度（核心修复）- 修复选择器 # → . */
-.publications-grid {
-    padding-left: 200px;
-    padding-right: 260px; /* 为末尾卡片留更多缓冲空间 */
-    
-    /* 关键修复：使用 !important 强制 Flex 布局生效 */
-    display: flex !important; 
-    flex-direction: row !important;
-    flex-wrap: nowrap !important; /* 强制不换行 */
-    
-    overflow-x: auto;
-    overflow-y: visible !important; /* allow images to overflow vertically */
-    gap: 20px;
-    margin-top: 40px;
-    
-    /* 关键：强制宽度并允许溢出 */
-    width: 100vw;
-    max-width: none;
-    margin-left: calc(50% - 50vw);
-    
-    scroll-behavior: smooth;
-    cursor: grab;
-    will-change: scroll-position;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none; /* hide scrollbar in Firefox */
+#publications .pub-stage {
     position: relative;
-    z-index: 1;
+    width: 100vw;
+    height: 740px;
+    margin: 10px 0 20px calc(50% - 50vw);
+    perspective: 1600px;
+    perspective-origin: 50% 42%;
+    overflow: visible;
+}
+.publications-grid {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 300px;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+    display: block !important;
+    overflow: visible !important;
+    transform-style: preserve-3d;
+    transform: translate(-50%, -50%) rotateY(0deg);
+    cursor: grab;
 }
 
 /* hide scrollbar in WebKit browsers while keeping scroll functionality */
@@ -1801,31 +1796,28 @@
 
 /* 给末尾留出缓冲空间，避免最后一张卡片被遮挡 */
 .publications-grid::after {
-    content: '';
-    flex: 0 0 220px; /* 增大尾部占位，避免最后一张被遮挡 */
+    content: none;
 }
 
 /* 3. 卡片100%不透明（核心修复） */
         .publication-card {
-            flex: 0 0 auto !important;
-            width: 270px; /* 10% smaller */
-            background: #ffffff; /* 纯白完全不透明 */
-            border-radius: 15px;
-            overflow: visible !important; /* allow stacked images to fully show */
-            box-shadow: var(--shadow-light);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 500px;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: visible;
+            box-shadow: none;
             cursor: pointer;
-            position: relative;
-            will-change: transform;
-            transform: translateZ(0);
-            scroll-snap-align: center;
-            z-index: 1;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            isolation: isolate;
         }
 
         .publication-card:hover {
-            transform: translateY(-12px) scale(1.05);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-            z-index: 999 !important; /* lift above neighbors on hover */
+            box-shadow: none;
         }
 
 /* 横向双图（保持不变） */
@@ -3006,6 +2998,7 @@
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-flat" defer></script>
+    <script src="js/pub-gallery.js?v=20261018-ring" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
@@ -3359,6 +3352,7 @@
             <div id="publications" class="cube-page reveal" data-index="5">
                 <section data-zh-slot="publications">
                     <h2 class="section-title"><span data-i18n="pub.title">Selected Publications</span></h2>
+                    <div class="pub-stage">
                     <div class="publications-grid">
                         <div class="publication-card" data-pub-id="1">
                             <div class="pub-image-wrapper">
@@ -3440,6 +3434,7 @@
                                 <p class="pub-journal"><i>Clin Transl Med.</i> (Reviewed)</p>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </section>
             </div>
@@ -3851,71 +3846,6 @@
             });
         }, { threshold: 0.15 });
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-        
-        // ===== Publications Smooth Auto-Scroll on Hover - Balanced =====
-        document.addEventListener('DOMContentLoaded', () => {
-            const publicationsGrid = document.querySelector('.publications-grid');
-            if (!publicationsGrid) return;
-
-            const cards = publicationsGrid.querySelectorAll('.publication-card');
-            let scrollTimeout = null; // 防抖计时器
-
-            // 为每个 wrapper 标记叠放顺序
-            const wrappers = publicationsGrid.querySelectorAll('.pub-image-wrapper');
-            wrappers.forEach(wrapper => {
-                wrapper.querySelectorAll('.pub-image').forEach((img, idx) => {
-                    img.classList.add(`stack-${idx + 1}`);
-                });
-            });
-            
-            // 防抖函数：延迟执行，避免频繁触发
-            const debounceScroll = (fn, delay) => {
-                return (...args) => {
-                    clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(() => {
-                        fn(...args);
-                    }, delay);
-                };
-            };
-            
-            const scrollCardToCenterSmooth = (card) => {
-                const cardRect = card.getBoundingClientRect();
-                const cardCenter = cardRect.left + cardRect.width / 2;
-                const viewportCenter = window.innerWidth / 2;
-                const scrollDistance = cardCenter - viewportCenter;
-
-                // 平滑滚动到视口中央（仅水平方向）
-                publicationsGrid.scrollTo({
-                    left: publicationsGrid.scrollLeft + scrollDistance,
-                    behavior: 'smooth'
-                });
-            };
-            
-            // 包装成防抖函数，延迟150ms（平衡响应速度和平滑度）
-            const debouncedScroll = debounceScroll(scrollCardToCenterSmooth, 150);
-            
-            cards.forEach((card) => {
-                // 鼠标进入：触发防抖滚动
-                card.addEventListener('mouseenter', () => {
-                    debouncedScroll(card);
-                    
-                    // 立即添加视觉反馈（不延迟）
-                    card.style.transform = 'translateY(-8px) scale(1.02)';
-                    card.style.zIndex = '10';
-                    card.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                });
-
-                // 鼠标离开：恢复原状
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = '';
-                    card.style.zIndex = '';
-                    
-                    // 清除待执行的滚动（防止鼠标快速移动时混乱）
-                    clearTimeout(scrollTimeout);
-                });
-            });
-        });
-        
         
         // ========== 视差滚动效果 ==========
         let lastScrollTop = 0;
