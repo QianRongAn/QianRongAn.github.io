@@ -890,19 +890,19 @@
             position: relative;
             transition: box-shadow 0.3s ease;
         }
-        /* 字面复制 personal_statement.html .content-section 的毛玻璃参数 */
+        /* 参考图：无投影，只靠模糊和半透明白分开 */
         #about.cube-page section,
         #education.cube-page section,
         #experience.cube-page section,
         #extracurricular.cube-page section,
         #skills.cube-page section,
         #thesis.cube-page section {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
-            background-color: rgba(255, 255, 255, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            border-radius: 15px !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
+            box-shadow: none !important;
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            border: none !important;
+            border-radius: 28px !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
             position: relative !important;
             overflow: visible !important;
             isolation: auto !important;
@@ -1212,12 +1212,12 @@
         }
         .cube-page section:hover {
             transform: none;
-            box-shadow: var(--shadow-light);
+            box-shadow: none;
         }
         #thesis.cube-page section:hover {
             transform: none !important;
-            box-shadow: var(--shadow-light) !important;
-            background-color: var(--glass-bg-content) !important;
+            box-shadow: none !important;
+            background-color: rgba(255, 255, 255, 0.18) !important;
         }
         .section-title {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
@@ -3020,7 +3020,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-    <script src="js/hero-rise.js?v=20261018-bidaq"></script>
+    <script src="js/hero-rise.js?v=20261018-mask"></script>
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-split" defer></script>

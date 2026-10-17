@@ -37,6 +37,9 @@
                     });
                 }
                 if (isFocus) {
+                    el.querySelectorAll('.hero-focus-line').forEach(function (line) {
+                        line.classList.add('hero-mask');
+                    });
                     self.chars.forEach(function (char) {
                         char.style.setProperty('font-family', focusFont, 'important');
                         char.style.setProperty('font-style', 'italic', 'important');
