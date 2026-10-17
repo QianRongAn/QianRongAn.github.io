@@ -1,51 +1,47 @@
-/* Chinese homepage copy.
-   Leave a string empty to keep the English original.
-   text: plain text for [data-i18n]
-   html: HTML for [data-i18n-html]
-   slots: full inner HTML for [data-zh-slot]; keep the same class names */
+/* Chinese copy taken verbatim from Wang_Nan_CV_CN_updated.pdf. */
 window.ZH_COPY = {
-    text: {
-        "page.title": "王楠 | 生物信息与免疫学",
-        "nav.about": "关于",
-        "nav.education": "教育",
-        "nav.experience": "经历",
-        "nav.projects": "项目",
-        "nav.activities": "活动",
-        "nav.skills": "技能",
-        "nav.publications": "论文",
-        "nav.statement": "陈述",
-        "nav.thesis": "课题",
-        "intro.role": "生物信息分析 · 免疫学",
-        "intro.zh": "中文（母语）",
-        "intro.en": "英文（流利）",
-        "intro.hike": "登山",
-        "intro.travel": "旅行",
-        "intro.show": "展览与音乐会",
-        "intro.astro": "占星",
-        "intro.read": "阅读",
-        "about.title": "关于我",
-        "about.more": "了解更多",
-        "edu.title": "教育经历",
-        "exp.title": "实践经历",
-        "proj.title": "项目",
-        "act.title": "学术活动",
-        "skills.title": "技术与方法",
-        "pub.title": "代表性论文",
-        "thesis.title": "硕士学位论文：新冠相关免疫组库与特异性 TCR 的生物信息学分析"
-    },
-    html: {
-        "about.p1": "计算生物学与生物信息学研究者，专注于肿瘤免疫学、免疫组库分析、纳米–免疫跨学科交叉及多组学数据整合。厦门大学免疫学硕士，具备独立主导复杂干实验与跨学科科研项目全流程的能力。目前已发表 6 篇同行评审学术论文（<strong>Journal of Hematology &amp; Oncology</strong> 共同第一作者，<strong>IF: 40.4</strong>）。",
-        "about.p2": "",
-        "about.p3": "",
-        "about.p4": ""
-    },
-    slots: {
-        "education": "",
-        "experience": "",
-        "activities": "",
-        "skills": "",
-        "publications": "",
-        "thesis": "",
-        "projects": '<h2 class="section-title"><i class="fas fa-diagram-project"></i> 项目</h2>\n<div class="content-item">\n<div class="details">\n<h3>Meta-ACDC · T 细胞受体脱靶风险预测（图深度学习 / 计算免疫学）</h3>\n<span class="date-location">独立研究项目（AI 驱动执行） | Python / PyTorch | 2026 | GitHub 开源</span>\n<p>用深度学习预测 T 细胞受体（TCR）与肽段的结合特异性，在治疗前识别可能误伤健康组织、甚至致死的脱靶肽。研究动机是 2013 年 MAGE-A3 TCR 疗法致死事件：致死脱靶肽与靶肽骨架 RMSD 仅 0.285 Å，只差在侧链化学。项目覆盖多源数据管线、模型设计、消融实验、域适应、主动学习到临床金标准回测的完整闭环。</p>\n<h4>模型与方法</h4>\n<ul>\n<li><strong>自实现 E(3) 等变图神经网络（EGNN）</strong>：将 TCR-pMHC 复合物构建为界面图（残基为节点、界面距离 8 Å 内连边、界面截断 10 Å），节点特征融合理化性质与残基身份，边特征用距离径向基（RBF）+ 侧链范德华接触直方图（C-C / C-杂原子 / 杂原子-杂原子 / 总数 4 维）；旋转不变性验证误差 &lt; 0.002；零 PyTorch Geometric 依赖，GTX 1050 Ti 4GB 即可训练</li>\n<li><strong>诱饵（DECOY）负样本协议</strong>：针对真实负样本稀缺问题，设计双诱饵构造：位移诱饵（肽平移出 MHC 沟槽 6 Å，破坏形状）与嫁接诱饵（保持骨架坐标、替换侧链化学身份，直接复刻 titin 致死误伤机制），形成可控的判别任务与防泄漏对照协议</li>\n<li><strong>读出层设计</strong>：全局均值 + 全局最大池化之外，对肽节点单独均值池化（肽是判定变量），并加入坐标范数项；同序列同一性的肽对（GILGLVFTL 0.938 vs GILEFVFTL 0.475）验证模型学到的是化学特异性而非相似度代理</li>\n</ul>\n<h4>实验与核心发现</h4>\n<ul>\n<li><strong>用消融实验定位表征层级瓶颈</strong>：仅给骨架坐标（Cα）时嫁接诱饵 AUROC 0.500（等于随机），且加数据不改善；三连诊断逐一排除常见改进（肽感知池化 0.498、残基身份嵌入 0.499、序列+图混合 0.905 反而低于纯结构 0.933），证明问题不在架构而在表征本身</li>\n<li><strong>侧链接触特征突破</strong>：引入侧链范德华接触直方图后，嫁接诱饵 0.500 → 0.933、位移诱饵 0.946 → 0.980；系统消融确认特征必要性排序（去接触直方图回落 0.501，决定性；去理化标量 0.606；去残基身份 0.899）。「形状相同、化学不同」的致死界面从此可分</li>\n<li><strong>发现并解决 Rashomon 外推危机</strong>：诱饵任务上性能相同的模型，重训一次后对 AlphaFold3 预测结构的候选排名完全改变（两两 Spearman 0.17 / −0.24 / NaN）；提出跨实例稳定性判决门（多种子 mean Spearman ≥ 0.5 才可报告排名），并将其推广为「预测结构 + 学习打分」范式的通用方法学</li>\n<li><strong>域适应修复外推不稳定</strong>：将 AF3 预测的天然复合物配同协议诱饵混入训练（节点集 pin、供体去重防泄漏），天然正样本从 25 → 144，跨实例排名一致性从 0.447 单调提升至 0.802（95% CI 0.719–0.857）；域适应同时提升晶体任务（嫁接 0.918 → 0.98）；期间检测并剔除会塌缩成常数输出的退化种子，确认「稳定性 = 数据规模 × 种子质量」</li>\n<li><strong>主动学习采样闭环</strong>：实现 EIG/BALD 采集函数，在 465 万候选肽池上模拟「AI 挑库 → 实验验证 → 模型更新」闭环，6% 采样预算获得 2.0× 阳性召回增益（优于随机、熵、方差基线）；批大小消融发现大批次（3600×2，24.5%）优于小批多轮（300×20，21.6%），与文献常见建议相反；明确增益的阈值依赖边界（严格预筛 0.9 下增益消失，宽松 0.5 下仍有 1.76×）</li>\n<li><strong>临床金标准回测</strong>：在 MAGE-A3 TCR 疗法致死案例（PDB 5BRZ）上，靶肽排名第 1，两条致死脱靶肽（MAGE-A12、titin 模拟肽）分数仅低 0.02 / 0.06，保守地「不放过」已知危险肽；第 3 个高危脱靶部分漏检（0.679），如实报告；模型分数温度标定良好（ECE 0.02–0.06）</li>\n<li><strong>可解释性归因</strong>：梯度归因 + 逐位丙氨酸/色氨酸突变扫描发现：整肽替换分数 0.989 → 0.001（模型确实看化学），但单点突变最大 Δ 仅 0.02，相容性判定是分布式表征，无单一「致命热点」，提示消除误伤需多位点协同改造</li>\n</ul>\n<h4>数据管线与工程</h4>\n<ul>\n<li><strong>多源数据整合</strong>：VDJdb（19.9 万条 TCR-肽配对）、IEDB（230 万条 MHC 呈递记录）、STCRDab（291 个晶体复合物 → 423 个训练复合物）、UniProt 人蛋白组（20,431 蛋白 → 465 万唯一肽）；自实现 CIF/PDB 结构解析器</li>\n<li><strong>交叉反应图谱构建</strong>：将 291 个晶体复合物按链指纹映射到 VDJdb，281/291 映射成功、2309 条 CDR3 命中、1517 条异表位（交叉反应证据），179/281 个 TCR 存在交叉反应记录（中位 2 个异表位、最多 8 个），定量证明交叉反应普遍而非例外</li>\n<li><strong>MHC 预筛基准</strong>：本地 MHCflurry 对 50 已知结合肽 + 50 组成打乱诱饵（极难协议）打分，top-2% 阈值保留 56% 真结合肽、候选池压缩约 50×，为结构预测环节减负</li>\n<li><strong>方法学严谨性</strong>：首训 AUROC 0.988 被自查出诱饵身份泄漏（嫁接诱饵无原子 → 接触特征暴露身份），判定无效回退重做（修复后 0.933）；AF3 首批 17 个任务因链拼接错误作废，建立「自动化输出必须抽查结构」规程；阴性结果与踩坑全部写入诚实性记录</li>\n<li><strong>工程化交付</strong>：11 个 CLI 入口、16 项回归测试 + 交付打包测试 19 项 + 导入回归 10 项、Docker 可复现环境（国内镜像加速）、零依赖 Web 安全看板、一键健康检查脚本与从零复现 SOP</li>\n</ul>\n</div>\n</div>\n<div class="content-item">\n<div class="details">\n<h3>MedLit Evidence · 医学文献循证问答与撤稿风险预测（NLP / 检索 / 机器学习，开源）</h3>\n<span class="date-location">独立设计开发 | FastAPI + 原生前端 | GitHub 开源（MIT）</span>\n<p>面向医学编辑与临床科研的循证问答系统，核心创新是显式建模证据分歧：不输出「假共识」，每句回答锚定真实 PMID，同时内置一条「撤稿风险预测」研究管线（23279 篇带标签文献）。零密钥可运行，后端仅 3 个依赖。</p>\n<h4>检索与 NLP 系统</h4>\n<ul>\n<li><strong>检索链路</strong>：纯 Python 自实现 BM25（无 sklearn/nltk 依赖），中英双语分词（英文词级 + 停用词，中文单字 + bigram），70+ 中文医学术语自动映射英文检索词（映射后中文提问在线召回从 0 提升到 8600+ 条）；PICO 四要素（人群/干预/对照/结局）结构化后检索 PubMed（3800 万篇）</li>\n<li><strong>结论极性三分类</strong>：结论句优先取摘要 CONCLUSIONS/FINDINGS/INTERPRETATION 标签段（排除 DISCUSSION/LIMITATION），极性判定用「强短语优先 + 否定词感知」三层规则，解决「no significant benefit」类否定语义误判为中立的问题；统计极性分布做证据冲突检测（同时存在支持与反对 → 显式标注「证据存在分歧」并列出两边篇数），对抗通用大模型的「假共识」</li>\n<li><strong>可解释置信度评分</strong>：0-100 分显式公式（证据等级基础分按全部文献加权平均 + 结论一致性 ± + 文献量 ± + 时效 ±），分数可拆解质疑，一篇 meta 分析无法掩盖大量低质量证据</li>\n<li><strong>文献完整性检测</strong>：解析 PublicationType 与 CommentsCorrections 元数据，识别撤稿/存疑/更正三类问题文献，红色徽章告警、隔离出结论统计、置信度扣分</li>\n</ul>\n<h4>机器学习与实验严谨性（撤稿风险预测管线）</h4>\n<ul>\n<li><strong>带标签数据集构建</strong>：按年份段分层采集撤稿/存疑/更正文献与正常对照（正 12978 / 负 15000，逐年对齐），从最初 360 篇试点（同刊同年匹配对照）扩展到全量 23279 篇干净样本；采集脚本支持断点续传</li>\n<li><strong>对照组方法论重构</strong>：发现初版 76 篇「正常」对照混入 33 篇社论与 6 篇新闻，社论天然不会因数据造假被撤稿，会让模型只学到「社论不等于研究论文」的无效判别；重构为按年份分层采样正常研究论文，排除非研究类型</li>\n<li><strong>两层标签泄漏识别与修复</strong>：第一层显式（发表类型直接写 Retracted Publication，剔除）；第二层隐蔽（撤稿记录的摘要常被清空或替换为撤稿声明，「摘要缺失」本身泄漏标签并污染长度类特征），过滤 4345 篇摘要过短与 277 篇被替换记录，数字密度改按千字归一；修复后小样本阶段的「题录更瘦」结论被证伪并在报告中更正</li>\n<li><strong>模型与评估</strong>：LightGBM 主力 AUC 0.856 ± 0.004 / PR-AUC 0.812 ± 0.008 / F1 0.707，优于逻辑回归基线（0.795）与随机森林（0.828）；5 折分层交叉验证之外补做时序外推验证（≤2024 训练 → 2025+ 预测，AUC 0.715），这是比交叉验证更接近真实使用的检验</li>\n<li><strong>SHAP 特征归因与伪迹诊断</strong>：SHAP 图揭示发表年份是第一大特征但红蓝分离形状当场暴露删失伪迹（老论文只是有更长时间暴露撤稿）；真实信号画像：翻车论文统计术语更多（中位 1.0 vs 0）、标题更长（120 vs 110 字符）、Meta 分析与基础研究翻车倾向更高，而直觉上的「夸张措辞」贡献几乎为零；基金资助是保护信号</li>\n<li><strong>负结果实验（引文信号对照）</strong>：并发采集 78481 条 PMID 的 OpenAlex 引文信号（36 篇/秒，命中率 44%），对照实验结论：简单引文信号（被引次数、作者数）在预测未来撤稿上不敌年份伪迹（时序外推 PR-AUC 0.194 vs 0.578），原因是被引次数本身同样删失且翻车文献因争议反而被引更高；该负结果将研究主线重定向到「关系推理」</li>\n<li><strong>模型上线集成</strong>：风险模型接入检索链路，每次提问返回的每篇文献实时带「风险 N%」徽章（四档分色），特征构建与训练共用同一份词表代码，模型文件缺失时徽章自动隐藏不影响主流程</li>\n</ul>\n<h4>工程与性能</h4>\n<ul>\n<li><strong>性能优化</strong>：冷启动单次问答 7.8 秒（含两次 PubMed 往返），进程内 TTL 缓存命中后 6 毫秒；PubMed 频率限制下的请求调度；断网自动回退内置语料（11 篇 landmark 研究），演示永不断线</li>\n<li><strong>质量与设计</strong>：30 个单元测试覆盖检索、研究设计识别、证据分级、PICO、极性、冲突检测、完整性检测全部核心模块；LLM 作为可插拔升级（OpenAI 兼容接口，配置后升级为生成式 RAG，不配置自动回退抽取式），抽取式回答天然零幻觉</li>\n</ul>\n</div>\n</div>'
-    }
+  "text": {
+    "page.title": "王楠 | 生物医学 AI / 计算生物学 / 计算免疫学",
+    "nav.about": "关于",
+    "nav.education": "教育",
+    "nav.experience": "经历",
+    "nav.projects": "项目",
+    "nav.activities": "活动",
+    "nav.skills": "技能",
+    "nav.publications": "论文",
+    "nav.statement": "陈述",
+    "nav.thesis": "课题",
+    "intro.role": "生物医学 AI / 计算生物学 / 计算免疫学",
+    "intro.zh": "中文（母语）",
+    "intro.en": "英语（专业工作水平，精通学术阅读、英文论文写作与学术汇报）",
+    "intro.hike": "登山",
+    "intro.travel": "旅行",
+    "intro.show": "展览与音乐会",
+    "intro.astro": "占星",
+    "intro.read": "阅读",
+    "about.title": "个人总结",
+    "about.more": "了解更多",
+    "edu.title": "教育背景",
+    "exp.title": "工作与研究经历",
+    "proj.title": "独立研究项目",
+    "act.title": "学术会议与语言能力",
+    "skills.title": "专业技能",
+    "pub.title": "代表性学术论文",
+    "thesis.title": "硕士学位论文：《运用生物信息学手段分析新冠相关免疫组库及特异性 TCR》"
+  },
+  "html": {
+    "about.p1": "计算生物学与生物医学 AI 研究者,研究方向涵盖肿瘤免疫、免疫组库、计算免疫学与多组学整合,并延伸至医学 NLP 与结构驱动的深度学习。厦门大学免疫学硕士,具备独立主导科研项目全流程的能力:基于等变图神经网络构建 TCR 脱靶风险预测模型,结合主动学习筛选百万级候选肽;独立开发循证医学文献分析工具(PICO 结构化、证据分级与 PMID 溯源)及基于 LightGBM+SHAP 的撤稿风险预测模型。已发表 6 篇同行评审论文(J. Hematol. Oncol. 共同第一作者,IF: 40.4)。现寻求生物医学 AI 算法研发(医学 NLP、计算免疫学、多组学)或医学事务岗位。",
+    "about.p2": "",
+    "about.p3": "",
+    "about.p4": ""
+  },
+  "slots": {
+    "education": "<h2 class=\"section-title\"><i class=\"fas fa-university\"></i> 教育背景</h2><div class=\"content-item\"><div class=\"details\"><h3>理学硕士 · 免疫学专业 (医学院)</h3><span class=\"date-location\">厦门大学 (Xiamen University) | 2021.09 ‒ 2024.07 | 福建 厦门</span><ul><li>硕士毕业论文:《运用生物信息学手段分析新冠相关免疫组库及特异性 TCR》</li><li>深度分析 COVID-19 患者免疫组库,构建了可精准区分患者与健康个体的 TCR 分类器;利用共享 TCR 序列识别 SARS-CoV-2 感染并评估病情严重程度。</li><li>针对肝癌患者深入开展肿瘤新抗原预测,为个性化肿瘤免疫治疗提供了全新靶点。</li><li>主修课程:生物信息学、分子生物学、医学统计学、健康大数据与智能医学、免疫学。</li></ul></div></div><div class=\"content-item\"><div class=\"details\"><h3>理学学士 · 生物技术专业 (生物系)</h3><span class=\"date-location\">太原师范学院 (Taiyuan Normal University) | 2017.09 ‒ 2021.07 | 山西 太原</span></div></div>",
+    "experience": "<h2 class=\"section-title\"><i class=\"fas fa-flask\"></i> 工作与研究经历</h2><div class=\"content-item\"><div class=\"details\"><h3>生物信息学与跨学科科研助理 (Bioinformatics &amp; Research Assistant)</h3><span class=\"date-location\">温州瓯江实验室 · 纳米‒免疫课题组（PI） | 2026.04 ‒ 至今 | 浙江 温州</span><ul><li>纳米‒免疫细胞递送多组学整合:针对纳米针/纳米管(Nanoinjection/Silicon Nanotubes)介导的非病毒靶向基因递送与转染过程,深度整合 Single-cell RNA-seq 及 Spatial Transcriptomics 数据,评估物理穿刺/电活性递送对原代 T 细胞与 CAR-T 细胞活性、耗竭状态及功能转录图谱的影响。</li><li>非病毒 CAR-T 细胞工程化计算建模:利用生物信息学手段评估纳米注射递送 CRISPR/Cas9 基因编辑系统的靶向精准度与离靶效应(Off-target Analysis),构建高效、无病毒基因工程化细胞转染质量监控与评测计算流水线。</li><li>生物力学诱导免疫转录调控:研究纳米结构物理力学微环境诱导免疫细胞(T细胞/巨噬细胞)分化与功能的信号转导网络,解析力学‒免疫调控关键表达元件及异质性机制。</li><li>实验室日常管理与基金协助:协助 PI 撰写和申报国家级/省部级科研基金项目,指导课题组研究生进行干实验数据分析,负责实验室生物信息计算节点维护与科研对接。</li></ul></div></div><div class=\"content-item\"><div class=\"details\"><h3>生物信息学分析师</h3><span class=\"date-location\">北京熠星博睿医学科技有限公司 | 2025.03 ‒ 2025.09 | 中国 北京</span><ul><li>计算流水线与项目主导:独立执行4+个重大肿瘤医学研究项目的全部计算分析Pipelines,整体项目推进效率提升15%,按时高质量交付成果:</li><li>胰腺导管腺癌 (PDAC) 吉西他滨耐药:整合 Bulk、单细胞及空间转录组数据,识别出驱动耐药的 PRRX2+/SPP1+ 细胞集群;阐明其作用机制并提出 Dasatinib/ADC 的敏感性作为潜在治疗途径。</li><li>前列腺癌异质性 (PRAD):绘制 AURKA 表达异质性图谱;揭示高表达与肿瘤恶性程度的关联,以及低表达与 AR 介导的药物耐药机制。</li><li>结直肠癌 (CRC) 免疫治疗生物标志物:解析 PRRX2-TGF-β-myCAF 调控轴,将其作为预测免疫治疗响应和神经侵犯(PNI)的关键指标。</li><li>mHSPC 基因组图谱:主导完成了中国人群转移性激素敏感性前列腺癌(mHSPC)的首次全面基因组分析。</li><li>学术成果产出:作为核心科研人员撰写 4 篇同行评审期刊论文(1 篇已发表,3 篇在审 / 待出版)。</li></ul></div></div><div class=\"content-item\"><div class=\"details\"><h3>病理科 生物信息学科研助理</h3><span class=\"date-location\">国家癌症中心 / 中国医学科学院肿瘤医院 | 2024.07 ‒ 2025.02 | 中国 北京</span><ul><li>肿瘤新抗原预测研究:负责肺癌领域肿瘤新抗原(Neoantigen)计算预测流水线的构建与分析。</li><li>基金与重大项目管理:深度参与国家临床重点专科建设项目申报及预算编制、国家科技重大专项项目的申报与结题答辩工作。</li><li>日常科研与团队协作:负责病理科日常科研业务支持,指导低年级学生撰写学期论文;积极参与学术汇报、客戶对接及合作伙伴技术支持,协助科室日常管理并参加学术会议。</li></ul></div></div>",
+    "activities": "<h2 class=\"section-title\"><i class=\"fas fa-hands-helping\"></i> 学术会议与语言能力</h2><div class=\"content-item\"><div class=\"details\"><h3>学术会议汇报</h3><ul><li>中国整合肿瘤学大会 (CCHIO) (西安, 2024.11) ― 准备并汇报大会主题报告材料,协调会议工作</li><li>中国抗癌协会肿瘤基因诊断学术大会 (上海, 2024.10) ― 受邀参会代表</li></ul><h3>语言与证书</h3><p>中文(母语) | 英语(专业工作水平,精通学术阅读、英文论文写作与学术汇报) | 大学英语六级 (CET-6)</p></div></div>",
+    "skills": "<h2 class=\"section-title\"><i class=\"fas fa-tools\"></i> 专业技能</h2><div class=\"skill-category\"><h3 class=\"skill-category-title\">免疫组库分析</h3><div class=\"skills-grid\"><span class=\"skill-group\">MiXCR</span><span class=\"skill-group\">TRUST4</span><span class=\"skill-group\">VDJtools</span><span class=\"skill-group\">VDJmatch</span><span class=\"skill-group\">immunarch</span><span class=\"skill-group\">GLIPH</span></div><p>MiXCR, TRUST4, VDJtools, VDJmatch, immunarch, GLIPH</p></div><div class=\"skill-category\"><h3 class=\"skill-category-title\">单细胞与空间转录组</h3><div class=\"skills-grid\"><span class=\"skill-group\">Seurat</span><span class=\"skill-group\">Scanpy</span><span class=\"skill-group\">DESeq2</span><span class=\"skill-group\">limma</span><span class=\"skill-group\">HISAT2</span><span class=\"skill-group\">FastQC</span><span class=\"skill-group\">samtools</span></div><p>Seurat, Scanpy, DESeq2, limma, HISAT2, FastQC, samtools</p></div><div class=\"skill-category\"><h3 class=\"skill-category-title\">基因组与变异分析</h3><div class=\"skills-grid\"><span class=\"skill-group\">BWA</span><span class=\"skill-group\">GATK</span><span class=\"skill-group\">Mutect2</span><span class=\"skill-group\">ANNOVAR</span><span class=\"skill-group\">arcasHLA</span><span class=\"skill-group\">maftools</span></div><p>BWA, GATK, Mutect2, ANNOVAR, arcasHLA, maftools</p></div><div class=\"skill-category\"><h3 class=\"skill-category-title\">新抗原预测与纳米分析</h3><div class=\"skills-grid\"><span class=\"skill-group\">pVACtools</span><span class=\"skill-group\">NeoPredPipe</span><span class=\"skill-group\">netMHCpan</span><span class=\"skill-group\">OptiType</span><span class=\"skill-group\">CRISPR 基因编辑脱靶分析/计算建模</span></div><p>pVACtools, NeoPredPipe, netMHCpan, OptiType | CRISPR 基因编辑脱靶分析/计算建模</p></div><div class=\"skill-category\"><h3 class=\"skill-category-title\">功能富集与工具</h3><div class=\"skills-grid\"><span class=\"skill-group\">ClusterProfiler (GO</span><span class=\"skill-group\">KEGG)</span><span class=\"skill-group\">GSEA</span><span class=\"skill-group\">BLAST</span><span class=\"skill-group\">R 语言</span><span class=\"skill-group\">Python</span><span class=\"skill-group\">Linux/Shell</span></div><p>ClusterProfiler (GO, KEGG), GSEA, BLAST | R 语言, Python, Linux/Shell</p></div><div class=\"skill-category\"><h3 class=\"skill-category-title\">湿实验技术</h3><div class=\"skills-grid\"><span class=\"skill-group\">WB</span><span class=\"skill-group\">qPCR/RT-qPCR</span><span class=\"skill-group\">Co-IP</span><span class=\"skill-group\">IHC/IF</span><span class=\"skill-group\">FCM (流式)</span><span class=\"skill-group\">CRISPR-Cas9</span><span class=\"skill-group\">10x 测序建库</span></div><p>WB, qPCR/RT-qPCR, Co-IP, IHC/IF, FCM (流式), CRISPR-Cas9, 10x 测序建库</p></div>",
+    "publications": "<h2 class=\"section-title\"><i class=\"fas fa-file-alt\"></i> 代表性学术论文</h2><div class=\"content-item\"><div class=\"details\"><h3>1.</h3><p>Zhang Q+, Liang Q+, Zhang R+, Wang N+, Xiao X, Shao J, Wang K. Identification of SARS-CoV-2-specific T cell and its receptor. J Hematol Oncol. 2024 Mar 27;17(1):15. IF: 40.4</p><p>已发表</p><p>➔ 共同第一作者:独立承担并完成了全部干实验(Dry-lab)生物信息分析及预测模型构建。</p></div></div><div class=\"content-item\"><div class=\"details\"><h3>2.</h3><p>Zhang W, Zhang Q, Zhu C, Shi Z, Shao C, Chen Y, Wang N, Jiang Y, Liang Q, Wang K. The intrarenal landscape of T cell receptor repertoire in clear cell renal cell cancer. J Transl Med. 2022 Dec 3;20(1):558. 已发表</p><p>已发表</p></div></div><div class=\"content-item\"><div class=\"details\"><h3>3.</h3><p>Chen Y, Fu Q, Ma Y, Wang N, Yang J, Liang Q, Wang K, Gao L. Identification of the immune repertoire of γδ T-cell receptors in psoriasis. Immunol Cell Biol. 2024 Aug;102(7):570-577. 已发表</p><p>已发表</p></div></div><div class=\"content-item\"><div class=\"details\"><h3>4.</h3><p>Wang R, Liang Q, Zhang Q, Zhao S, Lin Y, Liu B, Ma Y, Mai X, Fu Q, Bao X, Wang N, Chen B, Yan P, Zhu Y, Wang K. Ccl2-Induced Regulatory T Cells Balance Inflammation Through Macrophage Polarization During Liver Reconstitution. Adv Sci (Weinh). 2024 Dec;11(45):e2403849. 已发表</p><p>已发表</p></div></div><div class=\"content-item\"><div class=\"details\"><h3>5.</h3><p>A multi-omics features-based approach integrating immunogenicity and inflammation enhances immunotherapy benefit in clear cell renal cell carcinoma. Front. Cell Dev. Biol. 2024. 已发表</p><p>已发表</p></div></div><div class=\"content-item\"><div class=\"details\"><h3>6.</h3><p>Molecular and Clinicopathological Characteristics Profiling of Macrotrabecular Massive HCC Subtype Reveals Key Features Related to Early Recurrence. Clin Transl Med.在审 (Reviewed)</p><p>在审 (Reviewed)</p></div></div>",
+    "projects": "<h2 class=\"section-title\"><i class=\"fas fa-diagram-project\"></i> 独立研究项目</h2><div class=\"content-item\"><div class=\"details\"><h3>Meta-ACDC｜基于等变图神经网络的 TCR 脱靶风险预测</h3><span class=\"date-location\">Biomedical AI · Computational Immunology · Graph Deep Learning</span><ul><li>项目目标:面向 T 细胞受体(TCR)交叉反应导致的潜在免疫治疗安全风险,构建基于分子结构的相容性评分模型,识别可能被 TCR 非预期识别的脱靶肽,并探索结合主动学习的候选筛选策略。</li><li>特征工程与消融验证:针对传统骨架几何特征难以区分结构相似脱靶肽的问题,设计骨架与侧链接触特征消融实验;在特定嫁接诱饵判别任务中,单独使用骨架坐标的 AUROC 为 0.500,加入侧链接触特征后提升至 0.933,验证侧链化学信息对该任务的关键作用。</li><li>泛化与域适应:针对晶体结构训练数据与预测结构实际应用之间的分布差异,引入预测复合物数据进行域适应,将实验中跨实例排名一致性由 0.447 提升至 0.802。</li><li>主动学习与候选筛选:基于期望信息增益(EIG)/BALD 设计候选采样策略,在约 465 万条候选肽的模拟筛选中,以 6% 采样预算实现相较随机采样等基线约 2 倍的阳性召回增益。</li><li>技术栈:Python、PyTorch、EGNN、NumPy、SciPy、scikit-learn、结构生物信息学</li></ul></div></div><div class=\"content-item\"><div class=\"details\"><h3>MedLit Evidence｜循证医学文献问答与撤稿风险建模</h3><span class=\"date-location\">Medical NLP · Evidence Retrieval · Machine Learning</span><ul><li>项目目标:面向临床研究人员和医学编辑,构建从医学问题检索、证据分级到结论冲突识别与来源溯源的循证分析工具,并开发基于论文元数据的撤稿风险预测模型。</li><li>循证检索与证据分析:基于 FastAPI 搭建 PubMed 文献检索与问答流程,采用 BM25 检索、PICO(人群、干预、对照、结局)问题结构化、研究设计识别及五级证据分级;通过支持/反对/中立结论分类与冲突检测显式呈现证据分歧,回答中的结论可追溯至具体 PMID。</li><li>撤稿风险预测:基于 27,978 篇论文构建撤稿风险预测数据集,使用 LightGBM 建模,并结合 SHAP 分析特征贡献;模型在仓库报告的交叉验证实验中,LightGBM 达到 AUROC 0.856、PR-AUC 0.812。</li><li>数据质量与泄漏审计:识别并处理发表类型标签泄漏、撤稿后摘要被清空或替换造成的隐性泄漏,并通过按发表年份切分的时序外推验证评估模型泛化能力;结合 SHAP 分析特征贡献,发现发表年份存在明显的时间删失偏倚,避免将表面预测能力误判为真实风险信号。</li><li>工程实现与验证:实现 PubMed 在线检索、离线语料回退、TTL 缓存和撤稿/存疑/更正文献标记;项目包含 30 项单元测试,仓库报告的缓存命中延迟约为 6 ms。</li><li>技术栈:Python、FastAPI、BM25、PICO、LightGBM、SHAP、PubMed API</li></ul></div></div>",
+    "thesis": ""
+  }
 };
