@@ -1,34 +1,6 @@
 /* Projects 全屏分栏：点右侧海报，切换左侧圆角卡片内容 */
 (function () {
     'use strict';
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function bindTilt(poster) {
-        var frame = poster.querySelector('.project-poster-frame');
-        if (!frame || reduce) return;
-        if (poster._tiltBound) return;
-        poster._tiltBound = true;
-
-        poster.addEventListener('pointerenter', function () {
-            poster.classList.add('is-tilting');
-        });
-
-        poster.addEventListener('pointermove', function (event) {
-            var rect = frame.getBoundingClientRect();
-            var px = (event.clientX - rect.left) / Math.max(rect.width, 1);
-            var py = (event.clientY - rect.top) / Math.max(rect.height, 1);
-            var rotY = (px - 0.5) * 16;
-            var rotX = (0.5 - py) * 10;
-            frame.style.transform =
-                'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) translateY(-8px) translateZ(20px)';
-        });
-
-        poster.addEventListener('pointerleave', function () {
-            poster.classList.remove('is-tilting');
-            frame.style.transform = '';
-        });
-    }
-
     function showProject(root, id) {
         if (!root || !id) return;
         root.querySelectorAll('.content-item').forEach(function (el) {
@@ -43,7 +15,6 @@
 
     function bind(root) {
         root.querySelectorAll('.project-poster[data-project-target]').forEach(function (poster) {
-            bindTilt(poster);
             if (poster._clickBound) return;
             poster._clickBound = true;
             poster.addEventListener('click', function (event) {

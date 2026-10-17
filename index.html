@@ -981,10 +981,8 @@
         }
         .projects-panel {
             background: #ffffff;
-            border-radius: clamp(36px, 4.8vw, 56px);
-            box-shadow:
-                0 18px 48px rgba(0, 0, 0, 0.08),
-                0 4px 14px rgba(0, 0, 0, 0.04);
+            border-radius: 28px;
+            box-shadow: none;
             padding: clamp(28px, 3.8vw, 56px);
             overflow: auto;
             scrollbar-width: none;
@@ -1039,7 +1037,6 @@
             gap: clamp(18px, 2.6vh, 32px);
             width: min(100%, 520px);
             margin: 0;
-            perspective: 1600px;
         }
         .project-poster {
             display: block;
@@ -1056,31 +1053,15 @@
         }
         .project-poster-frame {
             position: relative;
-            border-radius: 28px;
+            border-radius: 16px;
             overflow: hidden;
             background: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow:
-                0 28px 60px rgba(0, 0, 0, 0.14),
-                0 10px 22px rgba(0, 0, 0, 0.08);
-            transform: rotateX(4deg) rotateY(-10deg) translateZ(0);
-            transform-origin: center center;
-            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, outline-color 0.3s ease;
-            will-change: transform;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: none;
+            transform: none;
         }
         .project-poster.is-active .project-poster-frame {
-            outline: 2px solid rgba(17, 17, 17, 0.55);
-            outline-offset: 6px;
-            transform: rotateX(2deg) rotateY(-4deg) translateY(-10px) scale(1.03);
-        }
-        .project-poster.is-tilting .project-poster-frame {
-            transition: transform 0.08s linear, box-shadow 0.2s ease;
-        }
-        .project-poster:hover .project-poster-frame,
-        .project-poster:focus-visible .project-poster-frame {
-            box-shadow:
-                0 36px 72px rgba(0, 0, 0, 0.18),
-                0 14px 28px rgba(0, 0, 0, 0.1);
+            border-color: #111111;
         }
         .project-poster-frame img {
             display: block;
@@ -1190,7 +1171,7 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
             .project-poster-frame {
-                transform: none;
+                border-radius: 16px;
             }
             .project-poster-frame img,
             .project-poster-placeholder {
@@ -3023,7 +3004,7 @@
     <script src="js/hero-rise.js?v=20261018-mask"></script>
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
-    <script src="js/project-posters.js?v=20261018-split" defer></script>
+    <script src="js/project-posters.js?v=20261018-flat" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
