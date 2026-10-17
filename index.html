@@ -2209,7 +2209,9 @@
             color: #ffffff;
             pointer-events: none;   /* 背景可响应点击，链接保持可用 */
         }
-        .hero-content .hero-enter,
+        .hero-content .hero-lang,
+        .hero-content .mag,
+        .hero-content .mag-btn,
         .hero-content .hero-social a {
             pointer-events: auto;
         }
@@ -2283,25 +2285,49 @@
             margin: 0 0 26px;
             text-shadow: 0 1px 14px rgba(0, 0, 0, 0.6);
         }
-        .hero-enter {
-            display: inline-flex;
+        .hero-lang {
+            display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 13px 26px;
-            border-radius: 999px;
+            gap: 8px;
+        }
+        .mag {
+            position: relative;
+            width: 148px;
+            height: 148px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+        .mag-orbit {
+            position: absolute;
+            width: 116px;
+            height: 116px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.78);
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.06);
+            pointer-events: none;
+        }
+        .mag-btn {
+            position: relative;
+            width: 92px;
+            height: 92px;
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
             background: #ffffff;
             color: #14120f;
-            font-family: 'Poppins', var(--sans-font);
-            font-weight: 500;
-            font-size: 0.95rem;
-            letter-spacing: 0.01em;
-            text-decoration: none;
+            padding: 0;
             cursor: pointer;
-            transition: transform 0.3s ease, background 0.3s ease;
+            font-family: 'Poppins', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
+            box-shadow: 0 10px 28px rgba(8, 6, 24, 0.18);
         }
-        .hero-enter:hover { background: #efe9df; transform: translateY(-2px); }
-        .hero-enter i { font-size: 0.9em; transition: transform 0.3s ease; }
-        .hero-enter:hover i { transform: translateX(4px); }
+        .mag-label {
+            display: inline-block;
+            will-change: transform;
+        }
         .hero-social {
             display: flex;
             align-items: center;
@@ -2374,7 +2400,20 @@
             <p class="hero-focus hero-split" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;">Computational Immunology · TCR Repertoire &amp; Interpretable ML · Single-Cell &amp; Spatial Multi-Omics</p>
             <div class="hero-bottom">
                 <div class="hero-left">
-                    <a href="#intro" class="hero-enter" id="heroEnter">Enter <i class="fas fa-arrow-right"></i></a>
+                    <div class="hero-lang" id="heroLang">
+                        <div class="mag">
+                            <span class="mag-orbit" aria-hidden="true"></span>
+                            <button type="button" class="mag-btn" data-enter-lang="zh" aria-label="进入中文主页">
+                                <span class="mag-label">中文</span>
+                            </button>
+                        </div>
+                        <div class="mag">
+                            <span class="mag-orbit" aria-hidden="true"></span>
+                            <button type="button" class="mag-btn" data-enter-lang="en" aria-label="Enter English homepage">
+                                <span class="mag-label">EN</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-social">
                     <a href="https://github.com/QianRongAn" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fab fa-github"></i></a>
@@ -2391,7 +2430,10 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="js/hero-rise.js?v=20261017-rise4"></script>
-    <script src="js/hero.js?v=20261017-wave" defer></script>
+    <script src="js/zh-copy.js?v=20261017-lang" defer></script>
+    <script src="js/i18n.js?v=20261017-lang" defer></script>
+    <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
+    <script src="js/hero.js?v=20261017-lang" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
     <!-- 移动端提示 -->
@@ -2408,14 +2450,14 @@
     <header id="top-header">
         <div class="nav-glass-container">
             <ul class="nav-links">
-                <li><a href="#about" class="nav-link active" data-target="0"><i class="fas fa-user-circle"></i> <span>ABOUT</span></a></li>
-                <li><a href="#education" class="nav-link" data-target="1"><i class="fas fa-graduation-cap"></i> <span>EDUCATION</span></a></li> 
-                <li><a href="#experience" class="nav-link" data-target="2"><i class="fas fa-briefcase"></i> <span>EXPERIENCE</span></a></li>
-                <li><a href="#extracurricular" class="nav-link" data-target="3"><i class="fas fa-running"></i> <span>ACTIVITIES</span></a></li>
-                <li><a href="#skills" class="nav-link" data-target="4"><i class="fas fa-code"></i> <span>SKILLS</span></a></li>
-                <li><a href="#publications" class="nav-link" data-target="5"><i class="fas fa-book-open"></i> <span>PUBLICATIONS</span></a></li>
-                <li><a href="personal_statement.html" class="nav-link"><i class="fas fa-file-alt"></i> <span>STATEMENT</span></a></li>
-                <li><a href="#thesis" class="nav-link" data-target="6"><i class="fas fa-microscope"></i> <span>THESIS</span></a></li>
+                <li><a href="#about" class="nav-link active" data-target="0"><i class="fas fa-user-circle"></i> <span data-i18n="nav.about">ABOUT</span></a></li>
+                <li><a href="#education" class="nav-link" data-target="1"><i class="fas fa-graduation-cap"></i> <span data-i18n="nav.education">EDUCATION</span></a></li> 
+                <li><a href="#experience" class="nav-link" data-target="2"><i class="fas fa-briefcase"></i> <span data-i18n="nav.experience">EXPERIENCE</span></a></li>
+                <li><a href="#extracurricular" class="nav-link" data-target="3"><i class="fas fa-running"></i> <span data-i18n="nav.activities">ACTIVITIES</span></a></li>
+                <li><a href="#skills" class="nav-link" data-target="4"><i class="fas fa-code"></i> <span data-i18n="nav.skills">SKILLS</span></a></li>
+                <li><a href="#publications" class="nav-link" data-target="5"><i class="fas fa-book-open"></i> <span data-i18n="nav.publications">PUBLICATIONS</span></a></li>
+                <li><a href="personal_statement.html" class="nav-link" data-statement-link><i class="fas fa-file-alt"></i> <span data-i18n="nav.statement">STATEMENT</span></a></li>
+                <li><a href="#thesis" class="nav-link" data-target="6"><i class="fas fa-microscope"></i> <span data-i18n="nav.thesis">THESIS</span></a></li>
             </ul>
         </div>
     </header>
@@ -2423,7 +2465,7 @@
         <section id="intro" class="reveal">
             <img src="me.webp" alt="Nan Wang Profile Photo" class="profile-photo" fetchpriority="high" decoding="sync">
             <h1>Nan Wang</h1>
-            <p>Bioinformatics Analyst & Immunologist</p>
+            <p data-i18n="intro.role">Bioinformatics Analyst & Immunologist</p>
             <div class="contact-info">
                 <a href="mailto:wangnan1999@stu.xmu.edu.cn">
                     <i class="fas fa-envelope"></i> wangnan1999@stu.xmu.edu.cn
@@ -2436,35 +2478,35 @@
                 </a>
             </div>
             <div id="scroll-target-about" class="skills-grid">
-                <span class="skill-group"><i class="fas fa-globe-asia"></i> Chinese (Native)</span>
-                <span class="skill-group"><i class="fas fa-globe-europe"></i> English (Fluent)</span>
-                <span class="skill-group"><i class="fas fa-globe-europe"></i> German (learning)</span>
+                <span class="skill-group"><i class="fas fa-globe-asia"></i> <span data-i18n="intro.zh">Chinese (Native)</span></span>
+                <span class="skill-group"><i class="fas fa-globe-europe"></i> <span data-i18n="intro.en">English (Fluent)</span></span>
+                <span class="skill-group"><i class="fas fa-globe-europe"></i> <span data-i18n="intro.de">German (learning)</span></span>
                 <div id="scroll-target-others" style="width: 100%; height: 0;"></div>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-mountain"></i> Mountaineering</span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-plane-departure"></i> Traveling</span> 
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-theater-masks"></i> Exhibitions, concerts</span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-hand-sparkles"></i> Astrology, Metaphysics</span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-book-reader"></i> Reading</span>
+                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-mountain"></i> <span data-i18n="intro.hike">Mountaineering</span></span>
+                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-plane-departure"></i> <span data-i18n="intro.travel">Traveling</span></span> 
+                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-theater-masks"></i> <span data-i18n="intro.show">Exhibitions, concerts</span></span>
+                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-hand-sparkles"></i> <span data-i18n="intro.astro">Astrology, Metaphysics</span></span>
+                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-book-reader"></i> <span data-i18n="intro.read">Reading</span></span>
             </div>
         </section>
         <div id="content-wrapper">
             <div id="about" class="cube-page active reveal" data-index="0">
                 <section>
-                    <h2 class="section-title"><i class="fas fa-info-circle"></i> About Me </h2>
-                    <p class="about-paragraph">Computational biology and biomedical AI researcher with an <strong>MSc in Immunology from Xiamen University</strong> and research spanning <strong>tumor immunology</strong>, <strong>immune-repertoire analysis</strong>, <strong>computational immunology</strong>, and <strong>multi-omics integration</strong>, extending into <strong>medical NLP</strong> and <strong>structure-driven deep learning</strong>.</p>
-                    <p class="about-paragraph">Independently led research projects end to end, including an <strong>equivariant graph neural network</strong> for TCR off-target risk prediction with active-learning screening of million-scale candidate peptides and an independently developed <strong>evidence-based-medicine literature analysis tool</strong> (PICO structuring, evidence grading, and PMID traceability) with a <strong>LightGBM and SHAP</strong> retraction-risk prediction model.</p>
-                    <p class="about-paragraph">Co-first author of a <strong>Journal of Hematology &amp; Oncology</strong> study (<strong>IF: 40.4</strong>) that developed interpretable machine-learning classifiers across COVID-19 disease and vaccination states; author of <strong>six peer-reviewed articles</strong> (five published, one under review).</p>
-                    <p class="about-paragraph">Currently integrating <strong>single-cell and spatial transcriptomics</strong> to evaluate nanostructure-mediated gene delivery and immune-cell state changes in primary T cells and CAR T cells. Seeking positions in <strong>biomedical AI algorithm development</strong> (medical NLP, computational immunology, multi-omics) or <strong>medical affairs</strong>.</p>
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> <span data-i18n="about.title">About Me</span></h2>
+                    <p class="about-paragraph" data-i18n-html="about.p1">Computational biology and biomedical AI researcher with an <strong>MSc in Immunology from Xiamen University</strong> and research spanning <strong>tumor immunology</strong>, <strong>immune-repertoire analysis</strong>, <strong>computational immunology</strong>, and <strong>multi-omics integration</strong>, extending into <strong>medical NLP</strong> and <strong>structure-driven deep learning</strong>.</p>
+                    <p class="about-paragraph" data-i18n-html="about.p2">Independently led research projects end to end, including an <strong>equivariant graph neural network</strong> for TCR off-target risk prediction with active-learning screening of million-scale candidate peptides and an independently developed <strong>evidence-based-medicine literature analysis tool</strong> (PICO structuring, evidence grading, and PMID traceability) with a <strong>LightGBM and SHAP</strong> retraction-risk prediction model.</p>
+                    <p class="about-paragraph" data-i18n-html="about.p3">Co-first author of a <strong>Journal of Hematology &amp; Oncology</strong> study (<strong>IF: 40.4</strong>) that developed interpretable machine-learning classifiers across COVID-19 disease and vaccination states; author of <strong>six peer-reviewed articles</strong> (five published, one under review).</p>
+                    <p class="about-paragraph" data-i18n-html="about.p4">Currently integrating <strong>single-cell and spatial transcriptomics</strong> to evaluate nanostructure-mediated gene delivery and immune-cell state changes in primary T cells and CAR T cells. Seeking positions in <strong>biomedical AI algorithm development</strong> (medical NLP, computational immunology, multi-omics) or <strong>medical affairs</strong>.</p>
                     <div style="text-align: center; margin-top: 30px;">
-                        <a href="personal_statement.html" class="btn-learn-more" style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
-                            Learn More
+                        <a href="personal_statement.html" class="btn-learn-more" data-statement-link style="font-family: 'Times New Roman', Times, serif !important; font-style: italic !important;">
+                            <span data-i18n="about.more">Learn More</span>
                         </a>
                     </div>
                 </section>
             </div>
             <div id="education" class="cube-page reveal" data-index="1">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-university"></i> Education</h2>
+                <section data-zh-slot="education">
+                    <h2 class="section-title"><i class="fas fa-university"></i> <span data-i18n="edu.title">Education</span></h2>
                     <div class="content-item">
                         <div class="details">
                             <h3>MSc in Immunology</h3>
@@ -2500,8 +2542,8 @@
                 </section>
             </div>
             <div id="experience" class="cube-page reveal" data-index="2">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-flask"></i> Practical Experience </h2>
+                <section data-zh-slot="experience">
+                    <h2 class="section-title"><i class="fas fa-flask"></i> <span data-i18n="exp.title">Practical Experience</span></h2>
                     <div class="content-item">
                         <div class="details">
                             <h3>Research Assistant</h3>
@@ -2536,8 +2578,8 @@
                 </section>
             </div>
             <div id="extracurricular" class="cube-page reveal" data-index="3">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-hands-helping"></i> Academic Activities</h2>
+                <section data-zh-slot="activities">
+                    <h2 class="section-title"><i class="fas fa-hands-helping"></i> <span data-i18n="act.title">Academic Activities</span></h2>
                     <div class="content-item" style="border-left: none; padding-left: 0; margin-bottom: 0; padding-bottom: 0; position: relative; z-index: 1; pointer-events: none; overflow: visible;">
                         <div class="details" style="pointer-events: auto; margin-bottom: 40px;">
                             <h4>CCHIO (Chinese Congress on Holistic Integrative Oncology)</h4>
@@ -2572,8 +2614,8 @@
                 </section>
             </div>
             <div id="skills" class="cube-page reveal" data-index="4">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-tools"></i> Technical Skills & Methods </h2>
+                <section data-zh-slot="skills">
+                    <h2 class="section-title"><i class="fas fa-tools"></i> <span data-i18n="skills.title">Technical Skills & Methods</span></h2>
                     <div class="skill-category">
                         <h3 class="skill-category-title">NGS Data Processing</h3>
                         <div class="skills-grid">
@@ -2660,8 +2702,8 @@
                 </section>
             </div>
             <div id="publications" class="cube-page reveal" data-index="5">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-file-alt"></i> Selected Publications</h2>
+                <section data-zh-slot="publications">
+                    <h2 class="section-title"><i class="fas fa-file-alt"></i> <span data-i18n="pub.title">Selected Publications</span></h2>
                     <div class="publications-grid">
                         <div class="publication-card" data-pub-id="1">
                             <div class="pub-image-wrapper">
@@ -2747,8 +2789,8 @@
                 </section>
             </div>
             <div id="thesis" class="cube-page reveal" data-index="6">
-                <section>
-                    <h2 class="section-title"><i class="fas fa-microscope"></i> Master's Thesis: Bioinformatics Analysis of COVID-19-Associated Immune Repertoire and Specific TCRs</h2>
+                <section data-zh-slot="thesis">
+                    <h2 class="section-title"><i class="fas fa-microscope"></i> <span data-i18n="thesis.title">Master's Thesis: Bioinformatics Analysis of COVID-19-Associated Immune Repertoire and Specific TCRs</span></h2>
                     <div class="content-item">
                         <h3 class="thesis-chapter-title">Chapter 1: Introduction</h3>
                         <div class="details">

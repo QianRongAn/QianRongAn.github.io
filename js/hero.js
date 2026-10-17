@@ -5,7 +5,7 @@
     var canvas = document.getElementById('heroEffects');
     if (!hero) return;
     var ctx = canvas && canvas.getContext('2d');
-    var enter = document.getElementById('heroEnter');
+    var enters = document.querySelectorAll('[data-enter-lang]');
     var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var dismissed = false, frame = 0, last = 0;
     var width = 0, height = 0, dust = [];
@@ -125,7 +125,14 @@
     function onTouchStart(e) { touchY = e.touches[0].clientY; }
     function onTouchMove(e) { if (touchY !== null && touchY - e.touches[0].clientY > 25) dismiss(); }
     function onMotionChange() { resize(); resume(); }
-    if (enter) enter.addEventListener('click', function (e) { e.preventDefault(); dismiss(); });
+    enters.forEach(function (enter) {
+        enter.addEventListener('click', function (e) {
+            e.preventDefault();
+            var lang = enter.getAttribute('data-enter-lang') || 'en';
+            if (window.SiteI18n) window.SiteI18n.apply(lang);
+            dismiss();
+        });
+    });
     window.addEventListener('wheel', onWheel, {passive: true});
     window.addEventListener('keydown', onKey);
     window.addEventListener('touchstart', onTouchStart, {passive: true});
