@@ -434,6 +434,14 @@
             animation: none !important;
             filter: none !important;
         }
+        #top-header .nav-glass-container::before,
+        #top-header .nav-glass-container::after,
+        #top-header .nav-links li a::before,
+        #top-header .nav-links li a::after {
+            animation: none !important;
+            filter: none !important;
+            clip-path: none !important;
+        }
         #intro h1 {
             animation-delay: 2.5s;
         }
@@ -532,16 +540,68 @@
             transition: all 0.3s ease;
         }
         .nav-glass-container {
+            --x: 50%;
+            --y: 50%;
+            --nav-angle: 0deg;
             max-width: fit-content;
             margin: 0 auto;
             padding: 8px 18px;
             position: relative;
+            isolation: isolate;
+            overflow: hidden;
             background-color: var(--glass-bg-header);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border-radius: 30px;
             box-shadow: var(--shadow-float);
             border: 1px solid var(--glass-border);
+        }
+        .nav-glass-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(350px at var(--x) var(--y), #fff2, transparent);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .nav-glass-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1.5px;
+            background: conic-gradient(
+                from var(--nav-angle),
+                transparent 0%,
+                transparent 58%,
+                rgba(255, 255, 255, 0.15) 64%,
+                rgba(255, 255, 255, 0.95) 70%,
+                rgba(255, 255, 255, 0.2) 76%,
+                transparent 82%
+            );
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .nav-glass-container:hover::before,
+        .nav-glass-container:focus-within::before,
+        .nav-glass-container.is-spotlight::before,
+        .nav-glass-container:hover::after,
+        .nav-glass-container:focus-within::after,
+        .nav-glass-container.is-spotlight::after {
+            opacity: 1 !important;
         }
         .nav-links {
             list-style: none;
@@ -2968,7 +3028,7 @@
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
-    <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
+    <script src="js/nav-spotlight.js?v=20261018-glow" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
