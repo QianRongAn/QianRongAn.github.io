@@ -107,14 +107,7 @@
         cancelAnimationFrame(frame); frame = 0; last = 0;
         if (!dismissed && !document.hidden && !motion.matches && ctx) frame = requestAnimationFrame(animate);
     }
-    function dismiss() {
-        if (dismissed) return;
-        dismissed = true;
-        cancelAnimationFrame(frame);
-        document.documentElement.classList.remove('hero-locked');
-        hero.classList.add('hero-leaving');
-        hero.setAttribute('aria-hidden', 'true');
-        hero.inert = true;
+    function unbindHero() {
         window.removeEventListener('wheel', onWheel);
         window.removeEventListener('keydown', onKey);
         window.removeEventListener('touchstart', onTouchStart);
@@ -122,45 +115,100 @@
         window.removeEventListener('resize', resize);
         document.removeEventListener('visibilitychange', resume);
         motion.removeEventListener('change', onMotionChange);
+    }
+    function showHobbies() {
+        var hobbies = document.getElementById('scroll-target-about');
+        var header = document.getElementById('top-header');
+        if (!hobbies) return;
+        var headerBottom = header ? header.getBoundingClientRect().height + 8 : 84;
+        var photo = document.querySelector('#intro .profile-photo');
+        var photoTop = photo ? photo.getBoundingClientRect().top : headerBottom;
+        var overflow = hobbies.getBoundingClientRect().bottom - window.innerHeight + 20;
+        if (overflow <= 0) return;
+        var roomAbovePhoto = photoTop - headerBottom;
+        var delta = roomAbovePhoto > 8 ? Math.min(overflow, roomAbovePhoto) : overflow;
+        var root = document.scrollingElement || document.documentElement;
+        root.scrollTop += delta;
+    }
+    function revealHome() {
+        cancelAnimationFrame(frame);
+        document.documentElement.classList.remove('hero-locked');
+        hero.classList.remove('hero-leaving');
+        hero.setAttribute('aria-hidden', 'true');
+        hero.inert = true;
+        hero.hidden = true;
+        hero.style.display = 'none';
         hero.dispatchEvent(new Event('hero:dismiss'));
         var target = document.getElementById('intro');
         if (target) {
             target.setAttribute('tabindex', '-1');
             target.focus({preventScroll: true});
         }
-        function showHobbies() {
-            var hobbies = document.getElementById('scroll-target-about');
-            var header = document.getElementById('top-header');
-            if (!hobbies) return;
-            var headerBottom = header ? header.getBoundingClientRect().height + 8 : 84;
-            var photo = document.querySelector('#intro .profile-photo');
-            var photoTop = photo ? photo.getBoundingClientRect().top : headerBottom;
-            var overflow = hobbies.getBoundingClientRect().bottom - window.innerHeight + 20;
-            if (overflow <= 0) return;
-            var roomAbovePhoto = photoTop - headerBottom;
-            var delta = roomAbovePhoto > 8 ? Math.min(overflow, roomAbovePhoto) : overflow;
-            var root = document.scrollingElement || document.documentElement;
-            root.scrollTop += delta;
-        }
         showHobbies();
         window.setTimeout(showHobbies, 50);
-        window.setTimeout(showHobbies, 400);
-        window.setTimeout(function () { hero.hidden = true; hero.style.display = 'none'; }, motion.matches ? 0 : 1200);
     }
-    function onWheel(e) { if (e.deltaY > 0) dismiss(); }
+    function playCurtain(lang) {
+        if (dismissed) return;
+        var curtain = document.getElementById('pageCurtain');
+        var countEl = document.getElementById('pageCurtainCount');
+        var title = document.querySelector('#intro h1');
+        if (!curtain || typeof gsap === 'undefined' || motion.matches) {
+            dismissed = true;
+            unbindHero();
+            if (window.SiteI18n && lang) window.SiteI18n.apply(lang);
+            revealHome();
+            return;
+        }
+        dismissed = true;
+        unbindHero();
+        curtain.classList.add('is-on');
+        var counter = { n: 0 };
+        gsap.set(curtain, { yPercent: 100 });
+        if (title) {
+            title.classList.add('is-curtain-title');
+            gsap.set(title, { clipPath: 'inset(100% 0% 0% 0%)' });
+        }
+        gsap.timeline({
+            onComplete: function () {
+                curtain.classList.remove('is-on');
+                gsap.set(curtain, { yPercent: 100 });
+            }
+        })
+            .to(curtain, { yPercent: 0, duration: 0.9, ease: 'power4.inOut' }, 0)
+            .to(counter, {
+                n: 100,
+                duration: 0.9,
+                ease: 'none',
+                onUpdate: function () {
+                    var value = Math.round(counter.n);
+                    countEl.textContent = value < 10 ? '0' + value : String(value);
+                }
+            }, 0)
+            .add(function () {
+                if (window.SiteI18n && lang) window.SiteI18n.apply(lang);
+                revealHome();
+            })
+            .to(curtain, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' })
+            .fromTo(title, {
+                clipPath: 'inset(100% 0% 0% 0%)'
+            }, {
+                clipPath: 'inset(0% 0% 0% 0%)',
+                duration: 0.85,
+                ease: 'power4.out'
+            }, '<0.15');
+    }
+    function onWheel(e) { if (e.deltaY > 0) playCurtain(); }
     function onKey(e) {
         if (e.target.closest('a, button, input, textarea, select')) return;
-        if (['ArrowDown', 'PageDown', ' ', 'Escape'].indexOf(e.key) !== -1) { e.preventDefault(); dismiss(); }
+        if (['ArrowDown', 'PageDown', ' ', 'Escape'].indexOf(e.key) !== -1) { e.preventDefault(); playCurtain(); }
     }
     function onTouchStart(e) { touchY = e.touches[0].clientY; }
-    function onTouchMove(e) { if (touchY !== null && touchY - e.touches[0].clientY > 25) dismiss(); }
+    function onTouchMove(e) { if (touchY !== null && touchY - e.touches[0].clientY > 25) playCurtain(); }
     function onMotionChange() { resize(); resume(); }
     enters.forEach(function (enter) {
         enter.addEventListener('click', function (e) {
             e.preventDefault();
-            var lang = enter.getAttribute('data-enter-lang') || 'en';
-            if (window.SiteI18n) window.SiteI18n.apply(lang);
-            dismiss();
+            playCurtain(enter.getAttribute('data-enter-lang') || 'en');
         });
     });
     window.addEventListener('wheel', onWheel, {passive: true});
