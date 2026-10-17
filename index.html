@@ -862,10 +862,15 @@
             transform: none !important;
             filter: none !important;
         }
-        /* Projects：Mindora 式真全屏（左圆角白卡浮在底上 / 右海报直接铺在底色上） */
+        /* Projects：完全按 Mindora —— 冷灰全屏底 + 左圆角白卡 + 右海报贴边 */
         html.projects-view,
         html.projects-view body {
             overflow: hidden !important;
+            background: #ececec !important;
+        }
+        html.projects-view body::before {
+            opacity: 0 !important;
+            visibility: hidden !important;
         }
         html.projects-view #container {
             max-width: none;
@@ -873,10 +878,15 @@
             margin: 0;
             padding: 0;
             margin-top: 0;
+            background: transparent;
         }
         html.projects-view #content-wrapper {
             min-height: 100vh !important;
             min-height: 100dvh !important;
+            background: transparent;
+        }
+        html.projects-view #intro {
+            display: none !important;
         }
         #projects.cube-page.active {
             position: fixed;
@@ -890,10 +900,7 @@
             top: 0;
             z-index: 40;
             transform: none;
-            background:
-                radial-gradient(ellipse at 78% 42%, rgba(255, 255, 255, 0.55), transparent 42%),
-                radial-gradient(ellipse at 92% 88%, rgba(208, 186, 152, 0.35), transparent 48%),
-                #e6e1da;
+            background: #ececec;
             overflow: hidden;
         }
         #projects.cube-page section {
@@ -911,27 +918,27 @@
         }
         .projects-shell {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-            gap: clamp(8px, 1.5vw, 20px);
+            grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+            gap: clamp(10px, 1.4vw, 22px);
             width: 100%;
             height: 100%;
             max-width: none;
             margin: 0;
             padding:
-                calc(108px + clamp(12px, 2vh, 22px))
-                clamp(16px, 2.2vw, 28px)
-                clamp(16px, 2.4vh, 28px)
-                clamp(16px, 2.2vw, 28px);
+                calc(72px + clamp(14px, 2vh, 22px))
+                0
+                clamp(14px, 2vh, 22px)
+                clamp(14px, 1.8vw, 22px);
             box-sizing: border-box;
             align-items: stretch;
         }
         .projects-panel {
             background: #ffffff;
-            border-radius: clamp(32px, 4.5vw, 52px);
+            border-radius: clamp(36px, 4.8vw, 56px);
             box-shadow:
-                0 28px 70px rgba(20, 14, 8, 0.16),
-                0 6px 18px rgba(20, 14, 8, 0.06);
-            padding: clamp(28px, 3.6vw, 52px);
+                0 18px 48px rgba(0, 0, 0, 0.08),
+                0 4px 14px rgba(0, 0, 0, 0.04);
+            padding: clamp(28px, 3.8vw, 56px);
             overflow: auto;
             height: 100%;
             max-height: none;
@@ -939,10 +946,12 @@
             flex-direction: column;
             min-height: 0;
             min-width: 0;
+            color: #111111;
         }
         .projects-panel .section-title {
             margin-bottom: 22px;
             flex: 0 0 auto;
+            color: #111111;
         }
         .projects-copy {
             flex: 1 1 auto;
@@ -952,7 +961,11 @@
             position: relative;
             background: transparent;
             border-radius: 0;
-            padding: clamp(8px, 1.5vh, 18px) clamp(4px, 1vw, 12px);
+            padding:
+                clamp(8px, 2vh, 20px)
+                clamp(18px, 3vw, 40px)
+                clamp(8px, 2vh, 20px)
+                clamp(4px, 1vw, 12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -969,10 +982,10 @@
             z-index: 1;
             display: grid;
             grid-template-columns: 1fr;
-            gap: clamp(18px, 2.4vh, 28px);
-            width: min(100%, 460px);
+            gap: clamp(18px, 2.6vh, 32px);
+            width: min(100%, 520px);
             margin: 0;
-            perspective: 1400px;
+            perspective: 1600px;
         }
         .project-poster {
             display: block;
@@ -989,23 +1002,22 @@
         }
         .project-poster-frame {
             position: relative;
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
-            background: #fffaf4;
-            border: 1px solid rgba(255, 255, 255, 0.75);
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow:
-                0 30px 56px rgba(35, 20, 12, 0.28),
-                0 12px 22px rgba(35, 20, 12, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.85);
-            transform: rotateX(5deg) rotateY(-8deg) translateZ(0);
+                0 28px 60px rgba(0, 0, 0, 0.14),
+                0 10px 22px rgba(0, 0, 0, 0.08);
+            transform: rotateX(4deg) rotateY(-10deg) translateZ(0);
             transform-origin: center center;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, outline-color 0.3s ease;
             will-change: transform;
         }
         .project-poster.is-active .project-poster-frame {
-            outline: 2px solid rgba(81, 109, 176, 0.55);
-            outline-offset: 5px;
-            transform: rotateX(2deg) rotateY(-3deg) translateY(-8px) scale(1.03);
+            outline: 2px solid rgba(17, 17, 17, 0.55);
+            outline-offset: 6px;
+            transform: rotateX(2deg) rotateY(-4deg) translateY(-10px) scale(1.03);
         }
         .project-poster.is-tilting .project-poster-frame {
             transition: transform 0.08s linear, box-shadow 0.2s ease;
@@ -1013,17 +1025,16 @@
         .project-poster:hover .project-poster-frame,
         .project-poster:focus-visible .project-poster-frame {
             box-shadow:
-                0 38px 68px rgba(35, 20, 12, 0.34),
-                0 16px 28px rgba(35, 20, 12, 0.16),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+                0 36px 72px rgba(0, 0, 0, 0.18),
+                0 14px 28px rgba(0, 0, 0, 0.1);
         }
         .project-poster-frame img {
             display: block;
             width: 100%;
-            height: clamp(220px, 32vh, 340px);
-            object-fit: contain;
+            height: clamp(240px, 34vh, 380px);
+            object-fit: cover;
             object-position: center top;
-            background: #efe6d8;
+            background: #f3f3f3;
         }
         .project-poster-placeholder {
             display: flex;
@@ -1031,46 +1042,47 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            height: clamp(220px, 32vh, 340px);
+            height: clamp(240px, 34vh, 380px);
             padding: 24px;
             text-align: center;
             background:
-                linear-gradient(145deg, #fff8ef 0%, #eadcc8 55%, #d9c4a4 100%);
-            color: #5c4a37;
+                radial-gradient(circle at 30% 20%, rgba(186, 220, 235, 0.55), transparent 48%),
+                linear-gradient(155deg, #f7f7f7 0%, #e9e9e9 55%, #dcdcdc 100%);
+            color: #444444;
         }
         .project-poster-mark {
             font-family: 'Aboreto', Georgia, serif;
             font-size: clamp(1.2rem, 2.4vw, 1.7rem);
             letter-spacing: 0.04em;
-            color: #23140c;
+            color: #111111;
         }
         .project-poster-soon {
             font-family: var(--sans-font);
             font-size: 0.92rem;
             font-weight: 300;
-            opacity: 0.8;
+            opacity: 0.75;
         }
         .project-poster-caption {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            padding: 14px 16px 16px;
-            background: linear-gradient(180deg, rgba(255, 250, 244, 0.96), #f7efe4);
-            border-top: 1px solid rgba(208, 186, 152, 0.45);
+            padding: 14px 18px 16px;
+            background: #ffffff;
+            border-top: 1px solid #efefef;
         }
         .project-poster-caption strong {
-            font-family: var(--serif-font);
-            font-size: 1.05em;
-            font-weight: 700;
-            color: var(--dark-brown);
+            font-family: var(--sans-font);
+            font-size: 1.02em;
+            font-weight: 600;
+            color: #111111;
             background: none;
             padding: 0;
         }
         .project-poster-caption span {
             font-family: var(--sans-font);
             font-size: 0.78rem;
-            color: var(--text-secondary);
+            color: #777777;
             white-space: nowrap;
         }
         #projects .content-item {
@@ -1104,7 +1116,10 @@
             .projects-shell {
                 grid-template-columns: 1fr;
                 height: auto;
-                padding-top: calc(108px + 16px);
+                padding:
+                    calc(88px + 16px)
+                    16px
+                    24px;
             }
             .projects-panel {
                 height: auto;
@@ -1113,7 +1128,7 @@
             .projects-visual {
                 height: auto;
                 min-height: auto;
-                padding: 8px 0 24px;
+                padding: 8px 0 8px;
             }
             .project-posters {
                 width: 100%;
