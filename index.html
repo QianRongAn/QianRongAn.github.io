@@ -622,8 +622,8 @@
         }
         .cube-page.active {
             opacity: 1;
-            transform: translateY(0) rotateX(0deg) scale(1); 
-            position: relative; 
+            transform: none;
+            position: relative;
         }
         #intro {
             text-align: center;
@@ -765,27 +765,35 @@
             margin-right: 8px;
         }
         .cube-page section {
-            box-shadow: var(--shadow-float);
-            background-color: var(--glass-bg-content); 
+            box-shadow: var(--shadow-light);
+            background-color: var(--glass-bg-content);
             border: 1px solid var(--glass-border);
-            padding: 30px 40px; 
-            border-radius: 15px; 
-            backdrop-filter: blur(10px); 
+            padding: 30px 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             margin-bottom: 40px;
-            transform-style: preserve-3d;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            will-change: transform;
+            transition: box-shadow 0.3s ease;
+        }
+        #about.cube-page section,
+        #education.cube-page section,
+        #experience.cube-page section,
+        #projects.cube-page section,
+        #extracurricular.cube-page section,
+        #skills.cube-page section,
+        #thesis.cube-page section {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.6);
         }
         .cube-page section:hover {
-            /* 保持静止，移除卡片整体的浮动效果 */
             transform: none;
-            box-shadow: var(--shadow-float);
+            box-shadow: var(--shadow-light);
         }
         /* 禁用 thesis 内 section 的 hover 效果 */
         #thesis.cube-page section:hover {
             transform: none !important;
-            box-shadow: var(--shadow-float) !important;
+            box-shadow: var(--shadow-light) !important;
             background-color: var(--glass-bg-content) !important;
         }
         .section-title {
@@ -1899,7 +1907,7 @@
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: none;
             }
         }
         
@@ -3277,31 +3285,32 @@
                     prevPage.style.position = 'absolute';
                     prevPage.style.zIndex = 10;
                     prevPage.style.opacity = 1;
-                    prevPage.style.transform = 'translateY(0)'; 
+                    prevPage.style.transform = 'none';
                     setTimeout(() => {
                         prevPage.style.opacity = 0;
-                        prevPage.style.transform = direction === 'down' ? 'translateY(-100%)' : 'translateY(100%)'; 
+                        prevPage.style.transform = direction === 'down' ? 'translateY(-100%)' : 'translateY(100%)';
                     }, 10);
                 }
                 const targetPage = document.querySelector(`.cube-page[data-index="${targetIndex}"]`);
                 if (targetPage) {
                     targetPage.style.transform = direction === 'down' ? 'translateY(100%)' : 'translateY(-100%)';
                     targetPage.style.opacity = 0;
-                    targetPage.style.position = 'absolute'; 
+                    targetPage.style.position = 'absolute';
                     targetPage.style.zIndex = 20;
                     setTimeout(() => {
                         targetPage.style.opacity = 1;
-                        targetPage.style.transform = 'translateY(0)'; 
+                        targetPage.style.transform = 'none';
                         targetPage.classList.add('active');
                         setTimeout(() => {
                             if (prevPage) {
-                                prevPage.style.position = 'absolute'; 
+                                prevPage.style.position = 'absolute';
                                 prevPage.style.opacity = 0;
-                                prevPage.style.transform = 'translateY(100%)'; 
+                                prevPage.style.transform = 'translateY(100%)';
                             }
                             targetPage.style.position = 'relative';
-                            targetPage.style.zIndex = 'auto'; 
-                        }, 1000); 
+                            targetPage.style.zIndex = 'auto';
+                            targetPage.style.transform = 'none';
+                        }, 1000);
                     }, 10);
                 }
                 navLinks.forEach(link => link.classList.remove('active'));
@@ -3327,12 +3336,12 @@
                     page.classList.add('active');
                     page.style.position = 'relative';
                     page.style.opacity = 1;
-                    page.style.transform = 'translateY(0)'; 
+                    page.style.transform = 'none';
                 } else {
                     page.classList.remove('active');
                     page.style.position = 'absolute';
                     page.style.opacity = 0;
-                    page.style.transform = 'translateY(100%)'; 
+                    page.style.transform = 'translateY(100%)';
                 }
             });
             setWrapperHeight(0);
