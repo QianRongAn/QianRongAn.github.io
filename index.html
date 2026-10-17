@@ -2638,11 +2638,11 @@
         }
         .hero-focus {
             position: absolute;
-            top: clamp(48px, 10vh, 120px);
-            right: clamp(26px, 6.5vw, 104px);
+            top: 0;
+            right: 0;
             left: auto;
-            width: min(42vw, 420px);
-            max-width: min(42vw, 420px);
+            width: min(46%, 420px);
+            max-width: min(46%, 420px);
             margin: 0;
             text-align: right;
             font-size: clamp(1.05rem, 1.7vw, 1.55rem);
@@ -2653,6 +2653,18 @@
         }
         .hero-focus .hero-mask {
             text-align: right;
+        }
+        @media (max-width: 720px) {
+            .hero-focus {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                max-width: none;
+                margin: 14px 0 0;
+                text-align: right;
+                font-size: clamp(1rem, 4.2vw, 1.25rem);
+            }
         }
         .hero-mask { overflow: hidden; display: block; background: transparent; }
         .hero-title .hero-mask {
@@ -2957,7 +2969,7 @@
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-split" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
-    <script src="js/curtain-dna.js?v=20261018-twist" defer></script>
+    <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>

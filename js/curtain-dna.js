@@ -11,40 +11,34 @@
     var t = 0;
     var raf = 0;
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var count = 96;
+    var density = 1.5;
     var alignment = 0.5;
-    var turns = 2.35;
 
-    function Particle(i, offset, char) {
-        this.i = i;
+    function Particle(y, offset, char) {
+        this.y = y;
         this.offset = offset;
         this.char = char;
     }
     Particle.prototype.update = function (time) {
-        var yNorm = this.i / (count - 1);
-        // Mid pinch so the two strands visibly cross / twist in the center
-        var pinch = 0.42 + 0.58 * Math.pow(Math.abs(2 * yNorm - 1), 0.9);
-        var radius = (width < 768 ? 78 : 148) * pinch;
-        var angle = yNorm * Math.PI * 2 * turns + time + this.offset;
+        var angle = this.y * 0.05 + time + this.offset;
+        var radius = width < 768 ? 80 : 150;
         var x3d = Math.sin(angle) * radius;
         var z3d = Math.cos(angle) * radius;
-        var fov = 980;
+        var fov = 1000;
         var scale = fov / (fov + z3d);
         this.x = (width * alignment) + x3d * scale;
-        this.screenY = height * 0.08 + yNorm * height * 0.84;
-        this.size = (width < 768 ? 11 : 14) * scale;
-        this.z = z3d;
-        this.alpha = 0.22 + ((radius - z3d) / (radius * 2 || 1)) * 0.78;
+        this.screenY = (this.y * 15) * scale + (height * 0.1);
+        this.size = 12 * scale;
+        this.alpha = scale > 1 ? 1 : 0.3;
     };
     Particle.prototype.draw = function () {
-        ctx.font = "bold " + this.size.toFixed(1) + "px Helvetica, sans-serif";
-        ctx.fillStyle = "rgba(35,20,12," + this.alpha.toFixed(3) + ")";
+        ctx.font = "bold " + this.size + "px Helvetica, sans-serif";
+        ctx.fillStyle = "rgba(35,20,12," + this.alpha + ")";
         ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
         ctx.fillText(this.char, this.x, this.screenY);
     };
 
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i < (80 * density); i++) {
         var char = bases[i % 4];
         var pairChar = char === "A" ? "T" : char === "T" ? "A" : char === "C" ? "G" : "C";
         particles.push(new Particle(i, 0, char));
@@ -69,29 +63,25 @@
 
     function draw() {
         ctx.clearRect(0, 0, width, height);
-        var glyphs = [];
+        ctx.strokeStyle = "rgba(35,20,12,0.15)";
         for (var n = 0; n < particles.length; n += 2) {
             var p1 = particles[n];
             var p2 = particles[n + 1];
             p1.update(t);
             p2.update(t);
-            var lineAlpha = Math.min(p1.alpha, p2.alpha) * 0.28;
-            ctx.strokeStyle = "rgba(35,20,12," + lineAlpha.toFixed(3) + ")";
-            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.screenY);
             ctx.lineTo(p2.x, p2.screenY);
             ctx.stroke();
-            glyphs.push(p1, p2);
+            p1.draw();
+            p2.draw();
         }
-        glyphs.sort(function (a, b) { return b.z - a.z; });
-        for (var g = 0; g < glyphs.length; g++) glyphs[g].draw();
     }
 
     function loop() {
         raf = 0;
         if (!active()) return;
-        if (!reduce) t += 0.01;
+        if (!reduce) t += 0.008;
         draw();
         if (!reduce) raf = requestAnimationFrame(loop);
     }
