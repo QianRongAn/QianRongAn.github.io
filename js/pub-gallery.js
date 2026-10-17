@@ -1,13 +1,13 @@
-/* Publications stand on the front arc of a cylinder, like a curved gallery wall.
-   Cards are landscape (2:1) and spread out so they never overlap: every card corner
-   is projected analytically and a minimum gap is enforced between neighbours. */
+/* Publications stand on a full 360-degree ring, like a rotating carousel wall.
+   Cards are landscape (2:1) and the front-facing cards never overlap: every card
+   corner is projected analytically and a minimum gap is enforced between the
+   neighbours you actually see (the back of the ring is allowed to tuck behind). */
 (function () {
     'use strict';
 
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var PERSPECTIVE = 3600; /* keep in sync with css/pub-gallery.css */
     var TILT = 12;          /* keep in sync with css/pub-gallery.css */
-    var SPAN = 120;         /* degrees of the arc the cards are spread over */
     var SWAY = 8;           /* pointer sway, in degrees */
     var RATIO = 0.5;        /* card height = card width * RATIO (landscape) */
     var GAP = 22;           /* minimum horizontal gap between neighbours, px */
@@ -32,7 +32,7 @@
         var count = cards.length;
         var angles = [];
         for (var i = 0; i < count; i++) {
-            angles.push(count > 1 ? -SPAN / 2 + SPAN * i / (count - 1) : 0);
+            angles.push(count > 1 ? i * 360 / count : 0);
         }
         var tiltRad = TILT * Math.PI / 180;
         var cosT = Math.cos(tiltRad);
@@ -75,12 +75,26 @@
             return { minX: minX, maxX: maxX, minY: minY, maxY: maxY, w: maxX - minX, h: maxY - minY };
         }
 
+        function frontArc(sway) {
+            var list = [];
+            for (var i = 0; i < count; i++) {
+                var a = (angles[i] + sway) % 360;
+                if (a < 0) a += 360;
+                if (Math.cos(a * Math.PI / 180) > 0.15) {
+                    list.push(a > 180 ? a - 360 : a);
+                }
+            }
+            list.sort(function (x, y) { return x - y; });
+            return list;
+        }
+
         function minGap(width, height, radius, scale) {
             var g = Infinity;
             for (var p = -SWAY; p <= SWAY; p += SWAY) {
-                for (var i = 0; i < count - 1; i++) {
-                    var a = cardBox(width, height, radius, scale, angles[i] + p);
-                    var b = cardBox(width, height, radius, scale, angles[i + 1] + p);
+                var front = frontArc(p);
+                for (var i = 0; i + 1 < front.length; i++) {
+                    var a = cardBox(width, height, radius, scale, front[i]);
+                    var b = cardBox(width, height, radius, scale, front[i + 1]);
                     var gap = b.minX - a.maxX;
                     if (gap < g) g = gap;
                 }
