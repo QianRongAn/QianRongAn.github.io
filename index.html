@@ -2618,10 +2618,9 @@
             transition: opacity 0.5s ease;
         }
         .hero-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: clamp(24px, 4vw, 72px);
+            position: relative;
+            display: block;
+            min-height: clamp(4.2rem, 12vw, 9rem);
         }
         .hero-title {
             font-family: 'Jagers', 'Times New Roman', serif;
@@ -2633,21 +2632,25 @@
             margin: 0;
             color: #ffffff;
             text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
-            flex: 1 1 auto;
+            white-space: nowrap;
+            max-width: calc(100% - min(48%, 520px) - 24px);
         }
         .hero-focus,
         .hero-focus .hero-mask,
         .hero-focus .hero-char,
+        .hero-focus .hero-focus-line,
         .hero-focus * {
             font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
             font-weight: 300 !important;
             font-style: italic !important;
         }
         .hero-focus {
-            position: static;
-            flex: 0 1 auto;
-            width: min(46%, 560px);
-            max-width: min(46%, 560px);
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: auto;
+            max-width: min(48%, 520px);
             margin: 0;
             text-align: right;
             font-size: clamp(1.55rem, 2.8vw, 2.15rem) !important;
@@ -2656,21 +2659,30 @@
             color: #ffffff;
             text-shadow: 0 1px 2px rgba(12, 8, 32, 0.28);
         }
+        .hero-focus-line {
+            display: block;
+            white-space: nowrap;
+            text-align: right;
+        }
         .hero-focus .hero-mask,
         .hero-focus .hero-char {
             font-size: inherit !important;
             text-align: right;
         }
-        @media (max-width: 720px) {
+        @media (max-width: 900px) {
             .hero-head {
-                flex-direction: column;
-                align-items: stretch;
+                min-height: 0;
+            }
+            .hero-title {
+                max-width: none;
             }
             .hero-focus {
-                width: 100%;
+                position: relative;
+                top: auto;
+                right: auto;
+                transform: none;
                 max-width: none;
                 margin: 14px 0 0;
-                text-align: right;
             }
         }
         .hero-mask { overflow: hidden; display: block; background: transparent; }
@@ -2755,48 +2767,45 @@
         .mag-btn {
             position: relative;
             z-index: 1;
-            display: inline-flex;
+            display: inline-flex !important;
             align-items: center;
             justify-content: center;
-            padding: 0 0 7px;
-            margin: 0;
-            border: none !important;
-            background: #b5b5b5 !important;
-            background-image: none !important;
-            border-radius: 25px;
-            appearance: none;
-            -webkit-appearance: none;
-            color: #2c2c2c !important;
-            cursor: pointer;
-            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.28) !important;
-        }
-        .mag-face {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            gap: 8px;
             min-width: 108px;
             padding: 12px 24px;
             border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.55);
-            background: linear-gradient(to bottom, #f7f7f7 0%, #ececec 58%, #d7d7d7 100%);
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.9),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
-        }
-        .mag-btn:hover .mag-face {
-            background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 58%, #dcdcdc 100%);
-            transform: translateY(-4px);
-        }
-        .mag-btn,
-        .mag-btn .mag-label,
-        .mag-face {
-            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif !important;
-            font-style: italic !important;
+            appearance: none;
+            -webkit-appearance: none;
+            background: linear-gradient(to bottom, #f5f5f5, #e8e8e8) !important;
+            color: #2c2c2c !important;
+            text-decoration: none !important;
             font-weight: 600;
             font-size: 0.95em;
+            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif !important;
+            font-style: italic !important;
             letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            text-shadow: none;
+        }
+        .mag-btn,
+        .mag-btn .mag-label {
+            font-family: 'Times New Roman', Times, 'PingFang SC', 'Microsoft YaHei', serif !important;
+            font-style: italic !important;
+        }
+        .mag-btn:hover {
+            background: linear-gradient(to bottom, #f8f8f8, #ebebeb) !important;
+            box-shadow:
+                0 6px 12px rgba(0, 0, 0, 0.2),
+                0 3px 6px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.15) !important;
         }
         .mag-label {
             display: inline-block;
@@ -2926,8 +2935,8 @@
         <canvas class="hero-effects" id="heroEffects" aria-hidden="true"></canvas>
         <div class="hero-content" id="heroContent">
             <div class="hero-head">
-                <h1 class="hero-title hero-split">Nan Wang</h1>
-                <p class="hero-focus hero-split">Computational Immunology<br>TCR Repertoire &amp; Interpretable ML<br>Single-Cell &amp;<br>Spatial Multi-Omics</p>
+                <h1 class="hero-title hero-split">Nan&nbsp;Wang</h1>
+                <p class="hero-focus hero-split"><span class="hero-focus-line">Computational Immunology</span><span class="hero-focus-line">TCR Repertoire &amp; Interpretable&nbsp;ML</span><span class="hero-focus-line">Single-Cell&nbsp;&amp;</span><span class="hero-focus-line">Spatial Multi-Omics</span></p>
             </div>
             <div class="hero-bottom">
                 <div class="hero-left">
@@ -2935,13 +2944,13 @@
                         <div class="mag">
                             <span class="mag-orbit" aria-hidden="true"></span>
                             <button type="button" class="mag-btn" data-enter-lang="zh" aria-label="进入中文主页">
-                                <span class="mag-face"><span class="mag-label">中文</span></span>
+                                <span class="mag-label">中文</span>
                             </button>
                         </div>
                         <div class="mag">
                             <span class="mag-orbit" aria-hidden="true"></span>
                             <button type="button" class="mag-btn" data-enter-lang="en" aria-label="Enter English homepage">
-                                <span class="mag-face"><span class="mag-label">EN</span></span>
+                                <span class="mag-label">EN</span>
                             </button>
                         </div>
                     </div>
@@ -2960,7 +2969,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-    <script src="js/hero-rise.js?v=20261018-focus"></script>
+    <script src="js/hero-rise.js?v=20261018-lines"></script>
     <script src="js/zh-copy.js?v=20261018-split" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-split" defer></script>
