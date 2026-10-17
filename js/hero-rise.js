@@ -28,10 +28,10 @@
                 if (index === 0) nameChars = self.chars.length;
                 if (el.classList.contains('hero-title')) {
                     el.querySelectorAll('.hero-mask').forEach(function (mask) {
-                        mask.style.paddingBottom = '0.42em';
+                        mask.style.paddingBottom = '0.72em';
                         var clip = mask.parentElement;
                         if (clip && clip !== el) {
-                            clip.style.paddingBottom = '0.42em';
+                            clip.style.paddingBottom = '0.72em';
                             clip.style.height = 'auto';
                         }
                     });
