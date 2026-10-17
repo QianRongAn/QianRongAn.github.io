@@ -463,15 +463,68 @@
             transition: all 0.3s ease;
         }
         .nav-glass-container {
+            --x: 50%;
+            --y: 50%;
+            --nav-angle: 0deg;
             max-width: fit-content;
             margin: 0 auto;
             padding: 10px 30px;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
             background-color: var(--glass-bg-header);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px); 
-            border-radius: 30px; 
-            box-shadow: var(--shadow-float); 
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 30px;
+            box-shadow: var(--shadow-float);
             border: 1px solid var(--glass-border);
+        }
+        .nav-glass-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(350px at var(--x) var(--y), #fff2, transparent);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .nav-glass-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: conic-gradient(
+                from var(--nav-angle),
+                transparent 0%,
+                transparent 58%,
+                rgba(255, 255, 255, 0.15) 64%,
+                rgba(255, 255, 255, 0.95) 70%,
+                rgba(255, 255, 255, 0.2) 76%,
+                transparent 82%
+            );
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .nav-glass-container:hover::before,
+        .nav-glass-container:focus-within::before,
+        .nav-glass-container.is-spotlight::before,
+        .nav-glass-container:hover::after,
+        .nav-glass-container:focus-within::after,
+        .nav-glass-container.is-spotlight::after {
+            opacity: 1;
         }
         .nav-links {
             list-style: none;
@@ -480,50 +533,32 @@
             display: flex;
             justify-content: center;
             gap: 30px;
+            position: relative;
+            z-index: 1;
         }
         .nav-links li a {
             color: var(--text-secondary);
             text-decoration: none;
-            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important; 
+            font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
             font-weight: normal;
             font-size: 0.95em;
             letter-spacing: 0.5px;
             padding: 5px 0;
             position: relative;
-            transition: color 0.3s, transform 0.2s;
-            display: flex; 
+            transition: color 0.3s;
+            display: flex;
             align-items: center;
             gap: 5px;
             text-shadow: 0 0 1px rgba(92, 74, 55, 0.7);
         }
-        .nav-links li a.active,
-        .nav-links li a:hover {
+        .nav-links li a.active {
             color: var(--primary-color);
             text-shadow: 0 0 1px rgba(145, 4, 12, 0.7);
-            transform: scale(1.05);
         }
         .nav-links li a span {
             position: relative;
             display: block;
-            padding-bottom: 5px; 
-        }
-        .nav-links li a span::after {
-            content: '';
-            position: absolute;
-            bottom: 0px; 
-            height: 2px;
-            background-color: var(--primary-color);
-            transition: width 0.3s ease-out, left 0.3s ease-out;
-            width: 0; 
-            left: 50%;
-        }
-        .nav-links li a:hover span::after,
-        .nav-links li a.active span::after {
-            width: 60%;
-            left: 20%;
-        }
-        /* 导航栏中所有链接的 span 也使用相同字体 */
-        .nav-links li a span {
+            padding-bottom: 5px;
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
         #container {
@@ -2325,6 +2360,7 @@
     <script src="js/hero-rise.js?v=20261017-rise2"></script>
     <script src="js/hero.js?v=20261017-wave" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
+    <script src="js/nav-spotlight.js?v=20261017-nav1" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
