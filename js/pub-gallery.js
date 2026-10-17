@@ -99,7 +99,7 @@
 
         function layout() {
             var stageWidth = stage.clientWidth || window.innerWidth;
-            var width = Math.min(420, Math.max(300, stageWidth * 0.24));
+            var width = Math.min(560, Math.max(320, stageWidth * 0.30));
             grid.style.width = width + 'px';
             grid.style.setProperty('--pub-height', 'auto');
             var height = Math.max.apply(null, cards.map(function (card) {
