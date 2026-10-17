@@ -3,7 +3,7 @@
 #publications .publications-grid {
     top: 50%;
     height: var(--pub-height, auto);
-    transform: translate(-50%, -50%) translateY(var(--pub-shift, 0px)) scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1)) rotateX(-26deg) rotateY(0deg);
+    transform: translate(-50%, -50%) translateY(var(--pub-shift, 0px)) scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1)) rotateX(-12deg) rotateY(0deg);
 }
 #publications .publication-card {
     width: 100%;
