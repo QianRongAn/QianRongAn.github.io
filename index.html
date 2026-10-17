@@ -1768,10 +1768,10 @@
 #publications .pub-stage {
     position: relative;
     width: 100vw;
-    height: 380px;
-    margin: 10px 0 20px calc(50% - 50vw);
-    perspective: 1100px;
-    perspective-origin: 50% 45%;
+    height: 520px;
+    margin: 24px 0 20px calc(50% - 50vw);
+    perspective: 3600px;
+    perspective-origin: 50% 50%;
     overflow: visible;
 }
 .publications-grid {
@@ -1892,26 +1892,26 @@
     border-radius: 0 0 10px 10px;
 }
 #publications .pub-title {
-    font-size: 0.72em;
-    margin-bottom: 6px;
-    line-height: 1.3;
+    font-size: 0.98em;
+    margin-bottom: 7px;
+    line-height: 1.32;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 #publications .pub-authors,
 #publications .pub-journal {
-    font-size: 0.68em;
-    margin-bottom: 4px;
+    font-size: 0.86em;
+    margin-bottom: 6px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 #publications .pub-impact {
-    font-size: 0.65em;
-    padding: 2px 7px;
+    font-size: 0.82em;
+    padding: 3px 10px;
 }
 .pub-content > * {
     pointer-events: auto;
@@ -3020,8 +3020,8 @@
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-flat" defer></script>
-    <link rel="stylesheet" href="css/pub-gallery.css?v=20261018-full">
-    <script src="js/pub-gallery.js?v=20261018-full" defer></script>
+    <link rel="stylesheet" href="css/pub-gallery.css?v=20261018-big">
+    <script src="js/pub-gallery.js?v=20261018-big" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
@@ -3374,7 +3374,6 @@
             </div>
             <div id="publications" class="cube-page reveal" data-index="5">
                 <section data-zh-slot="publications">
-                    <h2 class="section-title"><span data-i18n="pub.title">Selected Publications</span></h2>
                     <div class="pub-stage">
                     <div class="publications-grid">
                         <div class="publication-card" data-pub-id="1">
