@@ -932,11 +932,12 @@
             min-height: 100dvh !important;
             background: transparent;
         }
-        html.projects-view #intro {
+        html.projects-view #intro,
+        body:has(#projects.cube-page.active) #footer {
             display: none !important;
         }
         #projects.cube-page.active {
-            position: fixed;
+            position: fixed !important;
             inset: 0;
             width: 100vw;
             height: 100vh;
@@ -945,8 +946,8 @@
             margin: 0;
             left: 0;
             top: 0;
-            z-index: 40;
-            transform: none;
+            z-index: 900;
+            transform: none !important;
             background: #ececec;
             overflow: hidden;
         }
