@@ -775,6 +775,8 @@
             margin-bottom: 40px;
             transition: box-shadow 0.3s ease;
         }
+        /* Match Personal Statement frosted glass. Parent page transforms break
+           backdrop-filter, so blur a fixed wall layer inside the card instead. */
         #about.cube-page section,
         #education.cube-page section,
         #experience.cube-page section,
@@ -782,9 +784,58 @@
         #extracurricular.cube-page section,
         #skills.cube-page section,
         #thesis.cube-page section {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            background-color: transparent !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        #about.cube-page section::before,
+        #education.cube-page section::before,
+        #experience.cube-page section::before,
+        #projects.cube-page section::before,
+        #extracurricular.cube-page section::before,
+        #skills.cube-page section::before,
+        #thesis.cube-page section::before {
+            content: "";
+            position: absolute;
+            inset: -28px;
+            z-index: 0;
+            background-image: url('wall.webp');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            filter: blur(10px);
+            -webkit-filter: blur(10px);
+            transform: scale(1.06);
+            pointer-events: none;
+        }
+        #about.cube-page section::after,
+        #education.cube-page section::after,
+        #experience.cube-page section::after,
+        #projects.cube-page section::after,
+        #extracurricular.cube-page section::after,
+        #skills.cube-page section::after,
+        #thesis.cube-page section::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
             background-color: rgba(255, 255, 255, 0.6);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+        #about.cube-page section > *,
+        #education.cube-page section > *,
+        #experience.cube-page section > *,
+        #projects.cube-page section > *,
+        #extracurricular.cube-page section > *,
+        #skills.cube-page section > *,
+        #thesis.cube-page section > * {
+            position: relative;
+            z-index: 1;
         }
         .cube-page section:hover {
             transform: none;
