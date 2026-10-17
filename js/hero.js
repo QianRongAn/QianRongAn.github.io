@@ -124,21 +124,27 @@
         motion.removeEventListener('change', onMotionChange);
         hero.dispatchEvent(new Event('hero:dismiss'));
         var target = document.getElementById('intro');
-        var hobbies = document.getElementById('scroll-target-about');
         if (target) {
             target.setAttribute('tabindex', '-1');
             target.focus({preventScroll: true});
-            target.scrollIntoView({behavior: motion.matches ? 'auto' : 'smooth', block: 'start'});
         }
-        if (hobbies) {
-            window.setTimeout(function () {
-                var bottom = hobbies.getBoundingClientRect().bottom;
-                var overflow = bottom - window.innerHeight + 16;
-                if (overflow > 0) {
-                    window.scrollBy({ top: overflow, behavior: motion.matches ? 'auto' : 'smooth' });
-                }
-            }, motion.matches ? 0 : 700);
+        function showHobbies() {
+            var hobbies = document.getElementById('scroll-target-about');
+            var header = document.getElementById('top-header');
+            if (!hobbies) return;
+            var headerBottom = header ? header.getBoundingClientRect().height + 8 : 84;
+            var photo = document.querySelector('#intro .profile-photo');
+            var photoTop = photo ? photo.getBoundingClientRect().top : headerBottom;
+            var overflow = hobbies.getBoundingClientRect().bottom - window.innerHeight + 20;
+            if (overflow <= 0) return;
+            var roomAbovePhoto = photoTop - headerBottom;
+            var delta = roomAbovePhoto > 8 ? Math.min(overflow, roomAbovePhoto) : overflow;
+            var root = document.scrollingElement || document.documentElement;
+            root.scrollTop += delta;
         }
+        showHobbies();
+        window.setTimeout(showHobbies, 50);
+        window.setTimeout(showHobbies, 400);
         window.setTimeout(function () { hero.hidden = true; hero.style.display = 'none'; }, motion.matches ? 0 : 1200);
     }
     function onWheel(e) { if (e.deltaY > 0) dismiss(); }
