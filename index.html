@@ -1768,18 +1768,18 @@
 #publications .pub-stage {
     position: relative;
     width: 100vw;
-    height: 740px;
+    height: 380px;
     margin: 10px 0 20px calc(50% - 50vw);
-    perspective: 1600px;
-    perspective-origin: 50% 42%;
+    perspective: 1100px;
+    perspective-origin: 50% 45%;
     overflow: visible;
 }
 .publications-grid {
     position: absolute;
     left: 50%;
-    top: 46%;
-    width: 300px;
-    height: 500px;
+    top: 50%;
+    width: 150px;
+    height: 250px;
     margin: 0;
     padding: 0;
     display: block !important;
@@ -1804,11 +1804,11 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 300px;
-            height: 500px;
+            width: 150px;
+            height: 250px;
             background: #ffffff;
-            border-radius: 16px;
-            overflow: visible;
+            border-radius: 10px;
+            overflow: hidden;
             box-shadow: none;
             cursor: pointer;
             transform-style: preserve-3d;
@@ -1824,10 +1824,10 @@
 .pub-image-wrapper {
     position: relative;
     width: 100%;
-    height: 220px; /* more headroom to avoid any clipping */
-    overflow: visible !important; /* allow top image to fully show */
-    border-radius: 15px 15px 0 0; /* 只设置顶部圆角 */
-    z-index: 1; /* create stacking context for images */
+    height: 110px;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
+    z-index: 1;
 }
 
 /* Modern gradients per card */
@@ -1886,10 +1886,32 @@
 
 /* 文本内容（保持不变） */
 .pub-content {
-    padding: 25px;
-    background: #ffffff; /* 内容区域也不透明 */
+    padding: 10px 12px 12px;
+    background: #ffffff;
     pointer-events: none;
-    border-radius: 0 0 15px 15px; /* 只设置底部圆角 */
+    border-radius: 0 0 10px 10px;
+}
+#publications .pub-title {
+    font-size: 0.72em;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+#publications .pub-authors,
+#publications .pub-journal {
+    font-size: 0.68em;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+#publications .pub-impact {
+    font-size: 0.65em;
+    padding: 2px 7px;
 }
 .pub-content > * {
     pointer-events: auto;
@@ -2998,7 +3020,7 @@
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-flat" defer></script>
-    <script src="js/pub-gallery.js?v=20261018-ring" defer></script>
+    <script src="js/pub-gallery.js?v=20261018-half" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>

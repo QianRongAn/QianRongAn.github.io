@@ -3,7 +3,7 @@
     'use strict';
 
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var radius = 540;
+    var radius = 270;
 
     function setup(grid) {
         if (!grid || grid._gallery) return;
