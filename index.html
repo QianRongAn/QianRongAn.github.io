@@ -638,11 +638,11 @@
             z-index: 10;
         }
         .profile-photo {
-            width: 150px; 
-            height: 150px;
+            width: 128px;
+            height: 128px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             box-shadow: var(--shadow-light);
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s;
             position: relative; 
@@ -656,7 +656,8 @@
         #intro h1 {
             font-family: 'BodoniFLF-Italic', 'Bodoni 72', 'Bodoni 72 Oldstyle', 'Bodoni MT', 'Bodoni', serif;
             font-size: 3.2em;
-            margin: 0 0 8px;
+            line-height: 1.05;
+            margin: 0 0 4px;
             font-weight: 400; 
             font-style: italic;
             color: var(--nan-wang-blue);
@@ -684,16 +685,17 @@
             font-family: var(--sans-font);
             font-size: 1.3em;
             font-weight: 300;
+            line-height: 1.35;
             color: var(--text-secondary);
             margin: 0;
-            padding-bottom: 10px;
+            padding-bottom: 0;
         }
         .contact-info {
             display: flex;
             justify-content: center;
             flex-wrap: wrap; 
             gap: 25px;
-            margin: 15px 0 15px 0;
+            margin: 10px 0 6px 0;
         }
         .contact-info a {
             color: var(--text-secondary);
@@ -713,6 +715,16 @@
             gap: 8px;
             margin-top: 0;
             margin-bottom: 20px;
+        }
+        #intro > .skills-grid {
+            margin-bottom: 4px;
+            overflow: visible;
+            clip-path: none;
+            animation-name: introRowIn;
+        }
+        @keyframes introRowIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .skill-group {
             display: inline-flex;
@@ -2502,11 +2514,11 @@
                 <span class="skill-group"><i class="fas fa-globe-asia"></i> <span data-i18n="intro.zh">Chinese (Native)</span></span>
                 <span class="skill-group"><i class="fas fa-globe-europe"></i> <span data-i18n="intro.en">English (Fluent)</span></span>
                 <div id="scroll-target-others" style="width: 100%; height: 0;"></div>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-mountain"></i> <span data-i18n="intro.hike">Mountaineering</span></span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-plane-departure"></i> <span data-i18n="intro.travel">Traveling</span></span> 
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-theater-masks"></i> <span data-i18n="intro.show">Exhibitions, concerts</span></span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-hand-sparkles"></i> <span data-i18n="intro.astro">Astrology</span></span>
-                <span class="skill-group" style="margin-top: -12px;"><i class="fas fa-book-reader"></i> <span data-i18n="intro.read">Reading</span></span>
+                <span class="skill-group"><i class="fas fa-mountain"></i> <span data-i18n="intro.hike">Mountaineering</span></span>
+                <span class="skill-group"><i class="fas fa-plane-departure"></i> <span data-i18n="intro.travel">Traveling</span></span> 
+                <span class="skill-group"><i class="fas fa-theater-masks"></i> <span data-i18n="intro.show">Exhibitions, concerts</span></span>
+                <span class="skill-group"><i class="fas fa-hand-sparkles"></i> <span data-i18n="intro.astro">Astrology</span></span>
+                <span class="skill-group"><i class="fas fa-book-reader"></i> <span data-i18n="intro.read">Reading</span></span>
             </div>
         </section>
         <div id="content-wrapper">

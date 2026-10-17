@@ -124,10 +124,20 @@
         motion.removeEventListener('change', onMotionChange);
         hero.dispatchEvent(new Event('hero:dismiss'));
         var target = document.getElementById('intro');
+        var hobbies = document.getElementById('scroll-target-about');
         if (target) {
             target.setAttribute('tabindex', '-1');
             target.focus({preventScroll: true});
             target.scrollIntoView({behavior: motion.matches ? 'auto' : 'smooth', block: 'start'});
+        }
+        if (hobbies) {
+            window.setTimeout(function () {
+                var bottom = hobbies.getBoundingClientRect().bottom;
+                var overflow = bottom - window.innerHeight + 16;
+                if (overflow > 0) {
+                    window.scrollBy({ top: overflow, behavior: motion.matches ? 'auto' : 'smooth' });
+                }
+            }, motion.matches ? 0 : 700);
         }
         window.setTimeout(function () { hero.hidden = true; hero.style.display = 'none'; }, motion.matches ? 0 : 1200);
     }
