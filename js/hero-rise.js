@@ -16,13 +16,14 @@
             onSplit: function (self) {
                 if (index === 0) nameChars = self.chars.length;
                 if (el.classList.contains('hero-focus')) {
-                    var focusFont = "'Playfair Display', Georgia, serif";
+                    var focusFont = "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
                     el.style.setProperty('font-family', focusFont, 'important');
                     el.style.setProperty('font-style', 'italic', 'important');
+                    el.style.setProperty('font-weight', '300', 'important');
                     self.chars.forEach(function (char) {
                         char.style.setProperty('font-family', focusFont, 'important');
                         char.style.setProperty('font-style', 'italic', 'important');
-                        char.style.setProperty('font-weight', '500', 'important');
+                        char.style.setProperty('font-weight', '300', 'important');
                     });
                 }
                 return gsap.from(self.chars, {
