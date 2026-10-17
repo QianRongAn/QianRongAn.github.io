@@ -344,17 +344,20 @@
         .fas, .fab, .far, .fal, .fa {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", var(--sans-font) !important;
         }
-        /* Opacity-only fade: filter:blur on #container paints a 1px black edge over wall.webp */
-        body > *:not(.page-overlay):not(#top-header):not(.hero-screen) {
+        /* 不要给 #container 做 opacity 动画，否则内部卡片 backdrop-filter 无法模糊墙纸（Statement 页没有这层） */
+        body > *:not(.page-overlay):not(#top-header):not(.hero-screen):not(#container):not(#pageCurtain) {
             opacity: 0;
             animation: fadeInContent 2s ease-in-out 0.3s forwards;
         }
         #container,
         #footer {
+            opacity: 1 !important;
+            animation: none !important;
             filter: none !important;
             outline: none !important;
             border: none !important;
             box-shadow: none !important;
+            transform: none !important;
         }
         #top-header {
             opacity: 1 !important;
@@ -3349,16 +3352,19 @@
             });
             cubePages.forEach((page, index) => {
                 page.setAttribute('data-index', index);
+                page.style.transform = 'none';
                 if (index === 0) {
                     page.classList.add('active');
                     page.style.position = 'relative';
-                    page.style.opacity = 1;
-                    page.style.transform = 'none';
+                    page.style.opacity = '1';
+                    page.style.visibility = 'visible';
+                    page.style.pointerEvents = 'auto';
                 } else {
                     page.classList.remove('active');
                     page.style.position = 'absolute';
-                    page.style.opacity = 0;
-                    page.style.transform = 'translateY(100%)';
+                    page.style.opacity = '0';
+                    page.style.visibility = 'hidden';
+                    page.style.pointerEvents = 'none';
                 }
             });
             setWrapperHeight(0);
