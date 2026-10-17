@@ -851,10 +851,9 @@
         }
         .project-split {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: clamp(18px, 2.5vw, 28px);
-            align-items: stretch;
-            min-height: clamp(320px, 48vh, 460px);
+            align-items: start;
             perspective: 1400px;
         }
         .project-info-card {
@@ -907,8 +906,7 @@
             min-height: 100%;
         }
         .project-poster-frame {
-            height: 100%;
-            min-height: clamp(280px, 42vh, 430px);
+            height: auto;
             border-radius: 36px;
             overflow: hidden;
             background: #fffaf4;
@@ -917,10 +915,9 @@
                 0 26px 50px rgba(35, 20, 12, 0.26),
                 0 10px 18px rgba(35, 20, 12, 0.12),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            transform: rotateY(-6deg) rotateX(3deg) translateZ(0);
-            transform-origin: center left;
+            transform: none;
+            transform-origin: center center;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
-            will-change: transform;
         }
         .project-visual.is-tilting .project-poster-frame {
             transition: transform 0.08s linear, box-shadow 0.2s ease;
@@ -934,11 +931,11 @@
         .project-poster-frame img {
             display: block;
             width: 100%;
-            height: 100%;
-            min-height: clamp(280px, 42vh, 430px);
-            object-fit: cover;
-            object-position: top center;
-            background: #efe6d8;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+            object-position: center center;
+            background: #fffaf4;
         }
         .project-poster-placeholder {
             display: flex;
@@ -973,9 +970,7 @@
             }
             .project-poster-frame {
                 transform: none;
-                min-height: 240px;
             }
-            .project-poster-frame img,
             .project-poster-placeholder {
                 min-height: 240px;
             }
