@@ -163,39 +163,40 @@
         unbindHero();
         curtain.classList.add('is-on');
         var counter = { n: 0 };
+        if (countEl) countEl.textContent = '00';
         gsap.set(curtain, { yPercent: 100 });
         if (title) {
             title.classList.add('is-curtain-title');
-            gsap.set(title, { clipPath: 'inset(100% 0% 0% 0%)' });
+            gsap.set(title, { clipPath: 'inset(0% 0% 0% 0%)' });
         }
         gsap.timeline({
+            defaults: { ease: 'power4.inOut' },
             onComplete: function () {
                 curtain.classList.remove('is-on');
                 gsap.set(curtain, { yPercent: 100 });
             }
         })
-            .to(curtain, { yPercent: 0, duration: 0.9, ease: 'power4.inOut' }, 0)
+            .to(curtain, { yPercent: 0, duration: 1 })
             .to(counter, {
                 n: 100,
-                duration: 0.9,
+                duration: 1,
                 ease: 'none',
                 onUpdate: function () {
+                    if (!countEl) return;
                     var value = Math.round(counter.n);
                     countEl.textContent = value < 10 ? '0' + value : String(value);
                 }
-            }, 0)
+            }, '<')
             .add(function () {
                 if (window.SiteI18n && lang) window.SiteI18n.apply(lang);
                 revealHome();
             })
-            .to(curtain, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' })
-            .fromTo(title, {
-                clipPath: 'inset(100% 0% 0% 0%)'
-            }, {
-                clipPath: 'inset(0% 0% 0% 0%)',
-                duration: 0.85,
+            .to(curtain, { yPercent: -100, duration: 1 })
+            .from(title, {
+                clipPath: 'inset(0% 0% 100% 0%)',
+                duration: 1,
                 ease: 'power4.out'
-            }, '<0.15');
+            }, '<');
     }
     function onWheel(e) { if (e.deltaY > 0) playCurtain(); }
     function onKey(e) {

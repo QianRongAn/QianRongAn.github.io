@@ -2409,18 +2409,19 @@
         .hero-scroll i { font-size: 0.9rem; }
         .page-curtain {
             position: fixed;
-            inset: 0;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
             z-index: 200000;
-            background: #23140C;
-            color: #f6f1e8;
+            background: #f4efe6;
+            color: #23140C;
             display: flex;
             align-items: flex-end;
             justify-content: flex-end;
-            padding: 7vh 6vw;
-            transform: translateY(100%);
-            visibility: hidden;
+            padding: 8vh 7vw;
             pointer-events: none;
-            will-change: transform;
+            visibility: hidden;
         }
         .page-curtain.is-on {
             visibility: visible;
@@ -2506,7 +2507,7 @@
     <script src="js/zh-copy.js?v=20261018-pdf2" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
-    <script src="js/hero.js?v=20261017-curtain" defer></script>
+    <script src="js/hero.js?v=20261018-curtain2" defer></script>
     <script src="js/hero-water.js?v=20261017-wave" defer></script>
     <script src="js/nav-spotlight.js?v=20261017-nav2" defer></script>
     <!-- 移动端提示 -->
