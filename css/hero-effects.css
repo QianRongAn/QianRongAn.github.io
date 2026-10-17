@@ -1,0 +1,23 @@
+/* Native gradients avoid both the contaminated cutout and the damaged clean plate. */
+.hero-bg { pointer-events: none; }
+.hero-aura {
+    position: absolute;
+    left: 66%; top: 42%;
+    width: min(52vw, 720px); aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(213, 213, 255, .17), rgba(150, 166, 245, .08) 36%, transparent 67%);
+    transform: translate(-50%, -50%);
+    animation: mistBreathe 9s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+.hero-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.hero-enter:focus-visible, .hero-social a:focus-visible { outline: 2px solid white; outline-offset: 6px; }
+@keyframes mistBreathe {
+    from { opacity: .5; transform: translate(-53%, -48%) scale(.94); }
+    to { opacity: 1; transform: translate(-47%, -52%) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero-screen, .hero-bg { transition: none !important; }
+    .hero-screen *, .hero-aura { animation: none !important; }
+    .hero-title, .hero-dream, .hero-left, .hero-social { opacity: 1; }
+}
