@@ -35,8 +35,19 @@
 
         document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
             var original = remember(el, '_enHtml', el.innerHTML);
-            var next = zh && pack.html && pack.html[el.getAttribute('data-i18n-html')];
-            el.innerHTML = next || original;
+            var key = el.getAttribute('data-i18n-html');
+            if (zh && pack.html && Object.prototype.hasOwnProperty.call(pack.html, key)) {
+                var next = pack.html[key];
+                if (!next) {
+                    el.style.display = 'none';
+                    return;
+                }
+                el.style.display = '';
+                el.innerHTML = next;
+                return;
+            }
+            el.style.display = '';
+            if (el.innerHTML !== original) el.innerHTML = original;
         });
 
         document.querySelectorAll('[data-statement-link]').forEach(function (el) {
