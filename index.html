@@ -314,21 +314,31 @@
         #thesis .tech-description {
             font-family: var(--sans-font) !important;
         }
-        /* 标题使用 Aboreto-Regular 字体 */
-        #education .section-title,
-        #experience .section-title,
-        #projects .section-title,
-        #extracurricular .section-title,
-        #skills .section-title,
-        #thesis .section-title {
+        /* 各卡片标题与 About Me 一样用 Aboreto；正文仍用 Inter */
+        #about#about .section-title,
+        #about#about .section-title span,
+        #education#education .section-title,
+        #education#education .section-title span,
+        #experience#experience .section-title,
+        #experience#experience .section-title span,
+        #projects#projects .section-title,
+        #projects#projects .section-title span,
+        #extracurricular#extracurricular .section-title,
+        #extracurricular#extracurricular .section-title span,
+        #skills#skills .section-title,
+        #skills#skills .section-title span,
+        #publications#publications .section-title,
+        #publications#publications .section-title span,
+        #thesis#thesis .section-title,
+        #thesis#thesis .section-title span {
             font-family: 'Aboreto', 'Georgia', 'Times New Roman', var(--serif-font) !important;
         }
-        /* 子标题保持原有字体 */
         .details h3,
         .details h4,
         .thesis-chapter-title,
-        #skills .skill-category-title {
-            font-family: var(--serif-font) !important;
+        #skills .skill-category-title,
+        .date-location {
+            font-family: var(--sans-font) !important;
         }
         /* 确保 Font Awesome 图标使用正确的字体 */
         .fas, .fab, .far, .fal, .fa {
@@ -883,7 +893,7 @@
         }
         /* 玻璃拟态风格图标 - 透明无边框样式 */
         .section-title i {
-            display: inline-flex !important;
+            display: none !important;
             align-items: center !important;
             justify-content: center !important;
             width: 56px;
@@ -2601,7 +2611,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="js/hero-rise.js?v=20261017-rise4"></script>
-    <script src="js/zh-copy.js?v=20261018-mail" defer></script>
+    <script src="js/zh-copy.js?v=20261018-icons" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
@@ -2669,7 +2679,7 @@
         <div id="content-wrapper">
             <div id="about" class="cube-page active reveal" data-index="0">
                 <section>
-                    <h2 class="section-title"><i class="fas fa-info-circle"></i> <span data-i18n="about.title">About Me</span></h2>
+                    <h2 class="section-title"><span data-i18n="about.title">About Me</span></h2>
                     <p class="about-paragraph" data-i18n-html="about.p1">Computational biology and biomedical AI researcher with an <strong>MSc in Immunology from Xiamen University</strong> and research spanning <strong>tumor immunology</strong>, <strong>immune-repertoire analysis</strong>, <strong>computational immunology</strong>, and <strong>multi-omics integration</strong>, extending into <strong>medical NLP</strong> and <strong>structure-driven deep learning</strong>.</p>
                     <p class="about-paragraph" data-i18n-html="about.p2">Independently led research projects end to end, including an <strong>equivariant graph neural network</strong> for TCR off-target risk prediction with active-learning screening of million-scale candidate peptides and an independently developed <strong>evidence-based-medicine literature analysis tool</strong> (PICO structuring, evidence grading, and PMID traceability) with a <strong>LightGBM and SHAP</strong> retraction-risk prediction model.</p>
                     <p class="about-paragraph" data-i18n-html="about.p3">Co-first author of a <strong>Journal of Hematology &amp; Oncology</strong> study (<strong>IF: 40.4</strong>) that developed interpretable machine-learning classifiers across COVID-19 disease and vaccination states; author of <strong>six peer-reviewed articles</strong> (five published, one under review).</p>
@@ -2683,7 +2693,7 @@
             </div>
             <div id="education" class="cube-page reveal" data-index="1">
                 <section data-zh-slot="education">
-                    <h2 class="section-title"><i class="fas fa-university"></i> <span data-i18n="edu.title">Education</span></h2>
+                    <h2 class="section-title"><span data-i18n="edu.title">Education</span></h2>
                     <div class="content-item">
                         <div class="details">
                             <h3>MSc in Immunology</h3>
@@ -2720,7 +2730,7 @@
             </div>
             <div id="experience" class="cube-page reveal" data-index="2">
                 <section data-zh-slot="experience">
-                    <h2 class="section-title"><i class="fas fa-flask"></i> <span data-i18n="exp.title">Practical Experience</span></h2>
+                    <h2 class="section-title"><span data-i18n="exp.title">Practical Experience</span></h2>
                     <div class="content-item">
                         <div class="details">
                             <h3>Bioinformatics &amp; Research Assistant</h3>
@@ -2768,7 +2778,7 @@
             </div>
             <div id="projects" class="cube-page reveal" data-index="3">
                 <section data-zh-slot="projects">
-                    <h2 class="section-title"><i class="fas fa-diagram-project"></i> <span data-i18n="proj.title">Projects</span></h2>
+                    <h2 class="section-title"><span data-i18n="proj.title">Projects</span></h2>
                     <div class="content-item">
                         <div class="details">
                             <h3>Meta-ACDC｜TCR off-target risk prediction based on an equivariant graph neural network</h3>
@@ -2801,7 +2811,7 @@
             </div>
             <div id="extracurricular" class="cube-page reveal" data-index="4">
                 <section data-zh-slot="activities">
-                    <h2 class="section-title"><i class="fas fa-hands-helping"></i> <span data-i18n="act.title">Academic Activities</span></h2>
+                    <h2 class="section-title"><span data-i18n="act.title">Academic Activities</span></h2>
                     <div class="content-item" style="border-left: none; padding-left: 0; margin-bottom: 0; padding-bottom: 0; position: relative; z-index: 1; pointer-events: none; overflow: visible;">
                         <div class="details" style="pointer-events: auto; margin-bottom: 40px;">
                             <h4>CCHIO (Chinese Congress on Holistic Integrative Oncology)</h4>
@@ -2837,7 +2847,7 @@
             </div>
             <div id="skills" class="cube-page reveal" data-index="4">
                 <section data-zh-slot="skills">
-                    <h2 class="section-title"><i class="fas fa-tools"></i> <span data-i18n="skills.title">Technical Skills & Methods</span></h2>
+                    <h2 class="section-title"><span data-i18n="skills.title">Technical Skills & Methods</span></h2>
                     <div class="skill-category">
                         <h3 class="skill-category-title">NGS Data Processing</h3>
                         <div class="skills-grid">
@@ -2925,7 +2935,7 @@
             </div>
             <div id="publications" class="cube-page reveal" data-index="5">
                 <section data-zh-slot="publications">
-                    <h2 class="section-title"><i class="fas fa-file-alt"></i> <span data-i18n="pub.title">Selected Publications</span></h2>
+                    <h2 class="section-title"><span data-i18n="pub.title">Selected Publications</span></h2>
                     <div class="publications-grid">
                         <div class="publication-card" data-pub-id="1">
                             <div class="pub-image-wrapper">
@@ -3012,7 +3022,7 @@
             </div>
             <div id="thesis" class="cube-page reveal" data-index="6">
                 <section data-zh-slot="thesis">
-                    <h2 class="section-title"><i class="fas fa-microscope"></i> <span data-i18n="thesis.title">Master's Thesis: Bioinformatics Analysis of COVID-19-Associated Immune Repertoire and Specific TCRs</span></h2>
+                    <h2 class="section-title"><span data-i18n="thesis.title">Master's Thesis: Bioinformatics Analysis of COVID-19-Associated Immune Repertoire and Specific TCRs</span></h2>
                     <div class="content-item">
                         <h3 class="thesis-chapter-title">Chapter 1: Introduction</h3>
                         <div class="details">
