@@ -90,7 +90,7 @@
         dust = [];
         for (var i = 0, n = Math.min(85, Math.round(width * height / 15500)); i < n; i++) {
             dust.push({x: Math.random() * width, y: Math.random() * height,
-                r: .8 + Math.random() * 1.5, speed: 6 + Math.random() * 12,
+                r: .45 + Math.random() * .65, speed: 4 + Math.random() * 8,
                 phase: Math.random() * Math.PI * 2, color: i % 4 === 0 ? 1 : 0});
         }
         draw(performance.now());
@@ -110,8 +110,15 @@
             }
             var pulse = motion.matches ? .6 : .4 + .6 * (1 + Math.sin(now / 1800 + p.phase)) / 2;
             ctx.globalAlpha = pulse * .85;
-            var size = p.r * 18;
+            var size = p.r * 8;
             ctx.drawImage(glowSprites[p.color], p.x - size / 2, p.y - size / 2, size, size);
+            ctx.fillStyle = '#fff9f3';
+            ctx.fillRect(p.x - .45, p.y - .45, .9, .9);
+            if (p.r > .9) {
+                ctx.globalAlpha = pulse * .35;
+                ctx.fillRect(p.x - 2.5, p.y - .25, 5, .5);
+                ctx.fillRect(p.x - .25, p.y - 2.5, .5, 5);
+            }
         });
         sparks = sparks.filter(function (spark) {
             spark.life -= dt;
@@ -119,7 +126,7 @@
             spark.x += spark.vx * dt;
             spark.y += spark.vy * dt;
             ctx.globalAlpha = Math.pow(spark.life / spark.maxLife, 1.5) * .9;
-            var size = spark.r * 20;
+            var size = spark.r * 7;
             ctx.drawImage(glowSprites[spark.color], spark.x - size / 2, spark.y - size / 2, size, size);
             return true;
         });
@@ -140,7 +147,7 @@
             var life = .65 + Math.random() * .8;
             sparks.push({x: x + (Math.random() - .5) * 12, y: y + (Math.random() - .5) * 12,
                 vx: (Math.random() - .5) * 22, vy: -12 - Math.random() * 20,
-                r: .7 + Math.random(), color: i % 2, life: life, maxLife: life});
+                r: .45 + Math.random() * .5, color: i % 2, life: life, maxLife: life});
         }
         if (sparks.length > 48) sparks.splice(0, sparks.length - 48);
     }
