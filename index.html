@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nan Wang | Bioinformatics & Immunology</title>
     <link rel="icon" type="image/jpeg" href="image/favicon.jpg">
+    <link rel="preload" href="font/bidaq.otf" as="font" type="font/otf" crossorigin fetchpriority="high">
     <style>
         @font-face {
             font-family: 'Inter';
@@ -83,7 +84,7 @@
             src: url('font/bidaq.otf') format('opentype');
             font-weight: 400;
             font-style: normal;
-            font-display: swap;
+            font-display: block;
         }
         @font-face {
             font-family: 'Inter Display';
@@ -168,6 +169,25 @@
             }
         }
     </style>
+    <style>
+        html.hero-font-pending .hero-title { visibility: hidden !important; }
+    </style>
+    <script>
+        (function () {
+            var root = document.documentElement;
+            if (!document.fonts) return;
+            root.classList.add('hero-font-pending');
+            window.heroTitleFontReady = document.fonts.load('400 160px "Bidaq"', 'Nan\u00a0Wang')
+                .then(function (faces) { return faces.length > 0; }, function () { return false; });
+            // Still reveal the name if the optional animation script cannot load.
+            var domReady = new Promise(function (resolve) {
+                document.addEventListener('DOMContentLoaded', resolve, { once: true });
+            });
+            Promise.all([window.heroTitleFontReady, domReady]).then(function () {
+                root.classList.remove('hero-font-pending');
+            });
+        })();
+    </script>
     <link rel="stylesheet" href="css/fontawesome.css">
     <link rel="preload" href="font/playfair-display-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="wall.webp" as="image" fetchpriority="high">
@@ -3016,12 +3036,12 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-    <script src="js/hero-rise.js?v=20261018-mask"></script>
+    <script src="js/hero-rise.js?v=20261018-font-ready"></script>
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-flat" defer></script>
     <link rel="stylesheet" href="css/pub-gallery.css?v=20261018-curved2">
-    <script src="js/pub-gallery.js?v=20261018-curved2" defer></script>
+    <script src="js/pub-gallery.js?v=20261018-full-turn" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>

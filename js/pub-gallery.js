@@ -11,7 +11,7 @@
     var ROLL = -12;         /* diagonal ring axis, like the reference */
     var LEAN = -8;          /* tops lean outward in the radial direction */
     var SLICES = 24;        /* tangent panels approximate a continuous cylinder */
-    var SWAY = 8;           /* pointer sway, in degrees */
+    var POINTER_TURN = 360; /* full pointer sweep can bring every paper forward */
     var RATIO = 0.5;        /* minimum height; full text can make a card taller */
     var GAP = 22;           /* minimum horizontal gap between neighbours, px */
 
@@ -75,7 +75,8 @@
 
         function ringBox(width, height, radius, scale) {
             var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            for (var p = -SWAY; p <= SWAY; p += SWAY) {
+            // The evenly spaced ring repeats after one card interval.
+            for (var p = 0; p <= 360 / count; p += 10) {
                 for (var i = 0; i < count; i++) {
                     var b = cardBox(width, height, radius, scale, angles[i] + p);
                     if (b.minX < minX) minX = b.minX;
@@ -102,7 +103,7 @@
 
         function minGap(width, height, radius, scale) {
             var g = Infinity;
-            for (var p = -SWAY; p <= SWAY; p += SWAY) {
+            for (var p = 0; p <= 360 / count; p += 10) {
                 var front = frontArc(p);
                 for (var i = 0; i + 1 < front.length; i++) {
                     var a = cardBox(width, height, radius, scale, front[i]);
@@ -248,7 +249,7 @@
             var rect = stage.getBoundingClientRect();
             var x = (event.clientX - rect.left) / Math.max(rect.width, 1);
             x = Math.max(0, Math.min(1, x));
-            target = (0.5 - x) * SWAY * 2;
+            target = (0.5 - x) * POINTER_TURN;
             spin();
         });
     }
