@@ -1,5 +1,5 @@
 /* Publications stand on a full 360-degree ring, like a rotating carousel wall.
-   Cards are landscape (2:1) and the front-facing cards never overlap: every card
+   Cards are landscape with content-sized height and the front-facing cards never overlap: every card
    corner is projected analytically and a minimum gap is enforced between the
    neighbours you actually see (the back of the ring is allowed to tuck behind). */
 (function () {
@@ -9,7 +9,7 @@
     var PERSPECTIVE = 3600; /* keep in sync with css/pub-gallery.css */
     var TILT = 12;          /* keep in sync with css/pub-gallery.css */
     var SWAY = 8;           /* pointer sway, in degrees */
-    var RATIO = 0.5;        /* card height = card width * RATIO (landscape) */
+    var RATIO = 0.5;        /* minimum height; full text can make a card taller */
     var GAP = 22;           /* minimum horizontal gap between neighbours, px */
 
     function setup(grid) {
@@ -126,10 +126,16 @@
 
         function layout() {
             var stageWidth = stage.clientWidth || window.innerWidth;
-            var width = Math.min(500, Math.max(340, stageWidth * 0.26));
-            var height = width * RATIO;
+            var width = Math.min(720, Math.max(560, stageWidth * 0.45));
             grid.style.width = width + 'px';
+            grid.style.setProperty('--pub-height', 'auto');
+            var fronts = cards.map(function (card) { return card.querySelector('.pub-front'); });
+            fronts.forEach(function (front) { front.style.minHeight = '0'; });
+            var height = Math.max(width * RATIO, Math.ceil(Math.max.apply(null, fronts.map(function (front) {
+                return front.scrollHeight;
+            }))) + 24);
             grid.style.setProperty('--pub-height', height + 'px');
+            fronts.forEach(function (front) { front.style.removeProperty('min-height'); });
 
             var availH = Math.max(520, Math.min(900, window.innerHeight - 170));
             var availW = Math.max(360, stageWidth - 40);
@@ -167,6 +173,8 @@
 
         layout();
         new ResizeObserver(layout).observe(stage);
+        var contentObserver = new ResizeObserver(layout);
+        cards.forEach(function (card) { contentObserver.observe(card.querySelector('.pub-content')); });
         window.addEventListener('resize', layout);
         if (document.fonts) document.fonts.ready.then(layout);
 

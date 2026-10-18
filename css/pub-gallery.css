@@ -28,12 +28,12 @@
     flex-direction: row;
     align-items: stretch;
     transform: translateZ(0.5px);
-    overflow: hidden;
+    overflow: visible;
 }
 /* Left: image panel. The first figure is shown completely (contain, no cropping). */
 #publications .pub-image-wrapper {
     position: relative;
-    flex: 0 0 44%;
+    flex: 0 0 34%;
     height: auto;
     overflow: hidden;
     border-radius: 10px 0 0 10px;
@@ -74,26 +74,33 @@
 #publications .pub-content .pub-impact {
     margin-left: 0;
 }
-/* compact text so it fits the landscape card */
+/* Full text determines the required height; never clamp a citation. */
+#publications .pub-title,
+#publications .pub-authors,
+#publications .pub-journal {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    flex: 0 0 auto;
+    letter-spacing: normal;
+}
 #publications .pub-title {
-    font-size: 0.92em;
+    font-size: 20px;
     line-height: 1.28;
-    -webkit-line-clamp: 3;
     margin-bottom: 6px;
 }
 #publications .pub-authors {
-    font-size: 0.8em;
+    font-size: 16px;
     line-height: 1.32;
-    -webkit-line-clamp: 3;
     margin-bottom: 5px;
 }
 #publications .pub-journal {
-    font-size: 0.8em;
+    font-size: 16px;
     line-height: 1.32;
-    -webkit-line-clamp: 2;
     margin-bottom: 5px;
 }
 #publications .pub-impact {
-    font-size: 0.8em;
+    font-size: 16px;
     padding: 2px 8px;
 }
