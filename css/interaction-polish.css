@@ -1,0 +1,55 @@
+/* The glass stays outside the content fade's backdrop-isolating group. */
+#content-wrapper .cube-page { transition: none !important; }
+#content-wrapper :is(.section-title, .content-item, .details, .skills-grid,
+    .pub-content, .thesis-image-container, .tech-description) {
+    opacity: 1;
+    clip-path: none !important;
+    animation: none !important;
+}
+#heroLang { gap: 8px; }
+#heroLang .mag { padding: 10px; }
+#heroLang .mag-orbit {
+    border: 0; background: radial-gradient(ellipse, #d6ddff55, transparent 70%);
+    backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none;
+    filter: blur(9px); opacity: 0; transition: opacity 250ms ease;
+}
+#heroLang .mag:hover .mag-orbit { opacity: 1; }
+#heroLang .mag-btn {
+    min-width: 118px; min-height: 48px; padding: 12px 17px 12px 20px;
+    justify-content: space-between; gap: 22px; border-radius: 999px;
+    background: rgba(255,255,255,.10) !important; color: #fff !important;
+    border: 1px solid rgba(255,255,255,.35) !important;
+    box-shadow: inset 0 1px 0 #ffffff25, 0 6px 24px #100b3c20 !important;
+    backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    overflow: hidden; transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+#heroLang .mag-btn[data-enter-lang="zh"] {
+    background: rgba(255,255,255,.88) !important; color: #272342 !important; border-color: #ffffffa6 !important;
+}
+#heroLang .mag-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(100px circle at var(--pointer-x,50%) var(--pointer-y,50%), #ffffff38, transparent 75%);
+    pointer-events: none; opacity: 0; transition: opacity 220ms ease;
+}
+#heroLang .mag-btn:hover::before { opacity: 1; }
+#heroLang .mag-btn:hover {
+    background: rgba(255,255,255,.20) !important; border-color: #ffffffa6 !important;
+    box-shadow: inset 0 1px 0 #ffffff40, 0 8px 28px #100b3c28 !important;
+}
+#heroLang .mag-btn[data-enter-lang="zh"]:hover { background: #fff !important; }
+#heroLang .mag-btn, #heroLang .mag-label {
+    font-family: Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+    font-style: normal !important; font-weight: 500; font-size: 12px; letter-spacing: .08em;
+}
+#heroLang .mag-icon {
+    display: grid; place-items: center; width: 22px; height: 22px;
+    border: 1px solid currentColor; border-color: color-mix(in srgb, currentColor 25%, transparent);
+    border-radius: 50%; font-size: 13px; line-height: 1; opacity: .85;
+}
+#heroLang .mag-btn:focus-visible { outline: 2px solid #fff; outline-offset: 5px; }
+@media (prefers-reduced-motion: reduce) {
+    #heroLang .mag-btn, #heroLang .mag-orbit, #heroLang .mag-btn::before { transition: none; }
+}
+
+#projects .projects-host{position:absolute!important;inset:0;border-radius:0!important;max-width:none!important}
+#projectsFrame{display:block;width:100%;height:100%;border:0;background:#f4efe6}

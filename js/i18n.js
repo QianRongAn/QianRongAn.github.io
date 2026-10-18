@@ -21,7 +21,7 @@
         try { sessionStorage.setItem('siteLang', zh ? 'zh' : 'en'); } catch (err) {}
 
         document.querySelectorAll('[data-zh-slot]').forEach(function (el) {
-            if (el.getAttribute('data-zh-slot') === 'publications') return;
+            if (['publications', 'projects'].indexOf(el.getAttribute('data-zh-slot')) !== -1) return;
             var original = remember(el, '_enHtml', el.innerHTML);
             var next = zh && pack.slots && pack.slots[el.getAttribute('data-zh-slot')];
             if (next) el.innerHTML = next;

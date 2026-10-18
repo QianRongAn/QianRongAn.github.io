@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nan Wang — Selected Projects / Concept Preview</title><link rel="preload" href="assets/inter.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="style.css?v=20261019-live"></head>
+<body>
+<script>if(new URLSearchParams(location.search).has('embedded'))document.documentElement.classList.add('embedded');</script>
+  <div class="dna-background is-on" id="pageCurtain" aria-hidden="true"><canvas id="curtain-dna"></canvas></div>
+  <header class="page-header"><div class="wordmark">Nan Wang<span>Computational biology &amp; biomedical AI</span></div><div class="header-note"><span class="live-dot"></span> Selected research</div></header>
+  <main>
+    <div class="intro-line"><h1 class="eyebrow">Projects / 01—02</h1><span class="hint">Hover to explore · Click to keep open</span></div>
+    <div class="projects">
+      <article class="project" id="meta-acdc">
+        <button class="project-trigger" aria-expanded="false" aria-controls="meta-detail"><span class="index">01</span><h2>Meta-<em>ACDC</em></h2><span class="project-count" aria-hidden="true">+</span></button>
+        <div class="project-reveal" id="meta-detail"><div class="reveal-clip"><div class="detail-grid">
+          <div class="copy-column">
+            <h3 class="project-subtitle">Equivariant Graph Neural Networks for TCR Off-Target Risk Prediction</h3>
+            <p class="categories">Biomedical AI | Computational Immunology | Graph Deep Learning</p>
+            <div class="full-copy" tabindex="0" role="region" aria-label="Meta-ACDC full project introduction">
+              <p><strong>Goal</strong>address potential immunotherapy safety risks arising from T-cell receptor (TCR) cross-reactivity by building a molecular-structure-based compatibility scoring model that identifies off-target peptides at risk of unintended TCR recognition, and explore active-learning candidate screening strategies.</p>
+              <p><strong>Feature engineering and ablation</strong>to separate structurally similar off-target peptides that traditional backbone-geometry features cannot distinguish, designed backbone versus side-chain contact ablation experiments; backbone coordinates alone yielded AUROC 0.500 on a grafted-decoy discrimination task, rising to 0.933 after adding side-chain contact features, confirming the decisive contribution of side-chain chemistry.</p>
+              <p><strong>Generalization and domain adaptation</strong>to bridge the distribution gap between crystal-structure training data and predicted structures in application, introduced predicted-complex data for domain adaptation, raising cross-instance ranking concordance from 0.447 to 0.802.</p>
+              <p><strong>Active learning and candidate screening</strong>designed candidate sampling strategies based on expected information gain (EIG) and BALD, achieving approximately 2x the positive-recall gain of random-sampling and equivalent baselines at a 6% sampling budget in a simulated screen of about 4.65 million candidate peptides.</p>
+              <p><strong>Tech stack</strong>Python, PyTorch, EGNN, NumPy, SciPy, scikit-learn, structural bioinformatics.</p>
+            </div>
+            <div class="stack"><strong>STRUCTURE → GRAPH → RECOGNITION</strong><br>Structural bioinformatics meets geometric deep learning.</div>
+          </div>
+          <div class="visual-column">
+            <div class="visual-topline"><span class="visual-label">Molecular intelligence</span><span class="visual-label">01 / Concept visual</span></div>
+            <button class="image-button" aria-label="Enlarge Meta-ACDC concept diagram"><img class="project-image diagram" src="assets/meta-acdc.svg" alt="Concept diagram of TCR and peptide contact graphs feeding an EGNN compatibility score"><span class="image-zoom" aria-hidden="true">↗</span></button>
+            <p class="image-caption">A structural view of TCR–peptide compatibility. Concept illustration.</p>
+            <div class="metrics"><div class="metric"><span class="metric-value">0.933</span><span class="metric-label">Grafted-decoy AUROC<br>with side-chain contacts</span></div><div class="metric"><span class="metric-value">0.802</span><span class="metric-label">Cross-instance<br>ranking concordance</span></div><div class="metric"><span class="metric-value">≈2×</span><span class="metric-label">Positive-recall gain<br>at a 6% sampling budget</span></div></div>
+            <p class="metric-note">Reported experiments · Candidate-screening result is simulation-based.</p>
+          </div>
+        </div></div></div>
+      </article>
+      <article class="project" id="medlit">
+        <button class="project-trigger" aria-expanded="false" aria-controls="medlit-detail"><span class="index">02</span><h2>MedLit <em>Evidence</em></h2><span class="project-count" aria-hidden="true">+</span></button>
+        <div class="project-reveal" id="medlit-detail"><div class="reveal-clip"><div class="detail-grid">
+          <div class="copy-column">
+            <h3 class="project-subtitle">Evidence-Based Medicine Literature QA and Retraction-Risk Modelling</h3>
+            <p class="categories">Medical NLP | Evidence Retrieval | Machine Learning</p>
+            <div class="full-copy" tabindex="0" role="region" aria-label="MedLit Evidence full project introduction">
+              <p><strong>Goal</strong>for clinical researchers and medical editors, build an evidence-analysis tool spanning medical-question retrieval, evidence grading, conclusion-conflict identification, and source traceability, together with a retraction-risk prediction model based on paper metadata.</p>
+              <p><strong>Evidence retrieval and analysis</strong>built a PubMed literature retrieval and question-answering pipeline on FastAPI using BM25 retrieval, PICO (population, intervention, comparator, outcome) question structuring, study-design identification, and five-level evidence grading; evidence disagreement is surfaced explicitly through support, oppose, and neutral conclusion classification with conflict detection, and conclusions in answers are traceable to specific PMIDs.</p>
+              <p><strong>Retraction-risk prediction</strong>built a retraction-risk dataset from 27,978 papers, modelled with LightGBM and interpreted with SHAP feature-contribution analysis; in the cross-validation experiments reported in the repository, LightGBM reached AUROC 0.856 and PR-AUC 0.812.</p>
+              <p><strong>Data-quality and leakage audit</strong>identified and handled publication-type label leakage and implicit leakage from cleared or replaced post-retraction abstracts, and assessed generalization through temporal extrapolation validation split by publication year; SHAP analysis revealed pronounced temporal censoring bias in publication year, avoiding mistaking superficial predictive performance for a genuine risk signal.</p>
+              <p><strong>Engineering and validation</strong>implemented online PubMed retrieval, offline corpus fallback, TTL caching, and flagging of retracted, questioned, or corrected literature; the project includes 30 unit tests, with repository-reported cache-hit latency of about 6 ms.</p>
+              <p><strong>Tech stack</strong>Python, FastAPI, BM25, PICO, LightGBM, SHAP, PubMed API.</p>
+            </div>
+            <div class="stack"><strong>QUESTION → EVIDENCE → TRACEABILITY</strong><br>Connecting medical questions with inspectable evidence.</div>
+          </div>
+          <div class="visual-column">
+            <div class="visual-topline"><span class="visual-label">Evidence, made inspectable</span><span class="visual-label">02 / Product interface</span></div>
+            <button class="image-button" aria-label="Enlarge MedLit Evidence interface"><img class="project-image" src="assets/medlit-evidence-poster.png" alt="MedLit Evidence interface showing PICO question structuring, evidence grading, answers and PMID-traceable sources"><span class="image-zoom" aria-hidden="true">↗</span></button>
+            <p class="image-caption">Existing project interface · Click to inspect the full image.</p>
+            <div class="metrics"><div class="metric"><span class="metric-value">27,978</span><span class="metric-label">Papers in the<br>retraction-risk dataset</span></div><div class="metric"><span class="metric-value">0.856</span><span class="metric-label">LightGBM AUROC<br>in cross-validation</span></div><div class="metric"><span class="metric-value">≈6 ms</span><span class="metric-label">Repository-reported<br>cache-hit latency</span></div></div>
+            <p class="metric-note">Repository-reported metrics · PR-AUC 0.812 · 30 unit tests.</p>
+          </div>
+        </div></div></div>
+      </article>
+    </div>
+    <div class="bottom-line"><span class="footer-label">From molecular recognition to medical evidence.</span><span class="footer-label">Immunology × Computation</span></div>
+  </main>
+  <div class="concept-label">Project interaction / concept preview</div>
+  <dialog class="lightbox" aria-label="Project image preview"><button class="lightbox-close" aria-label="Close image preview">×</button><img id="large-image" alt=""></dialog>
+  <script src="assets/curtain-dna.js"></script><script src="demo.js?v=20261019-live"></script>
+<script>
+if(document.documentElement.classList.contains('embedded')){
+  var dna=document.querySelector('.dna-background');
+  dna.classList.remove('is-on');
+  addEventListener('message',function(event){
+    if(event.source!==parent||event.origin!==location.origin||!event.data||event.data.type!=='projects-visibility')return;
+    dna.classList.toggle('is-on',!!event.data.active);
+  });
+  parent.postMessage({type:'projects-ready'},location.origin);
+}
+</script></body></html>
