@@ -13,6 +13,9 @@
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var density = 1.5;
     var alignment = 0.5;
+    var tilt = Math.PI / 4;
+    var cosTilt = Math.cos(tilt);
+    var sinTilt = Math.sin(tilt);
 
     function Particle(y, offset, char) {
         this.y = y;
@@ -24,10 +27,13 @@
         var radius = width < 768 ? 80 : 150;
         var x3d = Math.sin(angle) * radius;
         var z3d = Math.cos(angle) * radius;
+        var axisLength = Math.hypot(width, height) + radius * 2;
+        var y3d = (this.y / (80 * density - 1) - 0.5) * axisLength;
         var fov = 1000;
         var scale = fov / (fov + z3d);
-        this.x = (width * alignment) + x3d * scale;
-        this.screenY = (this.y * 15) * scale + (height * 0.1);
+        // Tilt the helix axis by 45 degrees, keeping the base letters upright.
+        this.x = width * alignment + (x3d * cosTilt - y3d * sinTilt) * scale;
+        this.screenY = height * 0.5 + (x3d * sinTilt + y3d * cosTilt) * scale;
         this.size = 12 * scale;
         this.alpha = scale > 1 ? 1 : 0.3;
     };
