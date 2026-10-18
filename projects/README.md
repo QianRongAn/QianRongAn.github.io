@@ -1,6 +1,6 @@
 # Projects 动态概念 Demo
 
-这是独立演示，没有替换线上网站。
+已接入主站 Projects 导航；也可独立打开预览。
 
 打开 `index.html` 即可预览；也可以在此目录运行 `python -m http.server 8765` 后访问 `http://127.0.0.1:8765/`。
 

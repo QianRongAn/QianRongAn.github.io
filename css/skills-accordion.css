@@ -1,0 +1,39 @@
+html.skills-view, html.skills-view body { background: #d7d7d0 !important; }
+html.skills-view body::before { opacity: 0 !important; visibility: hidden !important; }
+html.skills-view #intro, html.skills-view #footer { display: none !important; }
+html.skills-view #container { width: 100%; max-width: none; margin: 0; padding: 0; }
+html.skills-view #content-wrapper { min-height: 100dvh !important; background: transparent; }
+#skills.cube-page.active { position: relative !important; min-height: 100dvh; padding: 142px max(7vw, 24px) 90px; box-sizing: border-box; }
+#skills#skills section { max-width: 1296px; width: 100%; margin: 0 auto; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+#skills#skills section, #skills#skills section * { color: #242320; font-family: 'Recoleta', Georgia, 'Songti SC', serif !important; font-weight: 300; }
+#skills#skills .section-title, #skills#skills .section-title span { font-family: 'Recoleta', Georgia, 'Songti SC', serif !important; }
+#skills .skills-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 8%; align-items: start; margin-bottom: 90px; }
+#skills#skills .section-title { margin: 0 !important; padding: 0 !important; font-size: clamp(38px, 4.5vw, 64px); line-height: 1.08; letter-spacing: -.04em; text-align: left; text-transform: none; border: none; }
+#skills#skills .section-title::after, #skills#skills .section-title::before { display: none; }
+#skills .skills-description { margin: 0; padding: 0; font-size: clamp(23px, 2.4vw, 34px); line-height: 1.28; letter-spacing: -.02em; }
+#skills .skills-list { border: 1px dashed #24232026; }
+#skills#skills .skill-category { margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+#skills .skill-category + .skill-category { border-top: 1px dashed #24232026 !important; }
+#skills#skills .skill-category-title { margin: 0; padding: 0; font-size: inherit; line-height: inherit; }
+#skills .skill-toggle { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; min-height: 104px; padding: 28px 32px; border: 0; border-radius: 0; text-align: left; background: transparent; font-size: clamp(24px, 2.5vw, 34px); line-height: 1.35; cursor: pointer; transition: background 220ms ease; }
+#skills .skill-toggle:hover, #skills .is-open .skill-toggle { background: #ffffff12; }
+#skills .skill-toggle:focus-visible { outline: 1px solid #242320; outline-offset: -6px; }
+#skills .skill-plus { position: relative; flex: 0 0 18px; width: 18px; height: 18px; transition: transform 300ms ease; }
+#skills .skill-plus::before, #skills .skill-plus::after { content: ''; position: absolute; background: #383730; left: 0; top: 8px; width: 18px; height: 1px; }
+#skills .skill-plus::after { transform: rotate(90deg); transition: transform 300ms ease; }
+#skills .is-open .skill-plus::after { transform: rotate(0); }
+#skills .skill-panel { display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden; transition: grid-template-rows 360ms ease, opacity 250ms ease, visibility 360ms; }
+#skills .is-open .skill-panel { grid-template-rows: 1fr; opacity: 1; visibility: visible; }
+#skills:not(.active) .skill-panel { visibility: hidden !important; }
+#skills#skills .skills-grid { min-height: 0; overflow: hidden; display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 0 26px; margin: 0; padding: 0 32px; }
+#skills#skills .skill-group { display: inline; padding: 0; margin: 0 0 24px; border: 0; border-radius: 0; box-shadow: none; background: transparent; font-size: 21px; line-height: 1.6; letter-spacing: 0; transform: none; }
+#skills#skills .skill-group::before { content: '·'; margin-right: 10px; opacity: .5; }
+@media (max-width: 700px) {
+    #skills.cube-page.active { padding: 110px 22px 50px; }
+    #skills .skills-intro { grid-template-columns: 1fr; gap: 28px; margin-bottom: 48px; }
+    #skills .skills-description { max-width: 500px; }
+    #skills .skill-toggle { min-height: 88px; padding: 24px 20px; }
+    #skills#skills .skills-grid { padding: 0 20px; gap: 0 16px; }
+    #skills#skills .skill-group { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { #skills .skill-panel, #skills .skill-plus::after, #skills .skill-toggle { transition: none; } }
