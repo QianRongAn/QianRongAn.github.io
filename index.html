@@ -3020,8 +3020,8 @@
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261017-proj" defer></script>
     <script src="js/project-posters.js?v=20261018-flat" defer></script>
-    <link rel="stylesheet" href="css/pub-gallery.css?v=20261018-content-fit">
-    <script src="js/pub-gallery.js?v=20261018-content-fit" defer></script>
+    <link rel="stylesheet" href="css/pub-gallery.css?v=20261018-curved2">
+    <script src="js/pub-gallery.js?v=20261018-curved2" defer></script>
     <script src="js/hero-magnet.js?v=20261017-lang" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna3" defer></script>
     <script src="js/hero.js?v=20261018-curtain2" defer></script>
@@ -3783,9 +3783,10 @@
                 });
             }
             window.switchPage = function(targetIndex) {
-                let targetElement = document.getElementById('scroll-target-about'); 
+                const isPublications = cubePages[targetIndex] && cubePages[targetIndex].id === 'publications';
+                let targetElement = isPublications ? contentWrapper : document.getElementById('scroll-target-about');
                 if (targetElement) {
-                    const targetScrollPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    const targetScrollPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - (isPublications ? 90 : 0);
                     window.scrollTo({ top: targetScrollPosition, behavior: 'smooth' });
                 }
                 if (targetIndex === currentIndex) return; 

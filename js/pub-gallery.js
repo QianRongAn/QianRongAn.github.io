@@ -8,6 +8,9 @@
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var PERSPECTIVE = 3600; /* keep in sync with css/pub-gallery.css */
     var TILT = 12;          /* keep in sync with css/pub-gallery.css */
+    var ROLL = -12;         /* diagonal ring axis, like the reference */
+    var LEAN = -8;          /* tops lean outward in the radial direction */
+    var SLICES = 24;        /* tangent panels approximate a continuous cylinder */
     var SWAY = 8;           /* pointer sway, in degrees */
     var RATIO = 0.5;        /* minimum height; full text can make a card taller */
     var GAP = 22;           /* minimum horizontal gap between neighbours, px */
@@ -37,22 +40,31 @@
         var tiltRad = TILT * Math.PI / 180;
         var cosT = Math.cos(tiltRad);
         var sinT = Math.sin(tiltRad);
+        var leanRad = LEAN * Math.PI / 180;
+        var cosL = Math.cos(leanRad), sinL = Math.sin(leanRad);
+        var rollRad = ROLL * Math.PI / 180;
+        var cosR = Math.cos(rollRad), sinR = Math.sin(rollRad);
         var current = 0;
 
         function cardBox(width, height, radius, scale, angleDeg) {
             var th = angleDeg * Math.PI / 180;
             var ct = Math.cos(th), st = Math.sin(th);
             var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            for (var c = 0; c < 4; c++) {
-                var lx = (c & 1 ? 0.5 : -0.5) * width;
-                var ly = (c & 2 ? 0.5 : -0.5) * height;
-                var bx = lx * ct + radius * st;
-                var bz = -lx * st + radius * ct;
-                var y2 = ly * cosT + bz * sinT;
-                var z2 = -ly * sinT + bz * cosT;
+            for (var c = 0; c <= SLICES * 2 + 1; c++) {
+                var lx = (Math.floor(c / 2) / SLICES - 0.5) * width;
+                var ly = (c % 2 ? 0.5 : -0.5) * height;
+                var arc = lx / radius;
+                var cx = radius * Math.sin(arc);
+                var cz = radius * (Math.cos(arc) - 1);
+                var cy = ly * cosL - cz * sinL;
+                cz = ly * sinL + cz * cosL;
+                var bx = cx * ct + (radius + cz) * st;
+                var bz = -cx * st + (radius + cz) * ct;
+                var y2 = cy * cosT + bz * sinT;
+                var z2 = -cy * sinT + bz * cosT;
                 var persp = PERSPECTIVE / (PERSPECTIVE - z2 * scale);
-                var sx = bx * scale * persp;
-                var sy = y2 * scale * persp;
+                var sx = (bx * cosR - y2 * sinR) * scale * persp;
+                var sy = (bx * sinR + y2 * cosR) * scale * persp;
                 if (sx < minX) minX = sx;
                 if (sx > maxX) maxX = sx;
                 if (sy < minY) minY = sy;
@@ -119,10 +131,47 @@
         function transform() {
             return 'translate(-50%, -50%) translateY(var(--pub-shift, 0px))' +
                 ' scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1))' +
-                ' rotateX(-' + TILT + 'deg) rotateY(' + current.toFixed(2) + 'deg)';
+                ' rotateZ(' + ROLL + 'deg) rotateX(-' + TILT + 'deg) rotateY(' + current.toFixed(2) + 'deg)';
         }
 
         var radius = 900;
+        var surfaceKey = '';
+
+        function bendCards(width, height) {
+            var key = [width, height, radius].join(':');
+            if (surfaceKey === key) return;
+            surfaceKey = key;
+            cards.forEach(function (card) {
+                var source = card.querySelector('.pub-front');
+                source.classList.add('pub-source');
+                var previous = card.querySelector('.pub-curved-surface');
+                if (previous) previous.remove();
+                var surface = document.createElement('div');
+                surface.className = 'pub-curved-surface';
+                surface.setAttribute('aria-hidden', 'true');
+                for (var j = 0; j < SLICES; j++) {
+                    var sliceWidth = width / SLICES;
+                    var center = (j + 0.5) * sliceWidth - width / 2;
+                    var angle = center / radius;
+                    var panel = document.createElement('div');
+                    panel.className = 'pub-curve-panel';
+                    panel.style.width = (sliceWidth + 1.4) + 'px';
+                    panel.style.height = height + 'px';
+                    panel.style.marginLeft = (-sliceWidth / 2 - 0.7) + 'px';
+                    panel.style.transform = 'translate3d(' + (radius * Math.sin(angle)) + 'px,0,' +
+                        (radius * (Math.cos(angle) - 1)) + 'px) rotateY(' + (angle * 180 / Math.PI) + 'deg)';
+                    var content = source.cloneNode(true);
+                    content.classList.remove('pub-source');
+                    content.classList.add('pub-panel-content');
+                    content.style.width = width + 'px';
+                    content.style.height = height + 'px';
+                    content.style.left = (-j * sliceWidth + 0.7) + 'px';
+                    panel.appendChild(content);
+                    surface.appendChild(panel);
+                }
+                card.appendChild(surface);
+            });
+        }
 
         function layout() {
             var stageWidth = stage.clientWidth || window.innerWidth;
@@ -160,13 +209,14 @@
                 }
             }
             radius = bestR;
+            bendCards(width, height);
 
             var box = ringBox(width, height, radius, bestS);
             grid.style.setProperty('--pub-scale', bestS);
             grid.style.setProperty('--pub-shift', (-(box.minY + box.maxY) / 2).toFixed(1) + 'px');
             stage.style.height = Math.ceil(box.h + 24) + 'px';
             cards.forEach(function (card, i) {
-                card.style.transform = 'rotateY(' + angles[i].toFixed(2) + 'deg) translateZ(' + radius + 'px)';
+                card.style.transform = 'rotateY(' + angles[i].toFixed(2) + 'deg) translateZ(' + radius + 'px) rotateX(' + LEAN + 'deg)';
             });
             grid.style.transform = transform();
         }

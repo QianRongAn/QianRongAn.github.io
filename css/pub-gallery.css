@@ -3,7 +3,7 @@
 #publications .publications-grid {
     top: 50%;
     height: var(--pub-height, auto);
-    transform: translate(-50%, -50%) translateY(var(--pub-shift, 0px)) scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1)) rotateX(-12deg) rotateY(0deg);
+    transform: translate(-50%, -50%) translateY(var(--pub-shift, 0px)) scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1)) rotateZ(-12deg) rotateX(-12deg) rotateY(0deg);
 }
 #publications .publication-card {
     width: 100%;
@@ -103,4 +103,27 @@
 #publications .pub-impact {
     font-size: 16px;
     padding: 2px 8px;
+}
+/* Keep one complete semantic citation; its visual copy follows the cylinder. */
+#publications .pub-source { opacity: 0; }
+#publications .pub-curved-surface {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    pointer-events: none;
+}
+#publications .pub-curve-panel {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    overflow: hidden;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+}
+#publications .pub-panel-content {
+    position: absolute;
+    top: 0;
+    min-height: 0;
+    border-radius: 0;
+    transform: none;
 }
