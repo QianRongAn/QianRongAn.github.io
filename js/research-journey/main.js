@@ -29376,9 +29376,9 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), A.fragmentShader = `va
       let yt = Math.min(kt / Be.width, St / Be.height);
       G.drawImage(Be, Mt + (kt - Be.width * yt) / 2, Dt + (St - Be.height * yt) / 2, Be.width * yt, Be.height * yt);
     };
-    ue(ne[0], 65, 145, 430, 620), ue(ne[1], 65, 800, 205, 200), ue(ne[2], 290, 800, 205, 200), G.fillStyle = "#302d44", G.font = "46px Recoleta, Georgia";
-    let ce = Ie(G, A.querySelector(".pub-title").textContent.trim(), 550, 210, 970, 60);
-    G.font = "29px Arial", G.fillStyle = "#4b465e", ce = Ie(G, A.querySelector(".pub-authors").textContent.trim(), 550, ce + 35, 955, 44), G.font = "italic 29px Georgia", G.fillStyle = "#624f72", ce = Ie(G, A.querySelector(".pub-journal").textContent.trim(), 550, ce + 30, 950, 44), G.font = "bold 30px Georgia", G.fillStyle = "#353047", G.fillText((((We = A.querySelector(".pub-impact")) == null ? void 0 : We.textContent) || "").trim(), 550, Math.min(1045, ce + 32));
+    ue(ne[0], 65, 145, 430, 620), ue(ne[1], 65, 800, 205, 200), ue(ne[2], 290, 800, 205, 200), G.fillStyle = "#302d44", G.font = "52px Recoleta, Georgia";
+    let ce = Ie(G, A.querySelector(".pub-title").textContent.trim(), 550, 210, 970, 66);
+    G.font = "33px Arial", G.fillStyle = "#4b465e", ce = Ie(G, A.querySelector(".pub-authors").textContent.trim(), 550, ce + 35, 955, 48), G.font = "italic 32px Georgia", G.fillStyle = "#624f72", ce = Ie(G, A.querySelector(".pub-journal").textContent.trim(), 550, ce + 30, 950, 47), G.font = "bold 30px Georgia", G.fillStyle = "#353047", G.fillText((((We = A.querySelector(".pub-impact")) == null ? void 0 : We.textContent) || "").trim(), 550, Math.min(1045, ce + 32));
     const Ge = new ls(N);
     return Ge.colorSpace = dn, Ge.anisotropy = (f == null ? void 0 : f.capabilities.getMaxAnisotropy()) || 1, Ge;
   }

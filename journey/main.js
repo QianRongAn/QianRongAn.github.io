@@ -382,9 +382,9 @@ async function printedPaper(card){
  c.fillStyle='#514a67';c.font='22px Arial';c.fillText('SCIENTIFIC CONTRIBUTIONS / 0'+card.dataset.pubId,70,72);
  const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y+(h-img.height*r)/2,img.width*r,img.height*r);};
  fit(images[0],65,145,430,620);fit(images[1],65,800,205,200);fit(images[2],290,800,205,200);
- c.fillStyle='#302d44';c.font='46px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),550,210,970,60);
- c.font='29px Arial';c.fillStyle='#4b465e';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),550,y+35,955,44);
- c.font='italic 29px Georgia';c.fillStyle='#624f72';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),550,y+30,950,44);
+ c.fillStyle='#302d44';c.font='52px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),550,210,970,66);
+ c.font='33px Arial';c.fillStyle='#4b465e';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),550,y+35,955,48);
+ c.font='italic 32px Georgia';c.fillStyle='#624f72';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),550,y+30,950,47);
  c.font='bold 30px Georgia';c.fillStyle='#353047';c.fillText((card.querySelector('.pub-impact')?.textContent||'').trim(),550,Math.min(1045,y+32));
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;return texture;
 }

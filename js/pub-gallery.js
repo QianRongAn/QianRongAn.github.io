@@ -6,7 +6,7 @@ let index=0,locked=0,lastWheel=0,downX=0;const reduce=matchMedia('(prefers-reduc
 function setup(){
  const page=document.getElementById('publications'),grid=page?.querySelector('.publications-grid'),stage=page?.querySelector('.pub-stage');if(!grid||grid.dataset.glassHelix)return;grid.dataset.glassHelix='ready';
  const cards=[...grid.querySelectorAll('.publication-card')];
- const controls=document.createElement('aside');controls.className='pub-directory';controls.innerHTML='<span class="pub-directory-label">RESEARCH / SELECTED PAPERS</span><div class="pub-paper-index"></div><div class="pub-controls"><button type="button" aria-label="Previous paper">←</button><span class="pub-counter"></span><button type="button" aria-label="Next paper">→</button></div><small>SCROLL TO EXPLORE<br>DRAG TO ROTATE</small>';stage.append(controls);
+ const controls=document.createElement('aside');controls.className='pub-directory';controls.innerHTML='<span class="pub-directory-label">Publications</span><div class="pub-paper-index"></div><div class="pub-controls"><button type="button" aria-label="Previous paper">←</button><span class="pub-counter"></span><button type="button" aria-label="Next paper">→</button></div><small>SCROLL TO EXPLORE<br>DRAG TO ROTATE</small>';stage.append(controls);
  const directory=controls.querySelector('.pub-paper-index');cards.forEach((card,i)=>{
   card.setAttribute('role','article');const title=card.querySelector('.pub-title');card.setAttribute('aria-label',title?.textContent||'Paper '+(i+1));
   const face=document.createElement('div');face.className='pub-glass-face';while(card.firstChild)face.append(card.firstChild);card.append(face);

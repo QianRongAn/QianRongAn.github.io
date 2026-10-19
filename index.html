@@ -3044,22 +3044,23 @@
     <script src="js/project-posters.js?v=20261019-live" defer></script>
     <link rel="stylesheet" href="css/skills-accordion.css?v=20261019-auto2">
     <script src="js/skills-accordion.js?v=20261019-auto2" defer></script>
-    <link rel="stylesheet" href="css/pub-gallery.css?v=20261019-motion16">
-    <script src="js/pub-gallery.js?v=20261019-motion16" defer></script>
+    <link rel="stylesheet" href="css/pub-gallery.css?v=20261019-craft17">
+    <script src="js/pub-gallery.js?v=20261019-craft17" defer></script>
     <script src="js/hero-magnet.js?v=20261018-glass" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna45" defer></script>
     <script src="js/hero-water.js?v=20261019-restored" defer></script>
-    <script src="js/hero.js?v=motion16-20261019-journey1" defer></script>
+    <script src="js/hero.js?v=20261019-craft17" defer></script>
     <script src="js/nav-spotlight.js?v=20261018-glow" defer></script>
-    <link rel="stylesheet" href="css/dream-glass.css?v=20261019-motion16">
+    <link rel="stylesheet" href="css/dream-glass.css?v=20261019-craft17">
     <script src="js/dream-glass.js?v=20261019" defer></script>
     <link rel="stylesheet" href="css/footer-consistency.css?v=20261019-nav2">
-    <script src="js/page-motion.js?v=20261019" defer></script>
-    <link rel="stylesheet" href="js/research-journey/style.css?v=20261019-motion16">
-    <script type="module" src="js/research-journey/main.js?v=20261019-motion16"></script>
+    <script src="js/page-motion.js?v=20261019-craft17" defer></script>
+    <link rel="stylesheet" href="js/research-journey/style.css?v=20261019-craft17">
+    <script type="module" src="js/research-journey/main.js?v=20261019-craft17"></script>
 
 
     <link rel="stylesheet" href="css/about-editorial.css?v=20261019-3">
+    <link rel="stylesheet" href="css/research-refinement.css?v=20261019-craft17">
     <script src="js/about-editorial.js?v=20261019-3" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
@@ -3773,9 +3774,9 @@
                 requestAnimationFrame(() => {
                     if (currentIndex !== targetIndex || cubePages[targetIndex].id === 'projects') return;
                     if (['skills', 'education', 'experience', 'extracurricular', 'thesis'].includes(cubePages[targetIndex].id)) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-                    const targetElement = isPublications ? contentWrapper : document.getElementById('scroll-target-about');
+                    const targetElement = isPublications ? contentWrapper : document.getElementById('about');
                     if (targetElement) {
-                        const top = targetElement.getBoundingClientRect().top + window.pageYOffset - (isPublications ? 90 : 0);
+                        const top = targetElement.getBoundingClientRect().top + window.pageYOffset - (isPublications ? 90 : 115);
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
                 });

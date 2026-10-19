@@ -14,7 +14,8 @@
         if (home) {
             home.setAttribute('tabindex', '-1');
             home.focus({preventScroll: true});
-            home.scrollIntoView({behavior: 'auto', block: 'start'});
+            var aboutCard = document.getElementById('about') || home;
+            window.scrollTo({top: Math.max(0, aboutCard.getBoundingClientRect().top + scrollY - 115), behavior: 'instant'});
         }
         return;
     }

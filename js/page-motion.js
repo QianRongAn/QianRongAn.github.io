@@ -1,31 +1,17 @@
-/* Content enters while glass shells and their backdrop filters stay stable. */
-(function () {
-    'use strict';
-    var running = [];
-    function enter(page) {
-        if (!page || !page.classList.contains('active')) return;
-        running.forEach(function (animation) { animation.cancel(); }); running = [];
-        if (matchMedia('(prefers-reduced-motion: reduce)').matches || page.id === 'skills') return;
-        function animate(elements) {
-            Array.from(elements).forEach(function (el, index) {
-                running.push(el.animate([{ opacity: 0, translate: '0 20px' }, { opacity: 1, translate: '0 0' }], {
-                    duration: 640, delay: Math.min(index * 45, 200), easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'backwards'
-                }));
-            });
-            page.dataset.transition = 'soft-rise';
-        }
-        if (page.id === 'projects') {
-            var frame = page.querySelector('iframe');
-            function showProjects() {
-                if (!page.classList.contains('active')) return;
-                var doc = frame.contentDocument;
-                if (doc) animate(doc.querySelectorAll('main > .intro-line, .project-trigger, main > footer'));
-            }
-            if (frame.contentDocument && frame.contentDocument.querySelector('main')) showProjects();
-            else frame.addEventListener('load', showProjects, { once: true });
-        } else if (page.id === 'publications') animate(page.querySelectorAll('.pub-stage'));
-        else if (page.id === 'about') animate(page.querySelectorAll('section > *'));
-        else animate(page.querySelectorAll('.dream-kicker, .section-title, .glass-card-head, .glass-well, .education-item > *, .activity-image, .footnotes > *'));
-    }
-    window.SitePageMotion = { enter: enter };
+/* GSAP entrances animate the reading layers, leaving glass backdrops stationary. */
+(function(){
+'use strict';
+var context=null,legacy=[];
+function enter(page){
+ if(!page||!page.classList.contains('active'))return;
+ if(context){context.revert();context=null;}legacy.forEach(function(a){a.cancel();});legacy=[];
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches||page.id==='skills'||page.id==='projects')return;
+ var selector=page.id==='about'?'.about-masthead > *, .about-identity, .contact-info, .intro-meta, .about-research-copy, .about-evidence > div':page.id==='publications'?'.pub-directory-label, .pub-paper-index, .pub-controls, .pub-directory > small':'.dream-kicker, .section-title, .glass-card-head, .glass-well, .education-item';
+ var elements=Array.from(page.querySelectorAll(selector)).filter(function(el){var r=el.getBoundingClientRect();return r.height>0&&r.top<innerHeight+40&&r.bottom>0;});
+ if(!elements.length)return;
+ if(window.gsap){context=window.gsap.context(function(){window.gsap.fromTo(elements,{autoAlpha:0,y:22},{autoAlpha:1,y:0,duration:.72,stagger:.065,ease:'power3.out',overwrite:'auto',clearProps:'opacity,visibility,transform'});},page);}
+ else elements.forEach(function(el,i){legacy.push(el.animate([{opacity:0,translate:'0 22px'},{opacity:1,translate:'0 0'}],{duration:700,delay:i*60,easing:'cubic-bezier(.2,.75,.2,1)',fill:'backwards'}));});
+ page.dataset.transition='reading-rise';
+}
+window.SitePageMotion={enter:enter};
 })();
