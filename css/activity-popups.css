@@ -1,0 +1,17 @@
+@media(min-width:769px){
+#extracurricular .activities-gallery { display: block; margin: 70px 0 !important; z-index: 2 !important; }
+.activity-chapter { position: relative; height: 130vh; min-height: 900px; }
+.activity-sticky { position: sticky; top: 110px; height: calc(100vh - 150px); display: grid; grid-template-columns: 180px 1fr; gap: 40px; align-items: center; perspective: 1800px; }
+.activity-caption { align-self: center; color: #39364e; }
+.activity-caption small { font: 10px/1.5 Inter,sans-serif; letter-spacing: .18em; }
+.activity-caption h3 { font: 300 36px/1.12 'Recoleta',Georgia,serif; letter-spacing: -.035em; margin: 20px 0; }
+.activity-caption p { font: 12px/1.8 Inter,sans-serif; }
+.activity-book { position: relative; width: 100%; aspect-ratio: 1.5; transform-style: preserve-3d; transform: rotateX(var(--book-tilt,0deg)) rotateZ(var(--book-roll,0deg)); }
+.activity-base { position: absolute; inset: 0; background: #e1dce6; border: 10px solid #ffffff55; border-radius: 18px; box-shadow: 0 35px 60px #28224430, inset 0 1px 0 #fff; }
+.activity-back { position: absolute; inset: 0; transform-origin: center bottom; transform: rotateX(var(--back-open,0deg)); transform-style: preserve-3d; }
+#extracurricular .activity-book .activity-image { display: block; width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; border: 0; padding: 0; border-radius: 12px; background: #dedbe7; transform: none; box-shadow: 0 8px 30px #21133d24; cursor: zoom-in; }
+.activity-foreground { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transform: translateZ(var(--pop-depth,0px)); pointer-events: none; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: drop-shadow(0 14px 9px #21133d35); }
+.activity-fold-label { position: absolute; left: 25px; bottom: 20px; transform: translateZ(1px); font: 10px/1.5 Inter,sans-serif; letter-spacing: .15em; color: #4b445c; }
+.activity-progress { height: 1px; background: #62577433; width: 100%; margin-top: 25px; }
+.activity-progress span { display: block; height: 100%; background: #645a82; width: 100%; transform: scaleX(var(--open,0)); transform-origin: left; }
+}

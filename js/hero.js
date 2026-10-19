@@ -202,8 +202,8 @@
             target.setAttribute('tabindex', '-1');
             target.focus({preventScroll: true});
         }
-        showHobbies();
-        window.setTimeout(showHobbies, 50);
+        if (window.SiteJourney) window.SiteJourney.start();
+        else { showHobbies(); window.setTimeout(showHobbies, 50); }
     }
     function playCurtain(lang) {
         if (dismissed) return;

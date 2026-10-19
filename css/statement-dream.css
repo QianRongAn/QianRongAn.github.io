@@ -1,0 +1,9 @@
+@font-face { font-family: 'Recoleta'; src: url('../font/recoleta-light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+body::before { background-image: radial-gradient(ellipse at 75% 15%, #fce3ef9c, transparent 60%), linear-gradient(125deg, #d0cde970, #e9def144), url('../wall.webp'); filter: blur(13px) saturate(.7); transform: scale(1.07); }
+#container .content-section { border: 7px solid #ffffff40; border-radius: 48px; padding: clamp(28px, 6vw, 80px); background: linear-gradient(135deg, #ffffffab, #f8f4ff9c); box-shadow: inset 0 1px 0 #fff, 0 24px 70px #51445f20; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.content-section h1, .content-section h2, .content-section h3, .content-section h4 { font-family: 'Recoleta', Georgia, 'Songti SC', serif !important; font-weight: 300; letter-spacing: -.025em; color: #494255; }
+.content-section h1 { font-size: clamp(42px, 6vw, 74px); line-height: 1.1; border: none; text-align: left; }
+.content-section h2 { font-size: clamp(27px, 3vw, 38px); line-height: 1.25; padding-top: 26px; border-color: #b7a6c459; }
+.content-section p, .content-section li { color: #4c485a; line-height: 1.9; text-align: left; }
+.statement-image-container { border-radius: 28px; padding: 16px; border: 1px solid #ffffffb0; background: #ffffff54; box-shadow: none; }
+.statement-image { border-radius: 18px; }

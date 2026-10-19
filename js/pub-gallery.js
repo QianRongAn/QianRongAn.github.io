@@ -1,266 +1,31 @@
-/* Publications stand on a full 360-degree ring, like a rotating carousel wall.
-   Cards are landscape with content-sized height and the front-facing cards never overlap: every card
-   corner is projected analytically and a minimum gap is enforced between the
-   neighbours you actually see (the back of the ring is allowed to tuck behind). */
-(function () {
-    'use strict';
-
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var PERSPECTIVE = 3600; /* keep in sync with css/pub-gallery.css */
-    var TILT = 12;          /* keep in sync with css/pub-gallery.css */
-    var ROLL = -12;         /* diagonal ring axis, like the reference */
-    var LEAN = -8;          /* tops lean outward in the radial direction */
-    var SLICES = 24;        /* tangent panels approximate a continuous cylinder */
-    var POINTER_TURN = 360; /* full pointer sweep can bring every paper forward */
-    var RATIO = 0.5;        /* minimum height; full text can make a card taller */
-    var GAP = 22;           /* minimum horizontal gap between neighbours, px */
-
-    function setup(grid) {
-        if (!grid || grid._gallery) return;
-        var cards = Array.prototype.slice.call(grid.querySelectorAll('.publication-card'));
-        if (!cards.length) return;
-        grid._gallery = true;
-
-        cards.forEach(function (card) {
-            var front = document.createElement('div');
-            front.className = 'pub-face pub-front';
-            while (card.firstChild) front.appendChild(card.firstChild);
-            card.appendChild(front);
-            card.querySelectorAll('.pub-image').forEach(function (img, idx) {
-                img.classList.add('stack-' + (idx + 1));
-            });
-        });
-
-        var stage = grid.closest('.pub-stage') || grid.parentElement;
-        var count = cards.length;
-        var angles = [];
-        for (var i = 0; i < count; i++) {
-            angles.push(count > 1 ? i * 360 / count : 0);
-        }
-        var tiltRad = TILT * Math.PI / 180;
-        var cosT = Math.cos(tiltRad);
-        var sinT = Math.sin(tiltRad);
-        var leanRad = LEAN * Math.PI / 180;
-        var cosL = Math.cos(leanRad), sinL = Math.sin(leanRad);
-        var rollRad = ROLL * Math.PI / 180;
-        var cosR = Math.cos(rollRad), sinR = Math.sin(rollRad);
-        var current = 0;
-
-        function cardBox(width, height, radius, scale, angleDeg) {
-            var th = angleDeg * Math.PI / 180;
-            var ct = Math.cos(th), st = Math.sin(th);
-            var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            for (var c = 0; c <= SLICES * 2 + 1; c++) {
-                var lx = (Math.floor(c / 2) / SLICES - 0.5) * width;
-                var ly = (c % 2 ? 0.5 : -0.5) * height;
-                var arc = lx / radius;
-                var cx = radius * Math.sin(arc);
-                var cz = radius * (Math.cos(arc) - 1);
-                var cy = ly * cosL - cz * sinL;
-                cz = ly * sinL + cz * cosL;
-                var bx = cx * ct + (radius + cz) * st;
-                var bz = -cx * st + (radius + cz) * ct;
-                var y2 = cy * cosT + bz * sinT;
-                var z2 = -cy * sinT + bz * cosT;
-                var persp = PERSPECTIVE / (PERSPECTIVE - z2 * scale);
-                var sx = (bx * cosR - y2 * sinR) * scale * persp;
-                var sy = (bx * sinR + y2 * cosR) * scale * persp;
-                if (sx < minX) minX = sx;
-                if (sx > maxX) maxX = sx;
-                if (sy < minY) minY = sy;
-                if (sy > maxY) maxY = sy;
-            }
-            return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
-        }
-
-        function ringBox(width, height, radius, scale) {
-            var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            // The evenly spaced ring repeats after one card interval.
-            for (var p = 0; p <= 360 / count; p += 10) {
-                for (var i = 0; i < count; i++) {
-                    var b = cardBox(width, height, radius, scale, angles[i] + p);
-                    if (b.minX < minX) minX = b.minX;
-                    if (b.maxX > maxX) maxX = b.maxX;
-                    if (b.minY < minY) minY = b.minY;
-                    if (b.maxY > maxY) maxY = b.maxY;
-                }
-            }
-            return { minX: minX, maxX: maxX, minY: minY, maxY: maxY, w: maxX - minX, h: maxY - minY };
-        }
-
-        function frontArc(sway) {
-            var list = [];
-            for (var i = 0; i < count; i++) {
-                var a = (angles[i] + sway) % 360;
-                if (a < 0) a += 360;
-                if (Math.cos(a * Math.PI / 180) > 0.15) {
-                    list.push(a > 180 ? a - 360 : a);
-                }
-            }
-            list.sort(function (x, y) { return x - y; });
-            return list;
-        }
-
-        function minGap(width, height, radius, scale) {
-            var g = Infinity;
-            for (var p = 0; p <= 360 / count; p += 10) {
-                var front = frontArc(p);
-                for (var i = 0; i + 1 < front.length; i++) {
-                    var a = cardBox(width, height, radius, scale, front[i]);
-                    var b = cardBox(width, height, radius, scale, front[i + 1]);
-                    var gap = b.minX - a.maxX;
-                    if (gap < g) g = gap;
-                }
-            }
-            return g;
-        }
-
-        function fitScale(width, height, radius, target, axis) {
-            function measure(s) {
-                var b = ringBox(width, height, radius, s);
-                return axis === 'h' ? b.h : b.w;
-            }
-            var lo = 0.05, hi = 2;
-            if (measure(hi) <= target) return hi;
-            for (var k = 0; k < 24; k++) {
-                var mid = (lo + hi) / 2;
-                if (measure(mid) <= target) lo = mid; else hi = mid;
-            }
-            return lo;
-        }
-
-        function transform() {
-            return 'translate(-50%, -50%) translateY(var(--pub-shift, 0px))' +
-                ' scale3d(var(--pub-scale, 1), var(--pub-scale, 1), var(--pub-scale, 1))' +
-                ' rotateZ(' + ROLL + 'deg) rotateX(-' + TILT + 'deg) rotateY(' + current.toFixed(2) + 'deg)';
-        }
-
-        var radius = 900;
-        var surfaceKey = '';
-
-        function bendCards(width, height) {
-            var key = [width, height, radius].join(':');
-            if (surfaceKey === key) return;
-            surfaceKey = key;
-            cards.forEach(function (card) {
-                var source = card.querySelector('.pub-front');
-                source.classList.add('pub-source');
-                var previous = card.querySelector('.pub-curved-surface');
-                if (previous) previous.remove();
-                var surface = document.createElement('div');
-                surface.className = 'pub-curved-surface';
-                surface.setAttribute('aria-hidden', 'true');
-                for (var j = 0; j < SLICES; j++) {
-                    var sliceWidth = width / SLICES;
-                    var center = (j + 0.5) * sliceWidth - width / 2;
-                    var angle = center / radius;
-                    var panel = document.createElement('div');
-                    panel.className = 'pub-curve-panel';
-                    panel.style.width = (sliceWidth + 1.4) + 'px';
-                    panel.style.height = height + 'px';
-                    panel.style.marginLeft = (-sliceWidth / 2 - 0.7) + 'px';
-                    panel.style.transform = 'translate3d(' + (radius * Math.sin(angle)) + 'px,0,' +
-                        (radius * (Math.cos(angle) - 1)) + 'px) rotateY(' + (angle * 180 / Math.PI) + 'deg)';
-                    var content = source.cloneNode(true);
-                    content.classList.remove('pub-source');
-                    content.classList.add('pub-panel-content');
-                    content.style.width = width + 'px';
-                    content.style.height = height + 'px';
-                    content.style.left = (-j * sliceWidth + 0.7) + 'px';
-                    panel.appendChild(content);
-                    surface.appendChild(panel);
-                }
-                card.appendChild(surface);
-            });
-        }
-
-        function layout() {
-            var stageWidth = stage.clientWidth || window.innerWidth;
-            var width = Math.min(720, Math.max(560, stageWidth * 0.45));
-            grid.style.width = width + 'px';
-            grid.style.setProperty('--pub-height', 'auto');
-            var fronts = cards.map(function (card) { return card.querySelector('.pub-front'); });
-            fronts.forEach(function (front) { front.style.minHeight = '0'; });
-            var height = Math.max(width * RATIO, Math.ceil(Math.max.apply(null, fronts.map(function (front) {
-                return front.scrollHeight;
-            }))) + 24);
-            grid.style.setProperty('--pub-height', height + 'px');
-            fronts.forEach(function (front) { front.style.removeProperty('min-height'); });
-
-            var availH = Math.max(520, Math.min(900, window.innerHeight - 170));
-            var availW = Math.max(360, stageWidth - 40);
-
-            /* find the radius that renders the front cards largest while keeping
-               a clear gap between neighbours and everything inside the viewport */
-            var bestR = width * 1.5;
-            var bestS = 1;
-            var bestScore = -1;
-            for (var R = width * 1.5; R <= 5000; R *= 1.06) {
-                var s = Math.min(1.15,
-                    fitScale(width, height, R, availH, 'h'),
-                    fitScale(width, height, R, availW, 'w'));
-                if (minGap(width, height, R, s) >= GAP) {
-                    var f = cardBox(width, height, R, s, 0);
-                    var score = (f.maxX - f.minX) * (f.maxY - f.minY);
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestR = R;
-                        bestS = s;
-                    }
-                }
-            }
-            radius = bestR;
-            bendCards(width, height);
-
-            var box = ringBox(width, height, radius, bestS);
-            grid.style.setProperty('--pub-scale', bestS);
-            grid.style.setProperty('--pub-shift', (-(box.minY + box.maxY) / 2).toFixed(1) + 'px');
-            stage.style.height = Math.ceil(box.h + 24) + 'px';
-            cards.forEach(function (card, i) {
-                card.style.transform = 'rotateY(' + angles[i].toFixed(2) + 'deg) translateZ(' + radius + 'px) rotateX(' + LEAN + 'deg)';
-            });
-            grid.style.transform = transform();
-        }
-
-        layout();
-        new ResizeObserver(layout).observe(stage);
-        var contentObserver = new ResizeObserver(layout);
-        cards.forEach(function (card) { contentObserver.observe(card.querySelector('.pub-content')); });
-        window.addEventListener('resize', layout);
-        if (document.fonts) document.fonts.ready.then(layout);
-
-        if (reduce) return;
-
-        var target = 0;
-        var raf = 0;
-
-        function paint() {
-            current += (target - current) * 0.08;
-            if (Math.abs(target - current) < 0.04) current = target;
-            grid.style.transform = transform();
-            raf = current === target ? 0 : requestAnimationFrame(paint);
-        }
-
-        function spin() {
-            if (!raf) raf = requestAnimationFrame(paint);
-        }
-
-        stage.addEventListener('pointermove', function (event) {
-            var rect = stage.getBoundingClientRect();
-            var x = (event.clientX - rect.left) / Math.max(rect.width, 1);
-            x = Math.max(0, Math.min(1, x));
-            target = (0.5 - x) * POINTER_TURN;
-            spin();
-        });
-    }
-
-    function init() {
-        document.querySelectorAll('#publications .publications-grid').forEach(setup);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+/* A vertical glass helix: each scroll gesture brings one complete citation forward. */
+(function(){
+'use strict';
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(innerWidth<=768&&innerHeight<=1024))return;
+let index=0,locked=0,lastWheel=0,downX=0;const reduce=matchMedia('(prefers-reduced-motion:reduce)');
+function setup(){
+ const page=document.getElementById('publications'),grid=page?.querySelector('.publications-grid'),stage=page?.querySelector('.pub-stage');if(!grid||grid.dataset.glassHelix)return;grid.dataset.glassHelix='ready';
+ const cards=[...grid.querySelectorAll('.publication-card')];
+ const controls=document.createElement('aside');controls.className='pub-directory';controls.innerHTML='<span class="pub-directory-label">RESEARCH / SELECTED PAPERS</span><div class="pub-paper-index"></div><div class="pub-controls"><button type="button" aria-label="Previous paper">←</button><span class="pub-counter"></span><button type="button" aria-label="Next paper">→</button></div><small>SCROLL TO EXPLORE<br>DRAG TO ROTATE</small>';stage.append(controls);
+ const directory=controls.querySelector('.pub-paper-index');cards.forEach((card,i)=>{
+  card.setAttribute('role','article');const title=card.querySelector('.pub-title');card.setAttribute('aria-label',title?.textContent||'Paper '+(i+1));
+  const face=document.createElement('div');face.className='pub-glass-face';while(card.firstChild)face.append(card.firstChild);card.append(face);
+  const button=document.createElement('button');button.type='button';button.title=title?.textContent||'';button.innerHTML='<span>0'+(i+1)+'</span><span>'+(['J Hematol Oncol','Advanced Science','J Transl Med','Immunol Cell Biol','Front Cell Dev Biol','Clin Transl Med'][i])+'</span>';button.addEventListener('click',()=>select(i));directory.append(button);
+ });
+ function draw(){
+  const width=Math.min(innerWidth*.43,650),height=Math.min(innerHeight*.48,410);stage.style.setProperty('--paper-width',width+'px');stage.style.setProperty('--paper-height',height+'px');
+  cards.forEach((card,i)=>{let d=i-index;if(d>3)d-=cards.length;if(d< -2)d+=cards.length;
+   const distance=Math.abs(d),x=d===0?0:Math.sign(d)*(width*.68+Math.max(0,distance-1)*width*.10),y=d===0?0:-d*(height*.54),z=d===0?170:-distance*230,angle=d===0?-7:-Math.sign(d)*(48+distance*8);
+   card.style.transform='translate(-50%,-50%) translate3d('+x+'px,'+y+'px,'+z+'px) rotateY('+angle+'deg) rotateX('+(d===0?2:-4)+'deg)';card.style.opacity=d===0?'1':String(Math.max(.16,.75-distance*.13));card.style.zIndex=String(10-distance);card.classList.toggle('is-current',d===0);card.inert=d!==0;card.setAttribute('aria-hidden',d===0?'false':'true');
+  });
+  [...directory.children].forEach((button,i)=>{button.classList.toggle('is-current',i===index);button.setAttribute('aria-current',i===index?'true':'false');});controls.querySelector('.pub-counter').textContent='0'+(index+1)+' / 0'+cards.length;window.PublicationStage={index,count:cards.length};
+ }
+ function select(next){index=(next+cards.length)%cards.length;draw();}
+ controls.querySelectorAll('.pub-controls button')[0].addEventListener('click',()=>select(index-1));controls.querySelectorAll('.pub-controls button')[1].addEventListener('click',()=>select(index+1));
+ stage.addEventListener('wheel',event=>{if(event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;const sign=Math.sign(event.deltaY);if(!sign)return;if((index===cards.length-1&&sign>0)||(index===0&&sign<0))return;event.preventDefault();const now=performance.now(),quiet=now-lastWheel;lastWheel=now;if(now<locked||quiet<180)return;locked=now+1000;select(index+sign);},{passive:false});
+ stage.addEventListener('pointerdown',event=>{if(event.target.closest('button,a'))return;downX=event.clientX;});stage.addEventListener('pointerup',event=>{if(downX&&Math.abs(event.clientX-downX)>45)select(index+(event.clientX<downX?1:-1));downX=0;});
+ stage.tabIndex=0;stage.setAttribute('aria-label','Publication gallery. Scroll or use arrow keys to change paper.');stage.addEventListener('keydown',event=>{if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(event.key)){event.preventDefault();select(index+(['ArrowRight','ArrowDown'].includes(event.key)?1:-1));}});
+ function state(){document.documentElement.classList.toggle('publication-view',page.classList.contains('active'));}new MutationObserver(state).observe(page,{attributes:true,attributeFilter:['class']});state();draw();addEventListener('resize',draw,{passive:true});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();

@@ -1,0 +1,44 @@
+#journeyCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none;background:#120848;opacity:1!important;animation:none!important;overflow:hidden}
+#journeyCanvas canvas{display:block;width:100%;height:100%}
+html.journey-ready:not(.hero-locked) body{overflow-y:visible!important;overflow-x:clip!important}
+html.journey-dark #top-header .nav-link{color:#fff!important}
+html.journey-dark #top-header .nav-link.active{color:#D0BA98!important}
+html.journey-ready:not(.journey-skipped) body::before,html.journey-reduced body::before{background:none!important;filter:none!important}
+html.journey-ready:not(.journey-skipped) body::after{background:none!important}
+#researchJourney{position:relative;height:760vh;min-height:760svh;margin-bottom:0;--journey-ink:#fff;opacity:1!important;animation:none!important;clip-path:none!important}
+#researchJourney[hidden]{display:none!important}
+.journey-sticky{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;color:var(--journey-ink)}
+.journey-copy{position:absolute;inset:0;pointer-events:none}
+.journey-panel{position:absolute;top:50%;width:43%;max-width:570px;translate:0 -50%;opacity:0;visibility:hidden;pointer-events:none;will-change:opacity,transform}
+.journey-panel--left{left:7.5vw}.journey-panel--right{right:7.5vw}
+.journey-kicker{display:block;font:500 clamp(14px,1.15vw,17px)/1.6 Inter,sans-serif;letter-spacing:.12em;margin-bottom:24px;color:inherit;opacity:.92}
+.journey-panel h2,.journey-panel h2 em{font-family:'Recoleta',Georgia,'Source Han Serif SC','Songti SC',serif!important;font-weight:300;letter-spacing:-.045em;font-size:clamp(42px,6.4vw,94px);line-height:1.03;color:inherit;margin:0 0 28px;text-align:left}
+.journey-panel h2 em{font-style:italic}
+.journey-panel p{font:400 clamp(18px,1.5vw,22px)/1.65 Inter,'Microsoft YaHei',sans-serif;color:inherit;max-width:560px;margin:0;text-align:left;letter-spacing:.015em}
+.journey-panel a{color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:5px;pointer-events:auto}
+.journey-panel a:focus-visible{outline:1px solid currentColor;outline-offset:8px}
+.journey-progress{position:absolute;bottom:35px;left:7.5vw;right:7.5vw;display:flex;align-items:center;gap:22px;color:var(--journey-ink);opacity:.65;font:400 10px/1 Inter,sans-serif;letter-spacing:.15em}
+.journey-progress-track{height:1px;background:color-mix(in srgb,currentColor 20%,transparent);flex:1}.journey-progress-fill{height:1px;width:100%;background:#D0BA98;transform-origin:left;transform:scaleX(0)}
+.journey-scroll{position:absolute;bottom:65px;left:7.5vw;font:400 9px/1.5 Inter,sans-serif;letter-spacing:.2em;opacity:.7}
+html.journey-ready #container{position:relative}
+html.journey-reduced #journeyCanvas{background:#979eb7}
+@media(max-width:700px){
+    .journey-panel{top:auto;bottom:13vh;left:7vw;right:7vw;width:auto;max-width:none;translate:none}
+    .journey-panel h2,.journey-panel h2 em{font-size:clamp(40px,11vw,66px);margin-bottom:18px}
+    .journey-kicker{font-size:9px;margin-bottom:16px}
+    .journey-panel p{font-size:13px;line-height:1.7;max-width:100%;overflow-wrap:anywhere}
+    .journey-progress{left:7vw;right:7vw;bottom:22px}.journey-scroll{left:7vw;bottom:46px}
+    #top-header{left:8px;width:calc(100% - 16px);max-width:calc(100vw - 16px)}.nav-glass-container{max-width:100%;overflow-x:auto;scrollbar-width:none}.nav-glass-container::-webkit-scrollbar{display:none}.nav-links{flex-wrap:nowrap;width:max-content}.nav-links li a{font-size:11px;padding:10px 8px}
+    #container{box-sizing:border-box;max-width:100%}#footer{overflow:hidden}
+}
+@media(prefers-reduced-motion:reduce){#researchJourney{display:none!important}.journey-panel{will-change:auto}}
+
+
+.journey-title-line { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; }
+.journey-title-line > span { display: block; will-change: transform; }
+.journey-panel p { will-change: transform, opacity; }
+
+#journeyCanvas canvas { filter: blur(var(--scene-focus,0px)) brightness(var(--scene-light,1)); }
+html.journey-dark #journeyCanvas::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 62% 43%,transparent 30%,#03030a65 100%); }
+
+html.journey-dark #journeyCanvas::after { opacity: .5; }

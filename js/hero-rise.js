@@ -1,85 +1,42 @@
-/* Name and focus line rise out of per-line masks, one character at a time. */
+/* A centerline mask writes the original Bidaq outlines, stroke by stroke. */
 (function () {
     'use strict';
-    var nodes = document.querySelectorAll('.hero-split');
-    function reveal() {
-        document.documentElement.classList.remove('hero-font-pending');
+    var title = document.querySelector('.hero-title');
+    var focus = document.querySelector('.hero-focus');
+    var ns = 'http://www.w3.org/2000/svg';
+    function node(tag, attrs) {
+        var el = document.createElementNS(ns, tag);
+        Object.keys(attrs || {}).forEach(function (key) { el.setAttribute(key, attrs[key]); });
+        return el;
     }
-    function start(fontLoaded) {
-        if (!nodes.length || fontLoaded === false || typeof gsap === 'undefined' || typeof SplitText === 'undefined') {
-            reveal();
-            return;
-        }
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            reveal();
-            return;
-        }
-        gsap.registerPlugin(SplitText);
-        var nameChars = 0;
-
-        nodes.forEach(function (el, index) {
-            var isFocus = el.classList.contains('hero-focus');
-            var focusFont = "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif";
-
-            if (isFocus) {
-                el.style.setProperty('font-family', focusFont, 'important');
-                el.style.setProperty('font-style', 'italic', 'important');
-                el.style.setProperty('font-weight', '300', 'important');
-                el.style.setProperty('font-size', 'clamp(1.55rem, 2.8vw, 2.15rem)', 'important');
-            }
-
-            SplitText.create(el, {
-                type: isFocus ? 'chars' : 'lines,chars',
-                linesClass: 'hero-mask',
-                charsClass: 'hero-char',
-                mask: isFocus ? false : 'lines',
-                autoSplit: !isFocus,
-                onSplit: function (self) {
-                    if (index === 0) nameChars = self.chars.length;
-                    if (el.classList.contains('hero-title')) {
-                        el.querySelectorAll('.hero-mask').forEach(function (mask) {
-                            mask.style.paddingBottom = '0.72em';
-                            var clip = mask.parentElement;
-                            if (clip && clip !== el) {
-                                clip.style.paddingBottom = '0.72em';
-                                clip.style.height = 'auto';
-                            }
-                        });
-                    }
-                    if (isFocus) {
-                        el.querySelectorAll('.hero-focus-line').forEach(function (line) {
-                            line.classList.add('hero-mask');
-                        });
-                        self.chars.forEach(function (char) {
-                            char.style.setProperty('font-family', focusFont, 'important');
-                            char.style.setProperty('font-style', 'italic', 'important');
-                            char.style.setProperty('font-weight', '300', 'important');
-                            char.style.setProperty('font-size', 'inherit', 'important');
-                        });
-                    }
-                    return gsap.from(self.chars, {
-                        yPercent: 110,
-                        duration: 1.15,
-                        stagger: 0.03,
-                        delay: index === 0 ? 0 : nameChars * 0.03,
-                        ease: 'expo.out',
-                        onComplete: function () {
-                            el.classList.add('is-settled');
-                            if (!el.classList.contains('hero-title')) return;
-                            el.querySelectorAll('.hero-mask').forEach(function (mask) {
-                                mask.style.overflow = 'visible';
-                                var clip = mask.parentElement;
-                                if (clip && clip !== el) {
-                                    clip.style.overflow = 'visible';
-                                    clip.style.height = 'auto';
-                                }
-                            });
-                        }
-                    });
+    function reveal() { document.documentElement.classList.remove('hero-font-pending'); }
+    function start(results) {
+        if (!title || results[0] === false) { reveal(); return; }
+        var data = results[1];
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var svg = node('svg', { viewBox: '0 0 ' + data.width + ' ' + data.height, class: 'signature', 'aria-hidden': 'true' });
+        var defs = node('defs'); svg.appendChild(defs);
+        var total = data.letters.reduce(function (sum, letter) { return sum + letter.strokes.reduce(function (n, s) { return n + s.length; }, 0); }, 0);
+        var elapsed = .15;
+        data.letters.forEach(function (letter, index) {
+            var mask = node('mask', { id: 'signature-mask-' + index, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: data.width, height: data.height });
+            var shape = node('path', { d: letter.outline, fill: 'currentColor', mask: 'url(#signature-mask-' + index + ')' });
+            letter.strokes.forEach(function (stroke) {
+                var duration = Math.max(.055, stroke.length / total * 3.5);
+                var line = node('path', { d: stroke.d, fill: 'none', stroke: 'white', 'stroke-width': stroke.width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', pathLength: 1 });
+                if (!reduced) {
+                    line.style.strokeDasharray = '1'; line.style.strokeDashoffset = '1';
+                    line.style.animation = 'signature-ink ' + duration + 's linear ' + elapsed + 's forwards';
                 }
+                mask.appendChild(line); elapsed += duration;
             });
+            defs.appendChild(mask); svg.appendChild(shape); elapsed += .055;
         });
+        title.setAttribute('aria-label', 'Nan Wang');
+        title.replaceChildren(svg); title.classList.add('signature-ready');
+        if (focus && !reduced) focus.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: 900, fill: 'backwards', easing: 'ease-out' });
+        title.dataset.animation = 'stroke-writing';
         reveal();
     }
-    (window.heroTitleFontReady || Promise.resolve(true)).then(start).catch(reveal);
+    Promise.all([window.heroTitleFontReady || Promise.resolve(true), fetch('js/signature-paths.json').then(function (r) { if (!r.ok) throw Error('Signature unavailable'); return r.json(); })]).then(start).catch(reveal);
 })();

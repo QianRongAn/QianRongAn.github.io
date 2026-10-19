@@ -1,20 +1,21 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
 	root: '.',
 	base: './',
 	server: {
-		open: '/butterfly/index.html',
+		open: mode === 'journey' ? '/' : '/butterfly/index.html',
 	},
 	build: {
-		outDir: 'js/hero-butterfly',
+		outDir: mode === 'journey' ? 'js/research-journey' : 'js/hero-butterfly',
 		emptyOutDir: true,
 		lib: {
-			entry: resolve(__dirname, 'butterfly/main.js'),
-			name: 'HeroButterfly',
+			entry: resolve(__dirname, mode === 'journey' ? 'journey/main.js' : 'butterfly/main.js'),
+			name: mode === 'journey' ? 'ResearchJourney' : 'HeroButterfly',
 			formats: ['es'],
-			fileName: () => 'butterfly.js',
+			fileName: () => mode === 'journey' ? 'main.js' : 'butterfly.js',
+			cssFileName: 'style',
 		},
 		rollupOptions: {
 			output: {
@@ -22,4 +23,4 @@ export default defineConfig({
 			},
 		},
 	},
-});
+}));

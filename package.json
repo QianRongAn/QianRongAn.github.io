@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build:butterfly": "vite build",
+    "dev:journey": "vite --mode journey",
+    "build:journey": "vite build --mode journey",
     "preview": "vite preview"
   },
   "repository": {

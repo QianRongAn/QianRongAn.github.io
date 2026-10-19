@@ -1,7 +1,8 @@
-html.skills-view, html.skills-view body { background: #d7d7d0 !important; }
+html.skills-view, html.skills-view body { background: #d7d7d0 !important; overflow-anchor: none; }
 html.skills-view body::before { opacity: 0 !important; visibility: hidden !important; }
-html.skills-view #intro, html.skills-view #footer { display: none !important; }
-html.skills-view #container { width: 100%; max-width: none; margin: 0; padding: 0; }
+html.skills-view #intro { display: none !important; }
+html.skills-view #container { width: 100%; max-width: none; margin: 0 !important; padding: 0; }
+html.skills-view #content-wrapper { margin-top: 0 !important; }
 html.skills-view #content-wrapper { min-height: 100dvh !important; background: transparent; }
 #skills.cube-page.active { position: relative !important; min-height: 100dvh; padding: 142px max(7vw, 24px) 90px; box-sizing: border-box; }
 #skills#skills section { max-width: 1296px; width: 100%; margin: 0 auto; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
@@ -11,11 +12,22 @@ html.skills-view #content-wrapper { min-height: 100dvh !important; background: t
 #skills#skills .section-title { margin: 0 !important; padding: 0 !important; font-size: clamp(38px, 4.5vw, 64px); line-height: 1.08; letter-spacing: -.04em; text-align: left; text-transform: none; border: none; }
 #skills#skills .section-title::after, #skills#skills .section-title::before { display: none; }
 #skills .skills-description { margin: 0; padding: 0; font-size: clamp(23px, 2.4vw, 34px); line-height: 1.28; letter-spacing: -.02em; }
+#skills .skills-intro .section-title { transform: translateY(var(--skills-title-drift, 0px)); }
+#skills .skills-description { transform: translateY(var(--skills-copy-drift, 0px)); }
+#skills .skills-intro { translate: 0 var(--skills-entry-shift, 0px); }
+#skills .skills-list { translate: 0 calc(var(--skills-entry-shift, 0px) * 1.4); }
+html.skills-unveiling #top-header { z-index: 1300; }
+html.skills-unveiling #skillsCurtain { pointer-events: none; }
+#skillsCurtain canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#skillsCurtain > span, #skillsCurtain > small { position: relative; z-index: 1; }
+#skillsCurtain { position: fixed; inset: 0; z-index: 1200; background: #d7d7d0; color: #77796d; display: flex; flex-direction: column; justify-content: center; padding: 0 8vw; box-sizing: border-box; transform: translateY(-102%); pointer-events: none; opacity: 1 !important; clip-path: none !important; }
+#skillsCurtain span { font: 300 clamp(52px, 10vw, 150px)/1.05 'Recoleta', Georgia, serif; letter-spacing: -.05em; }
+#skillsCurtain small { margin-top: 28px; font: 400 10px/1.4 Inter, sans-serif; letter-spacing: .24em; }
 #skills .skills-list { border: 1px dashed #24232026; }
 #skills#skills .skill-category { margin: 0; padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
 #skills .skill-category + .skill-category { border-top: 1px dashed #24232026 !important; }
 #skills#skills .skill-category-title { margin: 0; padding: 0; font-size: inherit; line-height: inherit; }
-#skills .skill-toggle { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; min-height: 104px; padding: 28px 32px; border: 0; border-radius: 0; text-align: left; background: transparent; font-size: clamp(24px, 2.5vw, 34px); line-height: 1.35; cursor: pointer; transition: background 220ms ease; }
+#skills .skill-toggle { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; min-height: 96px; padding: 28px 32px; border: 0; border-radius: 0; text-align: left; background: transparent; font-size: clamp(21px, 1.9vw, 27px); line-height: 1.35; cursor: pointer; transition: background 220ms ease; }
 #skills .skill-toggle:hover, #skills .is-open .skill-toggle { background: #ffffff12; }
 #skills .skill-toggle:focus-visible { outline: 1px solid #242320; outline-offset: -6px; }
 #skills .skill-plus { position: relative; flex: 0 0 18px; width: 18px; height: 18px; transition: transform 300ms ease; }

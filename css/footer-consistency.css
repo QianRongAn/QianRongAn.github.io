@@ -1,0 +1,16 @@
+/* Every page shares the original About footer image and overlay geometry. */
+html.projects-view, html.projects-view body { overflow-y: auto !important; }
+html.projects-view #projects.cube-page.active { position: relative !important; }
+html.projects-view #footer { display: none !important; }
+#footer .footer-icons, #footer .footer-links { position: absolute; margin: 0; transform: none; }
+#content-wrapper .cube-page:not(.active) { display: none !important; }
+@media (max-width: 700px) {
+    #footer .footer-icons { gap: 8px; }
+    #footer .footer-icon { width: 24px; height: 24px; font-size: 17px; }
+    #footer .footer-links { gap: 8px; }
+}
+
+/* Keep the complete navigation in a separate compositing layer above WebGL/cards. */
+#top-header { z-index: 20000 !important; isolation: isolate; transform: translateZ(0); }
+#top-header .nav-links { position: relative; z-index: 3; }
+#top-header .nav-links li, #top-header .nav-link, #top-header .nav-link span { position: relative; transform: translateZ(0); backface-visibility: hidden; }
