@@ -21,9 +21,7 @@ html.about-editorial #about#about .about-paragraph{font-size:16px!important;line
 #about .about-evidence strong{font-size:44px!important;color:#343148}
 #about .about-evidence span{font-size:14px!important}
 #about .about-evidence small{font-size:12px!important;line-height:1.6!important}
-#education .glass-medallion,#experience .glass-medallion{display:none}
-#education#education .content-item:nth-of-type(2){border-radius:48px;padding-top:12px!important}
-#education .content-item:nth-of-type(2) .glass-card-head{text-align:left}
+#experience .glass-medallion{display:none}
 #education#education .date-location,#experience#experience .date-location{font-size:14px;color:#4b455c;line-height:1.8}
 #education#education .details :is(p,li),#experience#experience .glass-well li{font-size:16px;line-height:1.8}
 #education#education .details h3,#experience#experience .details h3{font-size:clamp(28px,2.5vw,36px);line-height:1.15;color:#343148!important}

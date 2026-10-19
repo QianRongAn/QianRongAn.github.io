@@ -1,0 +1,345 @@
+{
+  "source": "https://lifesciencedb.jp/bp3d/",
+  "version": "4.3",
+  "license": "CC BY-SA 2.1 Japan",
+  "parts": [
+    {
+      "name": "Tenth thoracic vertebra",
+      "fj": "FJ3154",
+      "fma": "FMA10037",
+      "faces": 2790,
+      "source_sha256": "b8322a72a3fc0e720e22fdbbdc81f04adaaa12a7ce5a11b76013e6f6e0e974c7"
+    },
+    {
+      "name": "Eleventh thoracic vertebra",
+      "fj": "FJ3155",
+      "fma": "FMA10059",
+      "faces": 2674,
+      "source_sha256": "f1734b5a82b3134f392b770255947569b8fb7fcefd152846a1102e7fa3c7b543"
+    },
+    {
+      "name": "Twelfth thoracic vertebra",
+      "fj": "FJ3156",
+      "fma": "FMA10081",
+      "faces": 2772,
+      "source_sha256": "396f459937f9afd71ee42ed17cad6b989842c6ec072a1401dc184bc292a0d68d"
+    },
+    {
+      "name": "First lumbar vertebra",
+      "fj": "FJ3157",
+      "fma": "FMA13072",
+      "faces": 2972,
+      "source_sha256": "3d5c43595140cf7e17d3698ec8d03568cacfeb6352b82d9cf2ed3a6ab097868f"
+    },
+    {
+      "name": "First thoracic vertebra",
+      "fj": "FJ3158",
+      "fma": "FMA5018",
+      "faces": 1700,
+      "source_sha256": "decdbc71af9e3ed2ec870ec51cb13074293ad95365e11d51a0429fcde4e7be86"
+    },
+    {
+      "name": "Second lumbar vertebra",
+      "fj": "FJ3159",
+      "fma": "FMA13073",
+      "faces": 3214,
+      "source_sha256": "f754ca81497dbf3d52a96d4243c74c692c6d3b4a5027db4d950bf6934e5a728a"
+    },
+    {
+      "name": "Second thoracic vertebra",
+      "fj": "FJ3160",
+      "fma": "FMA5018",
+      "faces": 1938,
+      "source_sha256": "a80babd2d3d511869c791607dad70939daf0ea8974f28a0a0c37278a94a832b9"
+    },
+    {
+      "name": "Third cervical vertebra",
+      "fj": "FJ3161",
+      "fma": "FMA12521",
+      "faces": 2030,
+      "source_sha256": "1fc32d22fd860e4fab228e2063a8a167ea2e85b14ad7570ac5c3a1d693df67e3"
+    },
+    {
+      "name": "Third lumbar vertebra",
+      "fj": "FJ3162",
+      "fma": "FMA13074",
+      "faces": 3272,
+      "source_sha256": "eefd71864836c9138d817d757932c987f94b0aff72fd825d92153052d4bf25b4"
+    },
+    {
+      "name": "Third thoracic vertebra",
+      "fj": "FJ3163",
+      "fma": "FMA5018",
+      "faces": 2038,
+      "source_sha256": "8e53609cdd7c5a49a1cbb9abd5e97a43e0a21a16708dcb71f085555010d190f8"
+    },
+    {
+      "name": "Fourth cervical vertebra",
+      "fj": "FJ3164",
+      "fma": "FMA12522",
+      "faces": 2410,
+      "source_sha256": "8a211a85a55ca6ed0466a7ff9505656f80677b8c3fdaf133026b750974089111"
+    },
+    {
+      "name": "Fourth lumbar vertebra",
+      "fj": "FJ3165",
+      "fma": "FMA13075",
+      "faces": 3512,
+      "source_sha256": "819bc08eef893a233a1292d76e9ba3c8d12151097526bca0624935dd10a95808"
+    },
+    {
+      "name": "Fourth thoracic vertebra",
+      "fj": "FJ3166",
+      "fma": "FMA5018",
+      "faces": 2066,
+      "source_sha256": "6b6d555c6132b5dd673e9b702a76574f2869462aace2bb3892cd8e38387ce0dc"
+    },
+    {
+      "name": "Fifth cervical vertebra",
+      "fj": "FJ3167",
+      "fma": "FMA12523",
+      "faces": 2196,
+      "source_sha256": "b5e0cb9386110c82189b036d56d8be640a29c7f56fa88cf922bce80c93a33825"
+    },
+    {
+      "name": "Fifth lumbar vertebra",
+      "fj": "FJ3168",
+      "fma": "FMA13076",
+      "faces": 3892,
+      "source_sha256": "91a45192b217738af6e18cd979907d858b8dc5ae30831c3d0edcc7c83bf112b0"
+    },
+    {
+      "name": "Fifth thoracic vertebra",
+      "fj": "FJ3169",
+      "fma": "FMA5018",
+      "faces": 2280,
+      "source_sha256": "2a06234c1a3837b3b643f0dd3af11843c85f6bd2a8ed29a011da31fea08d0682"
+    },
+    {
+      "name": "Sixth cervical vertebra",
+      "fj": "FJ3170",
+      "fma": "FMA12524",
+      "faces": 2374,
+      "source_sha256": "ca1c7507951b7a16bbd4286492391af0a4f60c8f07fb59a876f6526853ce9f60"
+    },
+    {
+      "name": "Sixth thoracic vertebra",
+      "fj": "FJ3171",
+      "fma": "FMA5018",
+      "faces": 2248,
+      "source_sha256": "082ac32fee22c34609758a61d58227d7dcd84220bf4264f8f110f64f2ebb3992"
+    },
+    {
+      "name": "Seventh cervical vertebra",
+      "fj": "FJ3172",
+      "fma": "FMA12525",
+      "faces": 1820,
+      "source_sha256": "20df76505e5d21ad9eac99e1dd241576a4411a3fa0d2c1d3dda7aa69a9f79f32"
+    },
+    {
+      "name": "Seventh thoracic vertebra",
+      "fj": "FJ3173",
+      "fma": "FMA5018",
+      "faces": 2574,
+      "source_sha256": "9f20e518e1a27a7c4be01a829bef7afda1a032cedf45c0fe165539a7df2edc8e"
+    },
+    {
+      "name": "Eighth thoracic vertebra",
+      "fj": "FJ3174",
+      "fma": "FMA5018",
+      "faces": 2424,
+      "source_sha256": "3f4f6575d9392332f5a8e04efdc2e1525fdd5d3ac1c3dac6b2f5f540d9833dad"
+    },
+    {
+      "name": "Ninth thoracic vertebra",
+      "fj": "FJ3175",
+      "fma": "FMA10014",
+      "faces": 2586,
+      "source_sha256": "41be91d8fd03e9894d868be28e931c66f5d805764bf143f91e8f8990c5784d15"
+    },
+    {
+      "name": "Intervertebral disk of axis",
+      "fj": "FJ3202",
+      "fma": "FMA10446",
+      "faces": 3712,
+      "source_sha256": "a00d34def49239402d52c4cf6c254570dff0792cbf9df89adf1c4285a14f5a64"
+    },
+    {
+      "name": "Intervertebral disk of fourth thoracic vertebra",
+      "fj": "FJ3203",
+      "fma": "FMA10446",
+      "faces": 1560,
+      "source_sha256": "3f7b88045dcf1ee6f7ac00f951d2f0c2a1fc89c63e77dd2f87ea8d8f88c12786"
+    },
+    {
+      "name": "Intervertebral disk of fifth thoracic vertebra",
+      "fj": "FJ3204",
+      "fma": "FMA10446",
+      "faces": 1836,
+      "source_sha256": "26383360a9ce7ab69998185e58ff11c8b6c5cc6deb4b2a6f33c1c5ee86856d5b"
+    },
+    {
+      "name": "Intervertebral disk of sixth thoracic vertebra",
+      "fj": "FJ3205",
+      "fma": "FMA10446",
+      "faces": 2564,
+      "source_sha256": "7ba98ac182ae384902306b9f811c85f37afa6f5831d52a085ed57d73c9a08597"
+    },
+    {
+      "name": "Intervertebral disk of seventh thoracic vertebra",
+      "fj": "FJ3206",
+      "fma": "FMA10446",
+      "faces": 2630,
+      "source_sha256": "d62bb5e51751735b1cbc61a116ddc914d7df397b42210332c2e8515a41f422d5"
+    },
+    {
+      "name": "Intervertebral disk of eighth thoracic vertebra",
+      "fj": "FJ3207",
+      "fma": "FMA10446",
+      "faces": 2894,
+      "source_sha256": "42ee1a498f882c99d6e8e7a68988daaecae8ba17cac0fec4abe2472c82523731"
+    },
+    {
+      "name": "Intervertebral disk of ninth thoracic vertebra",
+      "fj": "FJ3208",
+      "fma": "FMA10446",
+      "faces": 2940,
+      "source_sha256": "f3cb730a0db38b2c61227a1302136393bf3038d4298c5ba972968b47bf34dce4"
+    },
+    {
+      "name": "Intervertebral disk of tenth thoracic vertebra",
+      "fj": "FJ3209",
+      "fma": "FMA10446",
+      "faces": 3102,
+      "source_sha256": "21ce916d9e706032f7b40731206f94c131c1359c1a96be14adf71d3b04210508"
+    },
+    {
+      "name": "Intervertebral disk of eleventh thoracic vertebra",
+      "fj": "FJ3210",
+      "fma": "FMA10446",
+      "faces": 3336,
+      "source_sha256": "833ace3f03d5d510695a2b92e4d5c14ec31924a616786024efb152fd5a3d1745"
+    },
+    {
+      "name": "Intervertebral disk of twelfth thoracic vertebra",
+      "fj": "FJ3211",
+      "fma": "FMA10446",
+      "faces": 3476,
+      "source_sha256": "e441ca0b9ca0ba03f38ba21df5e59b5d1495e06920d9a3159f4fb66d22ee88df"
+    },
+    {
+      "name": "Intervertebral disk of first lumbar vertebra",
+      "fj": "FJ3212",
+      "fma": "FMA10446",
+      "faces": 3498,
+      "source_sha256": "dbb06d83aaa9db2ffb709734ad4e1bb87091a7d7766dc1ce8a9e23f3daa8f3e8"
+    },
+    {
+      "name": "Intervertebral disk of third cervical vertebra",
+      "fj": "FJ3213",
+      "fma": "FMA10446",
+      "faces": 770,
+      "source_sha256": "941380d19e2be9b6cbf97ebe2f5cc3f47c656cbd961967665bc83ef94d3fe408"
+    },
+    {
+      "name": "Intervertebral disk of second lumbar vertebra",
+      "fj": "FJ3214",
+      "fma": "FMA10446",
+      "faces": 3406,
+      "source_sha256": "4f282d710c20d9e5df48897ce4eb4959f85f039053bbb4b61f440f2d508c58eb"
+    },
+    {
+      "name": "Intervertebral disk of third lumbar vertebra",
+      "fj": "FJ3215",
+      "fma": "FMA10446",
+      "faces": 3454,
+      "source_sha256": "acb6cc9e42c21395d01ffada9b7b76564818fefdf4787bd728ca216749793a37"
+    },
+    {
+      "name": "Intervertebral disk of fourth lumbar vertebra",
+      "fj": "FJ3216",
+      "fma": "FMA10446",
+      "faces": 3512,
+      "source_sha256": "74cbf4b6ec23fe9d4f57af85bf5f9c1e3a0376a3caa01ea6a3ef46eb223b1f1d"
+    },
+    {
+      "name": "Intervertebral disk of fifth lumbar vertebra",
+      "fj": "FJ3217",
+      "fma": "FMA10446",
+      "faces": 3498,
+      "source_sha256": "e1cb74e7c5031df0b0004833df43465ca502866cfb50dacdb31b647fc49b1035"
+    },
+    {
+      "name": "Intervertebral disk of fourth cervical vertebra",
+      "fj": "FJ3218",
+      "fma": "FMA10446",
+      "faces": 926,
+      "source_sha256": "fc8ca687ae2db092cf7873d66974c89b0f3ae3818c854703f60e98068e0717f6"
+    },
+    {
+      "name": "Intervertebral disk of fifth cervical vertebra",
+      "fj": "FJ3219",
+      "fma": "FMA10446",
+      "faces": 956,
+      "source_sha256": "bc5feec465f04f070de074bb2f6f9770473048d49f2518de6f7c93848b8d7cb0"
+    },
+    {
+      "name": "Intervertebral disk of sixth cervical vertebra",
+      "fj": "FJ3220",
+      "fma": "FMA10446",
+      "faces": 892,
+      "source_sha256": "fc4330356dd0aa56c50bcb356303711cc9b7e96b2b7e30e7031547c83806d86a"
+    },
+    {
+      "name": "Intervertebral disk of seventh cervical vertebra",
+      "fj": "FJ3221",
+      "fma": "FMA10446",
+      "faces": 1092,
+      "source_sha256": "b766aa63a293d3de68c761ca4a4501d0278cfa5c4b7c481c24bc9fbe782e374b"
+    },
+    {
+      "name": "Intervertebral disk of first thoracic vertebra",
+      "fj": "FJ3222",
+      "fma": "FMA10446",
+      "faces": 1232,
+      "source_sha256": "f5c2af84b26e8bd1010f67c6ba2194bf54c3e541b6d089c114ce933ce7b641bb"
+    },
+    {
+      "name": "Intervertebral disk of second thoracic vertebra",
+      "fj": "FJ3223",
+      "fma": "FMA10446",
+      "faces": 1374,
+      "source_sha256": "e4f42fbb1ff973a61a566fb4a9ab4e0757f2f110544cc75eed6d3fbbf9a784df"
+    },
+    {
+      "name": "Intervertebral disk of third thoracic vertebra",
+      "fj": "FJ3224",
+      "fma": "FMA10446",
+      "faces": 1474,
+      "source_sha256": "fb5a2310f93e646d982c8cd75104df95aa5e4633a79f05342acd9ee4f64ec7a9"
+    },
+    {
+      "name": "Atlas",
+      "fj": "FJ6295",
+      "fma": "FMA12519",
+      "faces": 2038,
+      "source_sha256": "d291173838e43ac59ee01a14764a2d0a2ec37db4fa9db42084a8d57781df1c8c"
+    },
+    {
+      "name": "Axis",
+      "fj": "FJ6296",
+      "fma": "FMA12520",
+      "faces": 2282,
+      "source_sha256": "a98a71c6b74564776f690ef5a295003670e9540d01ac81b7456c65c899009498"
+    },
+    {
+      "name": "Sacrum",
+      "fj": "FJ6484",
+      "fma": "FMA16202",
+      "faces": 9844,
+      "source_sha256": "0eecd1b0e4ba5a249742741af529ed8d27f64400adf4bd1688a13ce6e8146ddb"
+    }
+  ],
+  "conversion": "Shared rigid axis rotation, translation and uniform scale only; no per-part changes. No topology reduction.",
+  "missing_structure": "Coccyx is not represented by a separate labelled mesh in this source subset; none was fabricated."
+}

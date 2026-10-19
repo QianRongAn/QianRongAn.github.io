@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import './style.css';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
@@ -9,6 +10,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
 const root = document.documentElement;
+const spineStudy=new URLSearchParams(location.search).get('study')==='spine';
+if(spineStudy)root.classList.add('spine-study');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const section = document.getElementById('researchJourney');
 const container = document.getElementById('container');
@@ -78,8 +81,22 @@ const foreground=new THREE.Group();camera.add(foreground);
 const silhouetteShape=new THREE.Shape();silhouetteShape.moveTo(-2,-2);silhouetteShape.bezierCurveTo(-.8,-1.8,-1.4,-.8,-.75,-.65);silhouetteShape.bezierCurveTo(-.2,-.1,-1.7,.8,-2,2);silhouetteShape.lineTo(-3,2);silhouetteShape.lineTo(-3,-2);
 const silhouetteMat=new THREE.MeshBasicMaterial({color:'#03030a',side:THREE.DoubleSide,transparent:true,opacity:.94});
 for(const side of [-1,1]){const veil=new THREE.Mesh(new THREE.ShapeGeometry(silhouetteShape,40),silhouetteMat);veil.position.set(side===1?-1.05:1.05,-.6,-2.8);veil.scale.set(side===1?.7:-.7,.85,1);foreground.add(veil);}
-const revealLeafShape=new THREE.Shape();revealLeafShape.moveTo(0,-1.5);revealLeafShape.bezierCurveTo(-.08,-.7,.02,.15,.28,.6);revealLeafShape.bezierCurveTo(.5,.16,.15,-.3,.34,-1.5);revealLeafShape.closePath();
-const revealLeaf=new THREE.Mesh(new THREE.ShapeGeometry(revealLeafShape,48),silhouetteMat);revealLeaf.position.set(.65,-.55,-3);foreground.add(revealLeaf);
+// A recognisable sprig: a continuous curved stem, petioles and rounded leaves.
+const revealSprig=new THREE.Group();foreground.add(revealSprig);
+const sprigStem=new THREE.CatmullRomCurve3([new THREE.Vector3(1.45,-1.7,-3),new THREE.Vector3(1.32,-1.25,-3),new THREE.Vector3(1.18,-.93,-3),new THREE.Vector3(1.07,-.57,-3)]);
+revealSprig.add(new THREE.Mesh(new THREE.TubeGeometry(sprigStem,48,.014,7,false),silhouetteMat));
+const sprigLeafShape=new THREE.Shape();sprigLeafShape.moveTo(0,0);
+sprigLeafShape.bezierCurveTo(-.21,.10,-.26,.39,-.06,.61);
+sprigLeafShape.bezierCurveTo(-.025,.65,.015,.65,.045,.61);
+sprigLeafShape.bezierCurveTo(.24,.40,.19,.12,0,0);sprigLeafShape.closePath();
+const sprigLeafGeometry=new THREE.ExtrudeGeometry(sprigLeafShape,{depth:.009,bevelEnabled:true,bevelThickness:.004,bevelSize:.004,bevelSegments:2,steps:1,curveSegments:24});
+const veinMat=new THREE.MeshBasicMaterial({color:'#201d30',transparent:true,opacity:.65});
+[[1.30,-1.18,.90,.78],[1.21,-.98,-.80,.76],[1.13,-.76,.65,.72]].forEach(([x,y,angle,scale])=>{
+ const leaf=new THREE.Group();leaf.position.set(x,y,-2.99);leaf.rotation.z=angle;leaf.scale.setScalar(scale);
+ leaf.add(new THREE.Mesh(sprigLeafGeometry,silhouetteMat));
+ const vein=new THREE.CatmullRomCurve3([new THREE.Vector3(0,.035,.017),new THREE.Vector3(-.015,.30,.025),new THREE.Vector3(-.01,.57,.017)]);
+ leaf.add(new THREE.Mesh(new THREE.TubeGeometry(vein,20,.003,5,false),veinMat));revealSprig.add(leaf);
+});
 const world = new THREE.Group(); scene.add(world);
 scene.add(new THREE.HemisphereLight(palette.mist,palette.violet,.62));
 const warm = new THREE.DirectionalLight(palette.gold, 2.7); warm.position.set(-7, 12, 8); scene.add(warm);
@@ -262,6 +279,41 @@ for(let i=0;i<terrainPositions.count;i++){
 }
 terrainGeometry.computeVertexNormals();
 const terrain=new THREE.Mesh(terrainGeometry,terrainMaterial);terrain.rotation.x=-Math.PI/2;terrain.position.set(0,-4,-48);habitat.add(terrain);
+// Ground flowers are solid curved petals, stems and leaves, batched as instances.
+function meadowFloor(x,z){const localZ=-(z+48);return -4+Math.pow(Math.min(Math.abs(x)/12,2),1.7)*3.2+Math.sin(x*.62+localZ*.14)*.4+Math.sin(x*1.4-localZ*.23)*.15+Math.sin(localZ*.38)*.22-8/(1+Math.exp((localZ-10)*.18));}
+function petalGeometry(){
+ const positions=[],indices=[],nx=6,ny=14,stride=nx+1,count=stride*(ny+1);
+ for(let back=0;back<2;back++)for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
+  const u=j/ny,v=i/nx*2-1,w=.28*Math.pow(Math.sin(Math.PI*u),.65)+.018;
+  positions.push(v*w,.14*Math.sin(u*Math.PI)+.28*u*u+.075*v*v*Math.sin(Math.PI*u)+(back?-.009:.009),.07+u*.75);
+ }
+ for(let back=0;back<2;back++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=back*count+j*stride+i,b=a+1,c=a+stride,d=c+1;if(back)indices.push(a,b,c,b,d,c);else indices.push(a,c,b,b,c,d);}
+ const boundary=[];for(let i=0;i<=nx;i++)boundary.push(i);for(let j=1;j<=ny;j++)boundary.push(j*stride+nx);for(let i=nx-1;i>=0;i--)boundary.push(ny*stride+i);for(let j=ny-1;j>0;j--)boundary.push(j*stride);
+ boundary.forEach((a,i)=>{const b=boundary[(i+1)%boundary.length];indices.push(a,b,a+count,b,b+count,a+count);});
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
+}
+const meadow=new THREE.Group();habitat.add(meadow);
+const flowerCount=192,petalsPerFlower=7,flowerPetalGeometry=petalGeometry();
+const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.33,metalness:0,transmission:.16,thickness:.035,ior:1.36,clearcoat:.28,sheen:.7,sheenColor:palette.mist,iridescence:.18,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
+const foliageMaterial=matte(palette.blue,.015);foliageMaterial.roughness=.6;
+const petals=new THREE.InstancedMesh(flowerPetalGeometry,petalMaterial,flowerCount*petalsPerFlower);
+const leaves=new THREE.InstancedMesh(flowerPetalGeometry,foliageMaterial,flowerCount*3);
+const stems=new THREE.InstancedMesh(new THREE.CylinderGeometry(.023,.036,1,6,1),foliageMaterial,flowerCount);
+const flowerCenters=new THREE.InstancedMesh(new THREE.SphereGeometry(1,10,7),gold,flowerCount);
+const stamens=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),pearl,flowerCount*9);
+const flowerDummy=new THREE.Object3D(),flowerRoot=new THREE.Object3D(),flowerPositions=[];
+const blossomColors=[palette.dusk,palette.mist,palette.blue];
+for(let i=0;i<flowerCount;i++){
+ const side=i%2?1:-1,patch=Math.floor(i/24),z=12-patch*14-random()*12,x=side*(3.4+random()*7.5),floor=meadowFloor(x,z),height=.55+random()*1.15,scale=.45+random()*.60;
+ flowerPositions.push({x,y:floor,z,height});
+ flowerDummy.position.set(x+.10,floor+height*.5,z);flowerDummy.rotation.set(0,0,-.11);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
+ flowerRoot.position.set(x+.18,floor+height,z);flowerRoot.rotation.set((random()-.5)*.36,random()*Math.PI,(random()-.5)*.3);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
+ for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(.05*Math.sin(j*2),j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[i%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
+ flowerDummy.position.set(x+.18,floor+height+.10*scale,z);flowerDummy.rotation.set(0,0,0);flowerDummy.scale.set(.17*scale,.09*scale,.17*scale);flowerDummy.updateMatrix();flowerCenters.setMatrixAt(i,flowerDummy.matrix);
+ for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;flowerDummy.position.set(x+.18+Math.cos(angle)*.12*scale,floor+height+.15*scale,z+Math.sin(angle)*.12*scale);flowerDummy.scale.setScalar(.025*scale);flowerDummy.updateMatrix();stamens.setMatrixAt(i*9+j,flowerDummy.matrix);}
+ for(let j=0;j<3;j++){flowerDummy.position.set(x+j*.05,floor+height*(.25+j*.17),z);flowerDummy.rotation.set(.48,j*2.4+i*.2,0);flowerDummy.scale.set(.43,.50,.60);flowerDummy.updateMatrix();leaves.setMatrixAt(i*3+j,flowerDummy.matrix);}
+}
+meadow.add(stems,leaves,petals,flowerCenters,stamens);
 const boulderGeometry=new THREE.SphereGeometry(1,48,36);
 const bp=boulderGeometry.attributes.position;
 for(let i=0;i<bp.count;i++){const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i);const r=1+.065*Math.sin(y*19+x*9)+.045*Math.cos(z*23-y*7);bp.setXYZ(i,x*r,y*r,z*r);}boulderGeometry.computeVertexNormals();
@@ -320,38 +372,30 @@ materials.forEach(mat=>{if(mat.userData.baseOpacity===undefined)mat.userData.bas
 
 // Glass vertebrae: a procedural physical sculpture behind the literature cards.
 const glassScene=new THREE.Scene();glassScene.background=new THREE.Color('#979eb7');glassScene.environmentIntensity=.65;const glassCamera=new THREE.PerspectiveCamera(40,1,.1,80);glassCamera.position.set(0,0,16);
-const skeleton=new THREE.Group();skeleton.position.set(1.6,.4,0);glassScene.add(skeleton);
-const glassMaterial=new THREE.MeshPhysicalMaterial({color:'#9caecb',metalness:0,roughness:.055,transmission:.98,thickness:.32,ior:1.46,clearcoat:1,clearcoatRoughness:.045,iridescence:.38,iridescenceThicknessRange:[170,380],dispersion:.08,envMapIntensity:1.2});
-// Sculpt one continuous vertebra from a smooth implicit surface. The neural canal
-// is an actual hole; processes merge into the arch instead of intersecting cones.
-function smoothUnion(a,b,k=.065){const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*.25;}
-function ellipsoid(x,y,z,a,b,c){const k0=Math.hypot(x/a,y/b,z/c),k1=Math.hypot(x/(a*a),y/(b*b),z/(c*c));return k0*(k0-1)/Math.max(k1,.0001);}
-function taperedBone(x,y,z,a,b,r0,r1){const px=x-a[0],py=y-a[1],pz=z-a[2],vx=b[0]-a[0],vy=b[1]-a[1],vz=b[2]-a[2];const t=Math.max(0,Math.min(1,(px*vx+py*vy+pz*vz)/(vx*vx+vy*vy+vz*vz)));return Math.hypot(px-vx*t,py-vy*t,pz-vz*t)-(r0+(r1-r0)*t);}
-function vertebraField(x,y,z){
- const theta=Math.atan2(z+.12,x),radius=.34+.035*Math.sin(theta*3)+.014*Math.cos(theta*7);
- let d=Math.hypot(Math.hypot(x,z+.12)-radius,y*.92)-(.105+.022*Math.cos(theta*2));
- d=smoothUnion(d,ellipsoid(x,y,z-.29,.34,.155,.24),.09);
- for(const side of [-1,1]){
-  d=smoothUnion(d,taperedBone(x,y,z,[side*.25,0,-.04],[side*.58,.06,-.2],.13,.09));
-  d=smoothUnion(d,taperedBone(x,y,z,[side*.55,.05,-.2],[side*.86,.19,-.08],.10,.028),.06);
-  d=smoothUnion(d,ellipsoid(x-side*.26,y-.19,z+.19,.13,.13,.16),.055);
-  d=smoothUnion(d,ellipsoid(x-side*.23,y+.16,z+.28,.10,.11,.14),.055);
- }
- d=smoothUnion(d,taperedBone(x,y,z,[0,.015,-.43],[0,.12,-.78],.13,.045),.075);
- d=smoothUnion(d,ellipsoid(x,y-.13,z+.72,.075,.14,.12),.045);
- return d+.0025*Math.sin(x*43+z*17)*Math.sin(y*39-z*23);
+const studyControls=spineStudy&&renderer?new OrbitControls(glassCamera,renderer.domElement):null;
+const studyRotation={y:.85};let studyRotationGoal=.85,studyRotationTween;
+if(studyControls){
+ studyControls.enableDamping=true;studyControls.dampingFactor=.09;studyControls.enablePan=false;studyControls.enableZoom=false;studyControls.rotateSpeed=1.05;
+ renderer.domElement.addEventListener('wheel',event=>{
+  if(event.ctrlKey)return;event.preventDefault();
+  const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+  studyRotationGoal+=THREE.MathUtils.clamp(pixels,-120,120)*.0065;
+  studyRotationTween?.kill();
+  if(window.gsap&&!motion.matches)studyRotationTween=window.gsap.to(studyRotation,{y:studyRotationGoal,duration:.42,ease:'power2.out',overwrite:true});else studyRotation.y=studyRotationGoal;
+ },{passive:false});
 }
-const resolution=60,sculpt=new MarchingCubes(resolution,glassMaterial,false,false,18000);sculpt.isolation=0;
-for(let z=0;z<resolution;z++)for(let y=0;y<resolution;y++)for(let x=0;x<resolution;x++)sculpt.setCell(x,y,z,-vertebraField(x/resolution*2-1,y/resolution*2-1,z/resolution*2-1));
-sculpt.update();const vertexCount=sculpt.geometry.drawRange.count,vertebraGeometry=new THREE.BufferGeometry();
-for(const key of ['position','normal'])vertebraGeometry.setAttribute(key,new THREE.BufferAttribute(sculpt.geometry.attributes[key].array.slice(0,vertexCount*3),3));vertebraGeometry.computeBoundingSphere();sculpt.geometry.dispose();
-const vertebrae=[];
-for(let i=0;i<18;i++){
- const bone=new THREE.Mesh(vertebraGeometry,glassMaterial),u=i/17;
- bone.position.set(Math.sin(u*Math.PI*1.5)*.18,(i-8.5)*.44,Math.sin(u*Math.PI*2)*.20);
- bone.rotation.set(Math.sin(i*.43)*.08,.38+Math.sin(i*.28)*.3,i*.018-.12);
- const taper=.90+.15*Math.sin(u*Math.PI);bone.scale.set(taper,.88,taper);skeleton.add(bone);vertebrae.push(bone);
-}
+const skeleton=new THREE.Group();skeleton.position.set(-.75,.4,0);glassScene.add(skeleton);
+const glassMaterial=new THREE.MeshPhysicalMaterial({color:'#c5c4d2',metalness:1,roughness:.18,transmission:0,clearcoat:1,clearcoatRoughness:.10,iridescence:1,iridescenceIOR:1.46,iridescenceThicknessRange:[160,480],envMapIntensity:1.45,bumpMap:microTexture,bumpScale:.002});
+// Actual BodyParts3D anatomy. Each source mesh keeps its original shape and pose.
+// Only one shared rigid axis conversion, translation and uniform scale was applied.
+const discMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:.42,transmission:.36,thickness:.04,ior:1.38,transparent:true,opacity:.78});
+const anatomicalSpine=new THREE.Group();skeleton.add(anatomicalSpine);
+host.dataset.anatomy='loading';
+new GLTFLoader().load('models/bodyparts3d-spine.glb',gltf=>{
+ gltf.scene.traverse(part=>{if(part.isMesh){part.material=part.name.startsWith('Intervertebral')?discMaterial:glassMaterial;}});
+ anatomicalSpine.add(gltf.scene);host.dataset.anatomy='BodyParts3D-4.3';host.dataset.anatomyParts='24 vertebrae, 1 sacrum, 23 intervertebral discs';
+},undefined,error=>{host.dataset.anatomy='load-failed';console.error('Anatomical spine asset failed to load',error);});
+const anatomyCredit=document.createElement('a');anatomyCredit.className='anatomy-credit';anatomyCredit.href='models/bodyparts3d-license.txt';anatomyCredit.target='_blank';anatomyCredit.rel='noopener';anatomyCredit.textContent='Anatomy: BodyParts3D / DBCLS · CC BY-SA';document.body.appendChild(anatomyCredit);if(spineStudy){const studyHint=document.createElement('p');studyHint.className='spine-study-hint';studyHint.textContent='Scroll to rotate · Drag to inspect';document.body.appendChild(studyHint);}
 const splinterPositions=[],splinterColors=[];
 for(let i=0;i<520;i++){const a=i*.29,y=(random()-.5)*9,r=.65+random()*.6;splinterPositions.push(Math.cos(a)*r,y,Math.sin(a)*r);const c=new THREE.Color(i%4===0?palette.gold:palette.blue).lerp(new THREE.Color(palette.mist),random()*.6);splinterColors.push(c.r,c.g,c.b);}
 const splinterGeometry=new THREE.BufferGeometry();splinterGeometry.setAttribute('position',new THREE.Float32BufferAttribute(splinterPositions,3));splinterGeometry.setAttribute('color',new THREE.Float32BufferAttribute(splinterColors,3));
@@ -360,6 +404,18 @@ const edgeLight=new THREE.DirectionalLight(palette.blue,2);edgeLight.position.se
 const rimLight=new THREE.DirectionalLight(palette.dusk,1.5);rimLight.position.set(4,-1,3);glassScene.add(rimLight);
 glassScene.add(new THREE.HemisphereLight(palette.white,palette.blue,2));
 if(renderer){const studio=new RoomEnvironment(),generator=new THREE.PMREMGenerator(renderer);glassScene.environment=generator.fromScene(studio,.04).texture;scene.environment=glassScene.environment;scene.environmentIntensity=.42;studio.dispose();generator.dispose();}
+// Coloured studio ribbons are reflected by the chrome vertebrae only.
+// Glass paper panels keep their neutral lighting for legible ink.
+if(renderer){
+ const metalStudio=new THREE.Scene();
+ const metalSky=new THREE.Mesh(new THREE.SphereGeometry(40,48,24),new THREE.ShaderMaterial({side:THREE.BackSide,uniforms:{blue:{value:new THREE.Color(palette.blue)},rose:{value:new THREE.Color(palette.dusk)},gold:{value:new THREE.Color(palette.gold)}},vertexShader:'varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:`varying vec3 p;uniform vec3 blue;uniform vec3 rose;uniform vec3 gold;
+ void main(){vec3 d=normalize(p);float a=atan(d.z,d.x);vec3 c=vec3(.035,.027,.055);
+ float b=exp(-pow(sin(a+.35)*8.,2.));float r=exp(-pow(sin(a-1.2)*7.,2.));float g=exp(-pow(sin(a+2.2)*12.,2.));
+ c+=blue*b*2.8+rose*r*2.2+gold*g*1.9;
+ float white=exp(-pow((d.y-.55)*22.,2.))*.9+exp(-pow((d.y+.3)*32.,2.))*.45;c+=vec3(white);
+ c*=.85+.15*sin(d.y*50.+a*8.);gl_FragColor=vec4(c,1.);}` }));
+ metalStudio.add(metalSky);const metalGenerator=new THREE.PMREMGenerator(renderer);glassMaterial.envMap=metalGenerator.fromScene(metalStudio,.018).texture;metalGenerator.dispose();metalSky.geometry.dispose();metalSky.material.dispose();
+}
 // Curved solid glass sheets and printed content share the same world coordinates.
 const glassCards=[];
 const backdrop=new THREE.Mesh(new THREE.PlaneGeometry(160,90),new THREE.ShaderMaterial({depthWrite:false,uniforms:{},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;void main(){vec3 blue=vec3(.592,.620,.718),lilac=vec3(.83,.79,.86);float glow=exp(-8.*distance(vUv,vec2(.64,.68)));gl_FragColor=vec4(mix(blue,lilac,glow*.9),1.);}'}));backdrop.position.z=-26;glassScene.add(backdrop);
@@ -391,7 +447,7 @@ async function printedPaper(card){
 function initGlassCards(){
  if(glassCards.length)return;
  const cards=[...document.querySelectorAll('#publications .publication-card')];if(cards.length!==6)return;
- cards.forEach((card,i)=>{const group=new THREE.Group();glassScene.add(group);const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(['#d4cede','#c4ccdf','#dbcede'][i%3]),roughness:.24,metalness:0,transmission:.86,thickness:.10,ior:1.40,clearcoat:.18,clearcoatRoughness:.22,iridescence:.12,iridescenceThicknessRange:[180,320],envMapIntensity:.25,side:THREE.FrontSide});
+ cards.forEach((card,i)=>{const group=new THREE.Group();glassScene.add(group);const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(['#e8e5ee','#e1e6ef','#eee5ec'][i%3]),roughness:.10,metalness:0,transparent:true,opacity:.55,depthWrite:false,transmission:.97,thickness:.065,ior:1.36,clearcoat:.10,clearcoatRoughness:.16,iridescence:.12,iridescenceThicknessRange:[180,320],envMapIntensity:.14,side:THREE.FrontSide});
  const sheet=new THREE.Mesh(sheetGeometry(7.1,4.97,.075),mat);group.add(sheet);
  // A second thin inset edge catches the light at grazing angles.
  const rim=new THREE.LineSegments(new THREE.EdgesGeometry(sheet.geometry,27),new THREE.LineBasicMaterial({color:'#f7eefb',transparent:true,opacity:.35}));group.add(rim);
@@ -400,11 +456,11 @@ function initGlassCards(){
 }
 let paperPhase=0,paperSelection=-1;const paperMotion={phase:0};let paperTween;
 function moveGlassCards(){initGlassCards();const selected=window.PublicationStage?.index||0;if(selected!==paperSelection){paperSelection=selected;let diff=selected-paperMotion.phase;while(diff>3)diff-=6;while(diff< -3)diff+=6;paperTween?.kill();if(window.gsap&&!motion.matches)paperTween=window.gsap.to(paperMotion,{phase:paperMotion.phase+diff,duration:1.15,ease:'power2.inOut',overwrite:true});else paperMotion.phase+=diff;}paperPhase=paperMotion.phase;
- glassCards.forEach((group,i)=>{let d=i-paperPhase;while(d>3)d-=6;while(d< -3)d+=6;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*5.25,-d*5.5,3.2-distance*4.0);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
+ glassCards.forEach((group,i)=>{let d=i-paperPhase;while(d>3)d-=6;while(d< -3)d+=6;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*6.1,-d*6.6,3.2-distance*4.8);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
 }
 
 function publicationMode(){return skipped&&!!document.querySelector('#publications.active');}
-function paintGlass(time){moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,(window.PublicationStage?.index||0)*.55,.045)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);splinters.rotation.y=time*.045;if(renderer)renderer.render(glassScene,glassCamera);}
+function paintGlass(time){moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
 if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);}
 let composer,bokeh;
 if(renderer){composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));bokeh=new BokehPass(scene,camera,{focus:15,aperture:.00012,maxblur:.009});composer.addPass(bokeh);composer.addPass(new OutputPass());}
@@ -428,7 +484,7 @@ function paint(t,time){
     const focus=Math.max(smooth(.002,.055,t),smooth(.6,4.2,time-focusStarted));
     host.style.setProperty('--scene-focus','0px');if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
     host.style.setProperty('--scene-light',String(.05+focus*.95));
-    foreground.visible=t<.2;silhouetteMat.opacity=.94*(1-smooth(.06,.19,t));
+    foreground.visible=t<.2;silhouetteMat.opacity=.94*(1-smooth(.06,.19,t));veinMat.opacity=.65*(1-smooth(.06,.19,t));
     backgroundAt(t);const emergence=smooth(.045,.11,t);scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;habitat.visible=t>.065;dust.visible=t>.065;life.position.x=-5.8+9.2*smooth(0,4.6,time-focusStarted);life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
     cameraCurve.getPoint(t,camera.position);gazeCurve.getPoint(t,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
@@ -501,5 +557,6 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
+if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
 }

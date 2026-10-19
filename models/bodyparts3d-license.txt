@@ -1,0 +1,8 @@
+BodyParts3D, © The Database Center for Life Science (DBCLS).
+Anatomography mesh version 4.3.
+Licensed under Creative Commons Attribution-ShareAlike 2.1 Japan.
+https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
+Source: https://lifesciencedb.jp/bp3d/
+Official information: https://lifesciencedb.jp/bp3d/info_en/index.html
+GLB conversion: shared rigid axis rotation, translation and uniform scale only. No per-bone pose, shape or topology change. Display material replaced with iridescent metal.
+This derivative GLB remains under CC BY-SA 2.1 Japan. The license applies to the anatomical asset, not the unrelated website code.
