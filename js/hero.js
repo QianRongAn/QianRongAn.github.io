@@ -256,7 +256,7 @@
                 ease: 'power4.out'
             }, '<');
     }
-    function onWheel(e) { if (e.deltaY > 0) playCurtain(); }
+    function onWheel(e) { if (e.deltaY > 0) { e.preventDefault(); playCurtain(); } }
     function onKey(e) {
         if (e.target.closest('a, button, input, textarea, select')) return;
         if (['ArrowDown', 'PageDown', ' ', 'Escape'].indexOf(e.key) !== -1) { e.preventDefault(); playCurtain(); }
@@ -270,7 +270,7 @@
             playCurtain(enter.getAttribute('data-enter-lang') || 'en');
         });
     });
-    window.addEventListener('wheel', onWheel, {passive: true});
+    window.addEventListener('wheel', onWheel, {passive: false});
     window.addEventListener('keydown', onKey);
     window.addEventListener('touchstart', onTouchStart, {passive: true});
     window.addEventListener('touchmove', onTouchMove, {passive: true});

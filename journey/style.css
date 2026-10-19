@@ -42,3 +42,7 @@ html.journey-reduced #journeyCanvas{background:#979eb7}
 html.journey-dark #journeyCanvas::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 62% 43%,transparent 30%,#03030a65 100%); }
 
 html.journey-dark #journeyCanvas::after { opacity: .5; }
+
+/* Keep text separate from bright geometry without an opaque reading card. */
+.journey-panel--light-ink::before{content:'';position:absolute;z-index:-1;inset:-55px -70px;background:radial-gradient(ellipse,#12084870 0%,#12084835 45%,transparent 72%);pointer-events:none}
+.journey-panel{isolation:isolate}
