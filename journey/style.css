@@ -57,3 +57,7 @@ html.spine-study .anatomy-credit{color:#c7bfd7}
 html.spine-study #journeyCanvas{pointer-events:auto}
 html.spine-study #container{pointer-events:none}
 .spine-study-hint{position:fixed;z-index:100;right:4.5%;bottom:14px;margin:0;color:#c7bfd7;font:12px/1.5 Inter,sans-serif;pointer-events:none}
+
+#publications .pub-summary{font-family:Recoleta,Georgia,serif;font-size:16px;line-height:1.5;color:#302b40;margin-top:1.2em;}
+
+.journey-structure-note{position:absolute;left:7.5vw;bottom:15vh;max-width:38vw;color:#fff;font:13px/1.5 Georgia,serif;text-shadow:0 1px 8px #120848;pointer-events:none}.journey-structure-note[hidden]{display:none}

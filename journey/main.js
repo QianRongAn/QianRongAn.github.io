@@ -36,7 +36,7 @@ const captions = [
     [.775,.8125,'right','OUJIANG LABORATORY','Engineering<br><em>new questions.</em>','2026–present · Nano–Immune Group · bioinformatics and research','2026–今 · 纳米免疫课题组 · 生物信息与科研'],
     [.8125,.85,'right','OUJIANG / CELL ENGINEERING','Delivering<br><em>possibility.</em>','Nanoinjection · non-viral CAR-T engineering · CRISPR precision and off-target evaluation','纳米注射 · 非病毒 CAR-T 工程 · CRISPR 精准性与脱靶评估'],
     [.85,.87,'left','04 / SCIENTIFIC CONTRIBUTIONS','Six papers.<br><em>One curiosity.</em>','J Hematol Oncol · co-first author · IF 40.4','J Hematol Oncol · 共同第一作者 · IF 40.4'],
-    [.87,.89,'right','01 / IMMUNE RECOGNITION','A receptor.<br>A <em>recognition.</em>','SARS-CoV-2-specific T cells and their receptors · J Hematol Oncol, 2024','SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol Oncol, 2024'],
+    [.87,.89,'right','01 / IMMUNE RECOGNITION','A receptor.<br>A <em>recognition.</em>','SARS-CoV-2-specific T cells and their receptors\nJ Hematol Oncol, 2024','SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol Oncol, 2024'],
     [.89,.91,'left','02 / REGENERATIVE IMMUNITY','Finding<br><em>balance.</em>','Ccl2-induced regulatory T cells · macrophage polarization · Advanced Science, 2024','Ccl2 诱导的调节性 T 细胞 · 巨噬细胞极化 · Advanced Science, 2024'],
     [.91,.93,'right','03 / REPERTOIRE LANDSCAPES','An immune<br><em>landscape.</em>','Intrarenal TCR repertoires in clear cell renal cell cancer · J Transl Med, 2022','肾透明细胞癌的肾内 TCR 组库图谱 · J Transl Med, 2022'],
     [.93,.95,'left','04 / T-CELL DIVERSITY','Different cells.<br><em>Shared questions.</em>','The γδ T-cell receptor repertoire in psoriasis · Immunol Cell Biol, 2024','银屑病中的 γδ T 细胞受体组库 · Immunol Cell Biol, 2024'],
@@ -54,7 +54,7 @@ const progressBar = section.querySelector('.journey-progress-fill');
 const progressNumber = section.querySelector('.journey-progress-number');
 function localize() {
     const zh = root.lang.startsWith('zh');
-    panels.forEach((panel, i) => { const p = panel.querySelector('p'); (p.querySelector('a') || p).textContent = captions[i][zh ? 6 : 5]; });
+    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';if(i===11){p.style.setProperty('color','#f0dfba','important');p.style.textShadow='0 2px 12px rgba(18,8,72,.7)';} });
     section.querySelector('.journey-scroll').textContent = zh ? '向下滚动，探索研究之旅' : 'SCROLL TO EXPLORE';
 }
 localize();
@@ -78,25 +78,10 @@ const gazeCurve = new THREE.CatmullRomCurve3([
 // A close, black organic silhouette gives the first reveal a real foreground.
 scene.add(camera);
 const foreground=new THREE.Group();camera.add(foreground);
-const silhouetteShape=new THREE.Shape();silhouetteShape.moveTo(-2,-2);silhouetteShape.bezierCurveTo(-.8,-1.8,-1.4,-.8,-.75,-.65);silhouetteShape.bezierCurveTo(-.2,-.1,-1.7,.8,-2,2);silhouetteShape.lineTo(-3,2);silhouetteShape.lineTo(-3,-2);
-const silhouetteMat=new THREE.MeshBasicMaterial({color:'#03030a',side:THREE.DoubleSide,transparent:true,opacity:.94});
-for(const side of [-1,1]){const veil=new THREE.Mesh(new THREE.ShapeGeometry(silhouetteShape,40),silhouetteMat);veil.position.set(side===1?-1.05:1.05,-.6,-2.8);veil.scale.set(side===1?.7:-.7,.85,1);foreground.add(veil);}
-// A recognisable sprig: a continuous curved stem, petioles and rounded leaves.
-const revealSprig=new THREE.Group();foreground.add(revealSprig);
-const sprigStem=new THREE.CatmullRomCurve3([new THREE.Vector3(1.45,-1.7,-3),new THREE.Vector3(1.32,-1.25,-3),new THREE.Vector3(1.18,-.93,-3),new THREE.Vector3(1.07,-.57,-3)]);
-revealSprig.add(new THREE.Mesh(new THREE.TubeGeometry(sprigStem,48,.014,7,false),silhouetteMat));
-const sprigLeafShape=new THREE.Shape();sprigLeafShape.moveTo(0,0);
-sprigLeafShape.bezierCurveTo(-.21,.10,-.26,.39,-.06,.61);
-sprigLeafShape.bezierCurveTo(-.025,.65,.015,.65,.045,.61);
-sprigLeafShape.bezierCurveTo(.24,.40,.19,.12,0,0);sprigLeafShape.closePath();
-const sprigLeafGeometry=new THREE.ExtrudeGeometry(sprigLeafShape,{depth:.009,bevelEnabled:true,bevelThickness:.004,bevelSize:.004,bevelSegments:2,steps:1,curveSegments:24});
-const veinMat=new THREE.MeshBasicMaterial({color:'#201d30',transparent:true,opacity:.65});
-[[1.30,-1.18,.90,.78],[1.21,-.98,-.80,.76],[1.13,-.76,.65,.72]].forEach(([x,y,angle,scale])=>{
- const leaf=new THREE.Group();leaf.position.set(x,y,-2.99);leaf.rotation.z=angle;leaf.scale.setScalar(scale);
- leaf.add(new THREE.Mesh(sprigLeafGeometry,silhouetteMat));
- const vein=new THREE.CatmullRomCurve3([new THREE.Vector3(0,.035,.017),new THREE.Vector3(-.015,.30,.025),new THREE.Vector3(-.01,.57,.017)]);
- leaf.add(new THREE.Mesh(new THREE.TubeGeometry(vein,20,.003,5,false),veinMat));revealSprig.add(leaf);
-});
+const orchidAtlas=new THREE.TextureLoader().load('image/orchid-silhouette-atlas.png');
+const silhouetteMat=new THREE.ShaderMaterial({uniforms:{map:{value:orchidAtlas},opacity:{value:.94}},transparent:true,depthWrite:false,side:THREE.DoubleSide,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform sampler2D map;uniform float opacity;varying vec2 vUv;void main(){float a=texture2D(map,vUv).a;if(a<.03)discard;gl_FragColor=vec4(vec3(0.),a*opacity);}'});
+const orchidFrames=[];
+for(let i=0;i<2;i++){const geometry=new THREE.PlaneGeometry(2.1,2.8),uv=geometry.attributes.uv;for(let j=0;j<uv.count;j++)uv.setX(j,uv.getX(j)*.5+i*.5);const plant=new THREE.Mesh(geometry,silhouetteMat);plant.position.set(i?2:-2,-.15,-3);foreground.add(plant);orchidFrames.push(plant);}
 const world = new THREE.Group(); scene.add(world);
 scene.add(new THREE.HemisphereLight(palette.mist,palette.violet,.62));
 const warm = new THREE.DirectionalLight(palette.gold, 2.7); warm.position.set(-7, 12, 8); scene.add(warm);
@@ -185,13 +170,32 @@ void main(){
  float ribbon=.62+.10*sin(uv.x*14.+clock*.015)+.035*sin(uv.x*35.-clock*.01);
  float aurora=exp(-pow((uv.y-ribbon)*37.,2.))*(.35+.65*noise(vec2(uv.x*60.,uv.y*3.)));
  color+=vec3(.14,.17,.30)*aurora*.28;
- vec2 grid=uv*vec2(350.,180.);vec2 id=floor(grid),f=fract(grid)-.5;float star=step(.992,hash(id))*exp(-dot(f,f)*170.)*(.65+.35*sin(clock*.15+hash(id)*24.));
+ vec2 grid=uv*vec2(350.,180.);vec2 id=floor(grid),f=fract(grid)-.5;float star=step(.985,hash(id))*exp(-dot(f,f)*170.)*(.65+.35*sin(clock*.15+hash(id)*24.));
  color+=vec3(.55,.59,.72)*star*smoothstep(.46,.7,uv.y);
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
 }`;
 const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(145,48,32),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:skyUniforms,vertexShader:'varying vec3 direction;void main(){direction=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:skyFragment}));atmosphere.position.z=-50;scene.add(atmosphere);
+// Distant painted cloud banks: broad flat bases and unequal rising lobes.
+const skyObjects=new THREE.Group();world.add(skyObjects);
+const cloudRamp=new THREE.DataTexture(new Uint8Array([105,155,205,245]),4,1,THREE.RedFormat);cloudRamp.minFilter=cloudRamp.magFilter=THREE.NearestFilter;cloudRamp.needsUpdate=true;
+const cloudMaterial=new THREE.MeshToonMaterial({color:palette.white,vertexColors:true,gradientMap:cloudRamp,transparent:true,opacity:.86});materials.push(cloudMaterial);
+const cloudGeometry=new THREE.SphereGeometry(1,24,16),cloudBanks=[];
+const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#a8a9bd').lerp(new THREE.Color('#fff9ee'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
+for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
+ for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
+}
+const moonGeometry=new THREE.SphereGeometry(3.3,64,40),moonVertices=moonGeometry.attributes.position;
+const craters=Array.from({length:24},()=>{const n=new THREE.Vector3(random()-.5,random()-.5,random()-.5).normalize();return {n,r:.06+random()*.16};});
+for(let i=0;i<moonVertices.count;i++){const n=new THREE.Vector3().fromBufferAttribute(moonVertices,i).normalize();let relief=.004*Math.sin(n.x*63+n.z*37)*Math.sin(n.y*51);for(const crater of craters){const d=n.distanceTo(crater.n)/crater.r;relief+=-.025*Math.exp(-d*d*3)+.009*Math.exp(-Math.pow((d-1)*5,2));}moonVertices.setXYZ(i,n.x*3.3*(1+relief),n.y*3.3*(1+relief),n.z*3.3*(1+relief));}moonGeometry.computeVertexNormals();
+const moonMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:1,metalness:0,bumpMap:microTexture,bumpScale:.035,emissive:palette.mist,emissiveIntensity:.055,transparent:true});materials.push(moonMaterial);
+const lunarCanvas=document.createElement('canvas');lunarCanvas.width=1024;lunarCanvas.height=512;const lunarContext=lunarCanvas.getContext('2d');lunarContext.fillStyle='#b9b9c6';lunarContext.fillRect(0,0,1024,512);
+for(let i=0;i<360;i++){const x=random()*1024,y=random()*512,r=1+Math.pow(random(),2)*23;for(const offset of [-1024,0,1024]){const crater=lunarContext.createRadialGradient(x+offset-r*.18,y-r*.2,r*.08,x+offset,y,r);crater.addColorStop(0,'rgba(67,69,91,.28)');crater.addColorStop(.65,'rgba(106,107,126,.20)');crater.addColorStop(.84,'rgba(239,237,244,.26)');crater.addColorStop(1,'rgba(185,185,198,0)');lunarContext.fillStyle=crater;lunarContext.fillRect(x+offset-r,y-r,r*2,r*2);}}
+const lunarTexture=new THREE.CanvasTexture(lunarCanvas);lunarTexture.colorSpace=THREE.SRGBColorSpace;moonMaterial.map=lunarTexture;moonMaterial.bumpMap=lunarTexture;moonMaterial.bumpScale=.07;moonMaterial.color.set(palette.white);moonMaterial.fog=false;moonMaterial.emissiveIntensity=.10;
+const moon=new THREE.Mesh(moonGeometry,moonMaterial);moon.position.set(7,13,-92);skyObjects.add(moon);
+const satellite=new THREE.Mesh(new THREE.SphereGeometry(1.25,32,24),blue);satellite.position.set(-25,16,-78);skyObjects.add(satellite);
+const orbit=new THREE.Mesh(new THREE.TorusGeometry(2.1,.012,5,100),gold);orbit.rotation.set(.95,.2,.1);satellite.add(orbit);
 
 // Meta-ACDC: side-chain contact graph with a peptide ribbon and one risk core.
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
@@ -205,28 +209,72 @@ molecule.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(bon
 const peptide = Array.from({ length: 30 }, (_, i) => new THREE.Vector3(Math.sin(i * .45) * .62, (i - 14.5) * .19, Math.cos(i * .45) * .62));
 tube(molecule, peptide, .10, gold, 120); orb(molecule, .35, .2, .1, .23, matte(palette.red, .2));
 
-// MedLit: matte document leaves flow through a structured evidence lattice.
+// MedLit: thin, curled fibre-paper records orbit a fixed evidence core.
 const evidence = new THREE.Group(); evidence.position.set(3.6, .1, -35); world.add(evidence);
-const pageGeometry = new THREE.BoxGeometry(1.45, 1.9, .07), ruleGeometry = new THREE.BoxGeometry(.82, .035, .025);
+const evidenceRotor=new THREE.Group();evidence.add(evidenceRotor);
+const evidencePointer={x:0,y:0},evidenceTurn={z:0,y:0};
+addEventListener('pointermove',event=>{evidencePointer.x=(event.clientX/innerWidth-.5)*2;evidencePointer.y=(event.clientY/innerHeight-.5)*2;},{passive:true});
+const pageGeometry=new THREE.BoxGeometry(1.45,1.9,.012,16,24,1),pagePosition=pageGeometry.attributes.position;
+for(let i=0;i<pagePosition.count;i++){const x=pagePosition.getX(i),y=pagePosition.getY(i);pagePosition.setZ(i,pagePosition.getZ(i)+.065*Math.sin(x*2.2)+.04*y*y+.17*Math.pow(Math.max(0,(x+y-.65)/1.05),2));}pageGeometry.computeVertexNormals();
+function evidencePaper(index,research=false){const canvas=document.createElement('canvas');canvas.width=640;canvas.height=840;const c=canvas.getContext('2d');c.fillStyle=index%3===0?'#e9dee6':'#eceaf0';c.fillRect(0,0,640,840);
+ // Subpixel fibres and interrupted ink lines remain matte under grazing light.
+ for(let k=0;k<11000;k++){const x=random()*640,y=random()*840;c.strokeStyle=random()>.5?'rgba(74,58,122,.045)':'rgba(255,255,255,.22)';c.lineWidth=.5;c.beginPath();c.moveTo(x,y);c.lineTo(x+random()*5,y+random()*2);c.stroke();}
+ c.fillStyle='#514967';c.font='18px Georgia';c.fillText((research?'PUBLICATIONS / RESEARCH PAPER 0':'MEDLIT / EVIDENCE RECORD 0')+(index+1),55,65);c.fillRect(55,87,530,1);
+ if(research){c.font='28px Georgia';wrapText(c,document.querySelectorAll('#publications .pub-title')[index]?.textContent||'Research paper',55,140,530,34);}else{c.font='bold 36px Georgia';['Clinical evidence','Source traceability','Study design'][index%3].split(' ').forEach((word,j)=>c.fillText(word,55,146+j*42));}
+ c.font='italic 20px Georgia';c.fillText(research?'Research · Nan Wang':'A question. A study. A source.',55,research?290:255);
+ for(let column=0;column<2;column++)for(let row=0;row<24;row++){c.fillStyle=row%8===0?'#686078':'#9290a2';c.fillRect(55+column*280,310+row*15,180+random()*65,2);}
+ c.strokeStyle='#8d879c';c.lineWidth=1;c.strokeRect(55,700,530,66);c.font='18px Arial';c.fillStyle='#514967';c.fillText(['PICO · structured question','PMID · traceable source','GRADE · evidence level'][index%3],74,739);
+ const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;
+ const mat=new THREE.MeshPhysicalMaterial({map,color:palette.white,roughness:.91,metalness:0,clearcoat:0,sheen:.12,bumpMap:microTexture,bumpScale:.008,side:THREE.DoubleSide,transparent:true});materials.push(mat);return mat;
+}
 for (let i = 0; i < 9; i++) {
     const sheet = new THREE.Group(), a = i / 9 * Math.PI * 2;
     sheet.position.set(Math.cos(a) * 2, Math.sin(a) * 1.9, Math.sin(a * 2) * .8); sheet.rotation.set(.12, a * .3, Math.sin(a) * .2);
-    sheet.add(new THREE.Mesh(pageGeometry, i % 3 === 0 ? rose : pearl));
-    for (let j = 0; j < 5; j++) { const rule = new THREE.Mesh(ruleGeometry, blue); rule.position.set(-.08, .5 - j * .22, .06); if(j===4)rule.scale.x=.55;sheet.add(rule); }
-    evidence.add(sheet);
-    line(evidence, [sheet.position.clone(), new THREE.Vector3(0, 0, .4)], palette.gold, .32);
+    sheet.add(new THREE.Mesh(pageGeometry,evidencePaper(i)));
+    evidenceRotor.add(sheet);
+    line(evidenceRotor, [sheet.position.clone(), new THREE.Vector3(0, 0, .4)], palette.gold, .24);
 }
 orb(evidence, 0, 0, .4, .48, gold);
+// The second MedLit beat follows a visible record → assessment → source chain.
+const sourceTrail=new THREE.Group();sourceTrail.position.set(2.5,-1.5,-43);world.add(sourceTrail);
+for(let i=0;i<3;i++){const record=new THREE.Mesh(pageGeometry,evidencePaper(i));record.position.set((i-1)*1.65,Math.sin(i*1.4)*.55,-i*.75);record.scale.setScalar(.72);record.rotation.set(-.12,(i-1)*-.20,.06);sourceTrail.add(record);if(i){const previous=new THREE.Vector3((i-2)*1.65,Math.sin((i-1)*1.4)*.55,-(i-1)*.75);line(sourceTrail,[previous,record.position.clone()],palette.gold,.48);}orb(sourceTrail,record.position.x,record.position.y-.95,record.position.z,.055,gold);}
 
-// Two interleaved populations, plus spatial positions, stand for integrated omics.
-const tissue = new THREE.Group(); tissue.position.set(-3.8, .4, -47); world.add(tissue);
-function cellPosition(i, side) {
-    const angle = random() * Math.PI * 2, h = random() * 2 - 1, r = Math.pow(random(), .45) * 2.2;
-    return [Math.cos(angle) * r + side * .7, h * 1.8, Math.sin(angle) * r, .055 + random() * .13];
+// A curved phospholipid bilayer with outward heads, paired inward tails and
+// a generic receptor–linker–ligand schematic (not an atomistic protein model).
+const tissue=new THREE.Group(),bilayerView=new THREE.PerspectiveCamera(47,1,.1,160);bilayerView.position.copy(cameraCurve.getPoint(.475));bilayerView.lookAt(gazeCurve.getPoint(.475));bilayerView.updateMatrixWorld();tissue.position.copy(new THREE.Vector3(-2.9,-.45,-9.5).applyMatrix4(bilayerView.matrixWorld));tissue.quaternion.copy(bilayerView.quaternion);tissue.scale.setScalar(.72);world.add(tissue);
+const bilayer=new THREE.Group();bilayer.rotation.set(.35,.12,-.12);tissue.add(bilayer);
+const lipidSites=[];
+for(let row=0;row<13;row++)for(let col=0;col<21;col++){
+ const x=(col-10)*.27+(row%2)*.135,z=(row-6)*.27;
+ if(Math.hypot(x-1.1,z-.15)<.43||Math.hypot(x+1.3,z+.30)<.35)continue;
+ lipidSites.push({x,z,y:.19*Math.sin(x*.9)+.09*Math.cos(z*1.5)});
 }
-instanceSpheres(tissue, 230, blue, i => cellPosition(i, -1)); instanceSpheres(tissue, 230, rose, i => cellPosition(i, 1));
-const spatial = new THREE.Group(); tissue.add(spatial); spatial.rotation.x = -.2;
-for(let i=0;i<9;i++)line(spatial,[new THREE.Vector3(-3,-2+i*.5,-1.8),new THREE.Vector3(3,-2+i*.5,-1.8)],palette.blue,.15);
+const lipidHeadMaterial=matte('#c8cddd',.025);lipidHeadMaterial.roughness=.48;lipidHeadMaterial.clearcoat=.12;
+const lipidTailMaterial=matte('#8196bd',.02);lipidTailMaterial.roughness=.62;lipidTailMaterial.clearcoat=0;
+const lipidHeads=new THREE.InstancedMesh(new THREE.SphereGeometry(.132,16,10),lipidHeadMaterial,lipidSites.length*2);
+const tailCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,-.065,0),new THREE.Vector3(.025,-.19,.01),new THREE.Vector3(-.025,-.31,.015),new THREE.Vector3(.035,-.46,.025)]);
+const lipidTails=new THREE.InstancedMesh(new THREE.TubeGeometry(tailCurve,10,.024,5,false),lipidTailMaterial,lipidSites.length*4),lipidDummy=new THREE.Object3D();
+lipidSites.forEach((site,i)=>{for(let layer=0;layer<2;layer++){const sign=layer?-1:1;lipidDummy.position.set(site.x,site.y+sign*.49,site.z);lipidDummy.rotation.set(0,0,0);lipidDummy.scale.set(1,1,1);lipidDummy.updateMatrix();lipidHeads.setMatrixAt(i*2+layer,lipidDummy.matrix);lipidHeads.setColorAt(i*2+layer,new THREE.Color('#c8cddd').lerp(new THREE.Color('#c8cddd'),.08+(i%7)*.025));for(let tail=0;tail<2;tail++){lipidDummy.position.x=site.x+(tail?1:-1)*.047;lipidDummy.rotation.set(0,tail*Math.PI,layer*Math.PI);lipidDummy.updateMatrix();lipidTails.setMatrixAt(i*4+layer*2+tail,lipidDummy.matrix);}}});bilayer.add(lipidHeads,lipidTails);
+const receptor=new THREE.Group();receptor.position.set(1.1,0,.15);bilayer.add(receptor);
+instanceSpheres(receptor,210,matte('#89a8d5',.02),i=>{const a=random()*6.283,y=-.85+random()*2.1,r=.20+random()*.15;return [Math.cos(a)*r,y,Math.sin(a)*r,.10+random()*.07];});
+const ligand=new THREE.Group();ligand.position.set(.5,2.25,.1);receptor.add(ligand);
+instanceSpheres(ligand,90,matte('#d5b1c9',.02),i=>{const a=random()*6.283,h=random()*2-1,r=Math.sqrt(1-h*h)*(.15+random()*.24);return [Math.cos(a)*r,h*.40,Math.sin(a)*r,.075+random()*.055];});
+tube(receptor,[new THREE.Vector3(0,1.1,0),new THREE.Vector3(.07,1.48,0),new THREE.Vector3(.38,1.73,.10),new THREE.Vector3(.5,1.98,.10)],.038,gold,42);
+const channel=new THREE.Group();channel.position.set(-1.3,0,-.3);bilayer.add(channel);
+for(let i=0;i<6;i++){const a=i/6*Math.PI*2;const helix=Array.from({length:40},(_,j)=>new THREE.Vector3(Math.cos(a)*.23+Math.cos(j*.55)*.065,-.78+j*.041,Math.sin(a)*.23+Math.sin(j*.55)*.065));tube(channel,helix,.065,rose,50);}
+// Branched glycans sit on the outer leaflet, with a few dispersed partner molecules.
+for(let i=0;i<5;i++){const x=-2.3+i*.9,z=.8,y=.19*Math.sin(x*.9)+.09*Math.cos(z*1.5)+.55;const root=new THREE.Vector3(x,y,z),tip=new THREE.Vector3(x+.13,y+.65,z);tube(bilayer,[root,new THREE.Vector3(x-.1,y+.3,z),tip],.022,gold,20);for(let j=0;j<3;j++){const end=new THREE.Vector3(x+.13+(j-1)*.20,y+.9-Math.abs(j-1)*.1,z+.06);tube(bilayer,[tip,end],.018,gold,12);orb(bilayer,end.x,end.y,end.z,.065,pearl);}}
+
+// Deposited structures: UvrD-DNA (4C2U) and unmodified tRNA(Asp), chain A (6UGG).
+const structureNote=document.createElement('small');structureNote.className='journey-structure-note';structureNote.textContent='Molecular studies: UvrD–DNA (4C2U) / tRNA(Asp) (6UGG)';copyLayer.appendChild(structureNote);
+const structureStudies=new THREE.Group(),structureView=new THREE.PerspectiveCamera(47,1,.1,160);structureView.position.copy(cameraCurve.getPoint(.525));structureView.lookAt(gazeCurve.getPoint(.525));structureView.updateMatrixWorld();structureStudies.position.copy(new THREE.Vector3(-2.8,0,-9.5).applyMatrix4(structureView.matrixWorld));structureStudies.quaternion.copy(structureView.quaternion);world.add(structureStudies);
+for(const [code,position,size] of [['4c2u',[-.7,-.75,0],3],['6ugg',[.9,1.8,0],1.6]])fetch('models/'+code+'-atoms.json').then(r=>{if(!r.ok)throw new Error('Structure '+code+' unavailable');return r.json();}).then(data=>{
+ const coords=data.atoms.map(a=>new THREE.Vector3(a[0],a[1],a[2])),box=new THREE.Box3().setFromPoints(coords),center=box.getCenter(new THREE.Vector3()),extent=box.getSize(new THREE.Vector3()),scale=size/Math.max(extent.x,extent.y,extent.z),positions=[],colors=[];
+ data.atoms.forEach((atom,i)=>{const p=coords[i].sub(center).multiplyScalar(scale);positions.push(p.x,p.y,p.z);const color=new THREE.Color(atom[3]==='P'?'#8cdae4':atom[3]==='N'?'#8d9dea':atom[3]==='O'?'#e3d4ee':'#7696d0');colors.push(color.r,color.g,color.b);});
+ const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+ const material=new THREE.ShaderMaterial({vertexColors:true,transparent:true,depthWrite:true,vertexShader:'varying vec3 vColor;void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(60./-p.z,1.8,12.);}',fragmentShader:'varying vec3 vColor;void main(){vec2 p=gl_PointCoord*2.-1.;float r=dot(p,p);if(r>1.)discard;float z=sqrt(1.-r);float light=.38+.62*max(0.,dot(normalize(vec3(-.4,.7,1.)),vec3(p,z)));gl_FragColor=vec4(vColor*light,smoothstep(1.,.65,r));#include <colorspace_fragment>}'.replace(';#include',';\n#include')});
+ const points=new THREE.Points(geometry,material);points.position.fromArray(position);points.rotation.set(.2,-.4,.35);points.userData.pdb=code.toUpperCase();structureStudies.add(points);
+}).catch(error=>{host.dataset.structureError=error.message;});
 
 // The research timeline is one continuous sand-gold curve through four stations.
 const careerNodes = [new THREE.Vector3(3.4, -2, -63), new THREE.Vector3(-3.1, -.5, -72), new THREE.Vector3(3.5, .8, -82), new THREE.Vector3(-3.3, 1.4, -92)];
@@ -240,12 +288,33 @@ careerNodes.forEach((p, i) => {
     const halo = new THREE.Mesh(new THREE.TorusGeometry(.85,.035,7,56),pearl);halo.rotation.y=i*.35;node.add(halo);
     for(let j=0;j<5;j++){const mote=orb(node,(random()-.5)*1.7,-1.2+random()*2.7,(random()-.5)*1.3,.025+random()*.025,gold);rising.push({mesh:mote,base:mote.position.y,phase:random()});}
 });
+// Xiamen garden rotunda: six columns, moulded cornice, ribbed dome and climbing ivy.
+const pavilion=new THREE.Group();pavilion.position.set(3.4,meadowFloor(3.4,-66)+.10,-66);pavilion.scale.setScalar(.82);world.add(pavilion);
+const stone=matte(palette.white,.02);stone.roughness=.86;stone.clearcoat=0;stone.bumpMap=microTexture;stone.bumpScale=.016;
+const stoneShade=matte(palette.mist,.015);stoneShade.roughness=.9;stoneShade.clearcoat=0;
+function pavilionCylinder(radius,height,y,material=stone){const part=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,64),material);part.position.y=y;pavilion.add(part);return part;}
+[[2.22,.16,.08],[2.08,.16,.24],[1.94,.16,.40]].forEach(args=>pavilionCylinder(...args));
+const columnProfile=[new THREE.Vector2(.25,0),new THREE.Vector2(.25,.08),new THREE.Vector2(.21,.13),new THREE.Vector2(.18,.17),new THREE.Vector2(.14,.24)];
+const footGeometry=new THREE.LatheGeometry(columnProfile,24),shaftGeometry=new THREE.CylinderGeometry(.105,.14,2.14,20),capitalGeometry=new THREE.LatheGeometry(columnProfile.map(v=>new THREE.Vector2(v.x,v.y*-.8)),24);
+for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.cos(a)*1.62,z=Math.sin(a)*1.62;
+ const base=new THREE.Mesh(footGeometry,stone);base.position.set(x,.48,z);pavilion.add(base);
+ const shaft=new THREE.Mesh(shaftGeometry,stone);shaft.position.set(x,1.78,z);pavilion.add(shaft);
+ const capital=new THREE.Mesh(capitalGeometry,stone);capital.position.set(x,3.02,z);pavilion.add(capital);
+}
+const corniceProfile=[[1.76,2.91],[1.89,2.96],[1.89,3.06],[2.00,3.10],[2.04,3.16],[2.04,3.22],[1.96,3.26],[1.99,3.33],[2.11,3.38],[2.11,3.46],[2.02,3.52]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(corniceProfile,72),stone));
+pavilionCylinder(1.79,.08,2.95,stoneShade);
+const dome=new THREE.Mesh(new THREE.SphereGeometry(2.02,64,28,0,Math.PI*2,0,Math.PI/2),stone);dome.scale.y=.71;dome.position.y=3.48;pavilion.add(dome);
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.021,stoneShade,40);}
+const dentils=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.12,.10),stoneShade,48),pavilionDummy=new THREE.Object3D();for(let i=0;i<48;i++){const a=i/48*Math.PI*2;pavilionDummy.position.set(Math.cos(a)*1.92,3.09,Math.sin(a)*1.92);pavilionDummy.rotation.y=-a;pavilionDummy.updateMatrix();dentils.setMatrixAt(i,pavilionDummy.matrix);}pavilion.add(dentils);
+pavilionCylinder(.10,.09,4.98);orb(pavilion,0,5.08,0,.075,stone);
+const ivyLeaves=new THREE.InstancedMesh(new THREE.SphereGeometry(1,8,5),blue,132);let ivyIndex=0;
+for(const angle of [.1,Math.PI*.75,Math.PI*1.4]){const x=Math.cos(angle)*1.62,z=Math.sin(angle)*1.62,pts=Array.from({length:66},(_,j)=>new THREE.Vector3(x+Math.cos(j*.33)*.15,.5+j*.042,z+Math.sin(j*.33)*.15));tube(pavilion,pts,.015,blue,80);for(let j=0;j<44;j++){const p=pts[Math.floor(j*1.48)];pavilionDummy.position.copy(p);pavilionDummy.rotation.set(j*.6,j*1.8,.5);pavilionDummy.scale.set(.052,.11,.022);pavilionDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyIndex++,pavilionDummy.matrix);}}pavilion.add(ivyLeaves);
 
 // Six paper-like leaves gradually resolve into a light, abstract constellation.
 const publications = new THREE.Group(); publications.position.set(2.7, .7, -107); world.add(publications);
 const paperLeaves = [];
 for(let i=0;i<6;i++) {
-    const a=i/6*Math.PI*2, mesh=new THREE.Mesh(new THREE.BoxGeometry(.9,1.3,.06),i===0?rose:pearl);
+    const a=i/6*Math.PI*2, mesh=new THREE.Mesh(pageGeometry,evidencePaper(i,true));
     mesh.position.set(Math.cos(a)*2.3,Math.sin(a)*2,.2*Math.cos(a)); mesh.rotation.set(-.15,a*.2,Math.sin(a)*.15);publications.add(mesh);paperLeaves.push(mesh);
     orb(publications,mesh.position.x,mesh.position.y,mesh.position.z,.085,gold);
 }
@@ -253,7 +322,7 @@ for(let i=0;i<6;i++) {
 // An inhabited, continuous biomorphic canyon: near surfaces occlude distant ones.
 const habitat = new THREE.Group(); world.add(habitat);
 const terrainMaterial=matte(palette.violet,.035), ridgeMaterial=matte(palette.blue,.025);
-terrainMaterial.bumpMap=microTexture;terrainMaterial.bumpScale=.12;terrainMaterial.roughness=.85;ridgeMaterial.bumpMap=microTexture;ridgeMaterial.bumpScale=.08;ridgeMaterial.roughness=.78;
+terrainMaterial.bumpMap=microTexture;terrainMaterial.bumpScale=.12;terrainMaterial.roughness=1;terrainMaterial.clearcoat=0;ridgeMaterial.bumpMap=microTexture;ridgeMaterial.bumpScale=.08;ridgeMaterial.roughness=.78;
 const groundClock={value:0};
 terrainMaterial.onBeforeCompile=shader=>{
  shader.uniforms.groundClock=groundClock;
@@ -262,11 +331,10 @@ terrainMaterial.onBeforeCompile=shader=>{
  shader.fragmentShader='varying vec3 surveyPosition;uniform float groundClock;\n'+shader.fragmentShader;
  shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
  vec2 q=surveyPosition.xz;
- float ridges=sin(q.x*.47+sin(q.y*.21)*1.8)+sin(q.y*.63-q.x*.15);
- float contour=1.-smoothstep(.035,.11,abs(sin((surveyPosition.y+ridges*.10)*9.)));
- float shimmer=pow(max(0.,sin(q.x*.8+groundClock*.07)*sin(q.y*.65-groundClock*.04)),12.);
- diffuseColor.rgb*=.83+.16*sin(q.x*.13+q.y*.09)+contour*.12;
- diffuseColor.rgb+=vec3(.16,.14,.12)*shimmer*.2;
+ float patches=sin(q.x*1.7+sin(q.y*.8))*sin(q.y*2.1-q.x*.6);
+ float grain=fract(sin(dot(floor(q*95.),vec2(127.1,311.7)))*43758.5453);
+ diffuseColor.rgb*=.78+patches*.12+grain*.16;
+
  `);
 };
 const terrainGeometry=new THREE.PlaneGeometry(70,140,100,190);
@@ -279,10 +347,11 @@ for(let i=0;i<terrainPositions.count;i++){
 }
 terrainGeometry.computeVertexNormals();
 const terrain=new THREE.Mesh(terrainGeometry,terrainMaterial);terrain.rotation.x=-Math.PI/2;terrain.position.set(0,-4,-48);habitat.add(terrain);
+const pavilionMound=new THREE.Mesh(new THREE.SphereGeometry(1,32,16),terrainMaterial);pavilionMound.position.set(3.4,meadowFloor(3.4,-66)-.45,-66);pavilionMound.scale.set(2.3,.6,2.3);habitat.add(pavilionMound);
 // Ground flowers are solid curved petals, stems and leaves, batched as instances.
 function meadowFloor(x,z){const localZ=-(z+48);return -4+Math.pow(Math.min(Math.abs(x)/12,2),1.7)*3.2+Math.sin(x*.62+localZ*.14)*.4+Math.sin(x*1.4-localZ*.23)*.15+Math.sin(localZ*.38)*.22-8/(1+Math.exp((localZ-10)*.18));}
 function petalGeometry(){
- const positions=[],indices=[],nx=6,ny=14,stride=nx+1,count=stride*(ny+1);
+ const positions=[],indices=[],nx=4,ny=10,stride=nx+1,count=stride*(ny+1);
  for(let back=0;back<2;back++)for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
   const u=j/ny,v=i/nx*2-1,w=.28*Math.pow(Math.sin(Math.PI*u),.65)+.018;
   positions.push(v*w,.14*Math.sin(u*Math.PI)+.28*u*u+.075*v*v*Math.sin(Math.PI*u)+(back?-.009:.009),.07+u*.75);
@@ -293,36 +362,53 @@ function petalGeometry(){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
 }
 const meadow=new THREE.Group();habitat.add(meadow);
-const flowerCount=192,petalsPerFlower=7,flowerPetalGeometry=petalGeometry();
-const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.33,metalness:0,transmission:.16,thickness:.035,ior:1.36,clearcoat:.28,sheen:.7,sheenColor:palette.mist,iridescence:.18,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
+const flowerCount=480,petalsPerFlower=7,flowerPetalGeometry=petalGeometry();
+const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.48,metalness:0,transmission:0,thickness:.035,ior:1.36,clearcoat:.28,sheen:.7,sheenColor:palette.mist,iridescence:.18,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
 const foliageMaterial=matte(palette.blue,.015);foliageMaterial.roughness=.6;
 const petals=new THREE.InstancedMesh(flowerPetalGeometry,petalMaterial,flowerCount*petalsPerFlower);
 const leaves=new THREE.InstancedMesh(flowerPetalGeometry,foliageMaterial,flowerCount*3);
-const stems=new THREE.InstancedMesh(new THREE.CylinderGeometry(.023,.036,1,6,1),foliageMaterial,flowerCount);
+const stems=new THREE.InstancedMesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(.025,.33,.02),new THREE.Vector3(.13,.68,.035),new THREE.Vector3(.28,1,.05)]),12,.025,5,false),foliageMaterial,flowerCount);
 const flowerCenters=new THREE.InstancedMesh(new THREE.SphereGeometry(1,10,7),gold,flowerCount);
 const stamens=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),pearl,flowerCount*9);
 const flowerDummy=new THREE.Object3D(),flowerRoot=new THREE.Object3D(),flowerPositions=[];
 const blossomColors=[palette.dusk,palette.mist,palette.blue];
 for(let i=0;i<flowerCount;i++){
- const side=i%2?1:-1,patch=Math.floor(i/24),z=12-patch*14-random()*12,x=side*(3.4+random()*7.5),floor=meadowFloor(x,z),height=.55+random()*1.15,scale=.45+random()*.60;
+ const side=i%2?1:-1,patch=Math.floor(i/60),z=12-patch*14-random()*12,x=side*((i%5===0?.4:2.2)+random()*7.5),floor=meadowFloor(x,z),height=.55+random()*1.15,scale=.45+random()*.60,bend=random()*Math.PI*2,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
  flowerPositions.push({x,y:floor,z,height});
- flowerDummy.position.set(x+.10,floor+height*.5,z);flowerDummy.rotation.set(0,0,-.11);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
- flowerRoot.position.set(x+.18,floor+height,z);flowerRoot.rotation.set((random()-.5)*.36,random()*Math.PI,(random()-.5)*.3);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
+ flowerDummy.position.set(x,floor,z);flowerDummy.rotation.set(0,bend,0);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
+ flowerRoot.position.set(hx,floor+height,hz);flowerRoot.rotation.set((random()-.5)*.85,random()*Math.PI,(random()-.5)*.75);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
  for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(.05*Math.sin(j*2),j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[i%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
- flowerDummy.position.set(x+.18,floor+height+.10*scale,z);flowerDummy.rotation.set(0,0,0);flowerDummy.scale.set(.17*scale,.09*scale,.17*scale);flowerDummy.updateMatrix();flowerCenters.setMatrixAt(i,flowerDummy.matrix);
- for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;flowerDummy.position.set(x+.18+Math.cos(angle)*.12*scale,floor+height+.15*scale,z+Math.sin(angle)*.12*scale);flowerDummy.scale.setScalar(.025*scale);flowerDummy.updateMatrix();stamens.setMatrixAt(i*9+j,flowerDummy.matrix);}
+ flowerDummy.position.set(hx,floor+height+.10*scale,hz);flowerDummy.rotation.set(0,0,0);flowerDummy.scale.set(.17*scale,.09*scale,.17*scale);flowerDummy.updateMatrix();flowerCenters.setMatrixAt(i,flowerDummy.matrix);
+ for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;flowerDummy.position.set(hx+Math.cos(angle)*.12*scale,floor+height+.15*scale,hz+Math.sin(angle)*.12*scale);flowerDummy.scale.setScalar(.025*scale);flowerDummy.updateMatrix();stamens.setMatrixAt(i*9+j,flowerDummy.matrix);}
  for(let j=0;j<3;j++){flowerDummy.position.set(x+j*.05,floor+height*(.25+j*.17),z);flowerDummy.rotation.set(.48,j*2.4+i*.2,0);flowerDummy.scale.set(.43,.50,.60);flowerDummy.updateMatrix();leaves.setMatrixAt(i*3+j,flowerDummy.matrix);}
 }
 meadow.add(stems,leaves,petals,flowerCenters,stamens);
+// A few translucent iris-like accents; the surrounding meadow stays soft and matte.
+const irisMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:.18,metalness:.08,transparent:true,opacity:.64,depthWrite:false,clearcoat:.9,clearcoatRoughness:.12,iridescence:1,iridescenceIOR:1.36,iridescenceThicknessRange:[190,430],side:THREE.DoubleSide});materials.push(irisMaterial);
+const irisPetals=new THREE.InstancedMesh(flowerPetalGeometry,irisMaterial,40*petalsPerFlower),irisVeins=[],irisMatrix=new THREE.Matrix4(),hiddenMatrix=new THREE.Matrix4().makeScale(0,0,0);let irisIndex=0;
+for(let f=0;f<flowerCount;f+=12)for(let j=0;j<petalsPerFlower;j++){petals.getMatrixAt(f*petalsPerFlower+j,irisMatrix);irisPetals.setMatrixAt(irisIndex++,irisMatrix);petals.setMatrixAt(f*petalsPerFlower+j,hiddenMatrix);for(let k=0;k<10;k++){for(const u of [k/10,(k+1)/10]){const p=new THREE.Vector3(0,.14*Math.sin(u*Math.PI)+.28*u*u+.012,.07+u*.75).applyMatrix4(irisMatrix);irisVeins.push(p);}}}
+const irisVeinMaterial=new THREE.LineBasicMaterial({color:palette.mist,transparent:true,opacity:.38});materials.push(irisVeinMaterial);meadow.add(irisPetals,new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(irisVeins),irisVeinMaterial));
 const boulderGeometry=new THREE.SphereGeometry(1,48,36);
 const bp=boulderGeometry.attributes.position;
 for(let i=0;i<bp.count;i++){const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i);const r=1+.065*Math.sin(y*19+x*9)+.045*Math.cos(z*23-y*7);bp.setXYZ(i,x*r,y*r,z*r);}boulderGeometry.computeVertexNormals();
-const rocks=new THREE.InstancedMesh(boulderGeometry,ridgeMaterial,110),rockDummy=new THREE.Object3D();
-for(let i=0;i<110;i++){
-    const side=i%2?1:-1,z=16-Math.floor(i/2)*2.2;
-    rockDummy.position.set(side*(11+random()*8),-2+random()*2,z);
-    rockDummy.scale.set(1.8+random()*3.3,2.7+random()*5,1.8+random()*2.7);rockDummy.rotation.set(random(),random()*3,side*-.35);rockDummy.updateMatrix();rocks.setMatrixAt(i,rockDummy.matrix);
-}habitat.add(rocks);
+// Broken, overlapping brush-shaped foliage gives the roadside a painted forest edge.
+const forest=new THREE.Group();habitat.add(forest);
+const barkMaterial=matte(palette.violet,.015);barkMaterial.roughness=.97;barkMaterial.clearcoat=0;barkMaterial.bumpMap=microTexture;barkMaterial.bumpScale=.13;
+const canopyMaterial=matte(palette.blue,.015);canopyMaterial.roughness=1;canopyMaterial.clearcoat=0;canopyMaterial.sheen=0;canopyMaterial.flatShading=true;
+const treeCount=72,dabsPerTree=70,branchCount=5;
+const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.10,.22,1,7,5),barkMaterial,treeCount*(branchCount+1));
+const canopy=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),canopyMaterial,treeCount*dabsPerTree),treeDummy=new THREE.Object3D();
+function forestBranch(index,a,b,r){treeDummy.position.copy(a).lerp(b,.5);treeDummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());treeDummy.scale.set(r,a.distanceTo(b),r);treeDummy.updateMatrix();trunks.setMatrixAt(index,treeDummy.matrix);}
+for(let i=0;i<treeCount;i++){
+ const side=i%2?1:-1,z=14-Math.floor(i/2)*3.4,x=side*(11+random()*7),floor=meadowFloor(x,z),height=4.2+random()*4.3;
+ forestBranch(i*6,new THREE.Vector3(x,floor,z),new THREE.Vector3(x+side*.35,floor+height,z-.2),1);
+ for(let b=0;b<branchCount;b++){const a=b*2.4+i,spread=1.2+random()*1.3;forestBranch(i*6+b+1,new THREE.Vector3(x,floor+height*(.35+b*.08),z),new THREE.Vector3(x+Math.cos(a)*spread,floor+height*(.63+b*.06),z+Math.sin(a)*spread),.48);}
+ for(let j=0;j<dabsPerTree;j++){const a=random()*Math.PI*2,h=random()*2-1,r=Math.sqrt(1-h*h)*(1.1+random()*1.5);treeDummy.position.set(x+Math.cos(a)*r,floor+height*.75+h*height*.31,z+Math.sin(a)*r);treeDummy.rotation.set(random()*.9,random()*6,random()*.7);treeDummy.scale.set(.45+random()*.8,.15+random()*.32,.32+random()*.6);treeDummy.updateMatrix();canopy.setMatrixAt(i*dabsPerTree+j,treeDummy.matrix);const tint=new THREE.Color(palette.blue).lerp(new THREE.Color(j%7===0?palette.dusk:palette.mist),.10+random()*.26).multiplyScalar(.72+random()*.32);canopy.setColorAt(i*dabsPerTree+j,tint);}
+}forest.add(trunks,canopy);
+const grassGeometry=new THREE.PlaneGeometry(.11,1,1,5);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(1-h)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
+const grassMaterial=matte(palette.blue,.01);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
+const grass=new THREE.InstancedMesh(grassGeometry,grassMaterial,18000);
+for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(random()-.5)*.6,z=cz+(random()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)-.01,z);treeDummy.rotation.set((random()-.5)*.3,random()*6.28,(random()-.5)*.65);treeDummy.scale.set(.7+random()*1.3,(Math.abs(x)<2?.15:.35)+random()*(Math.abs(x)<2?.25:.85),1);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.30+random()*.42));}meadow.add(grass);
 // A high, open chamber transitions into a submerged molecular garden.
 for(let j=0;j<10;j++){
  const island=new THREE.Mesh(boulderGeometry,terrainMaterial);island.position.set((j%2?1:-1)*(5+random()*7),8+random()*9,7-j*6);island.scale.set(1.2+random()*2,1.5+random()*3,1+random()*2);island.rotation.z=random();habitat.add(island);
@@ -337,7 +423,7 @@ for(let j=0;j<18;j++){
 const portalPoints=Array.from({length:80},(_,i)=>{const a=i/79*Math.PI;return new THREE.Vector3(Math.cos(a)*11,Math.sin(a)*11-7,-63+Math.sin(a*2)*1.5);});tube(habitat,portalPoints,.7,terrainMaterial,120);
 const membraneGeometry=new THREE.PlaneGeometry(70,54,70,70);membraneGeometry.rotateX(-Math.PI/2);const mp=membraneGeometry.attributes.position;
 for(let i=0;i<mp.count;i++)mp.setY(i,Math.sin(mp.getX(i)*.22+mp.getZ(i)*.3)*.12);membraneGeometry.computeVertexNormals();
-const membraneMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:.19,metalness:.05,transmission:.4,thickness:.16,ior:1.34,transparent:true,opacity:.45,side:THREE.DoubleSide});materials.push(membraneMaterial);const membrane=new THREE.Mesh(membraneGeometry,membraneMaterial);membrane.position.set(0,.2,-42);habitat.add(membrane);
+const membraneMaterial=new THREE.MeshBasicMaterial({color:palette.mist,transparent:true,opacity:.065,depthWrite:false,side:THREE.DoubleSide});materials.push(membraneMaterial);const membrane=new THREE.Mesh(membraneGeometry,membraneMaterial);membrane.position.set(0,.2,-42);habitat.add(membrane);
 // Foreground cell membranes, with nested pores and connecting filaments.
 for(let i=0;i<24;i++){
     const side=i%2?1:-1,z=8-i*4.6,group=new THREE.Group();group.position.set(side*(5.5+random()*2),1+random()*3,z);group.rotation.set(random(),random()*2,random());habitat.add(group);
@@ -355,9 +441,8 @@ for(let j=0;j<12;j++){
 for(let i=0;i<8;i++){
  const p=atoms[i*7],tip=p.clone().multiplyScalar(1.23);tube(molecule,[p,p.clone().lerp(tip,.4).add(new THREE.Vector3(0,.1,0)),tip],.022,pearl,20);orb(molecule,tip.x,tip.y,tip.z,.065,gold);
 }
-paperLeaves.forEach(leaf=>{for(let j=0;j<5;j++){const rule=new THREE.Mesh(new THREE.BoxGeometry(j===4?.37:.59,.018,.008),blue);rule.position.set(-.04,.35-j*.15,.037);leaf.add(rule);}});
-const nucleusMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:.28,transmission:.3,thickness:.09,ior:1.36,clearcoat:.35,transparent:true});materials.push(nucleusMaterial);
-for(let i=0;i<24;i++){const a=i*2.4,r=1.1+random(),x=Math.cos(a)*r,y=(random()-.5)*2.5,z=Math.sin(a)*r;orb(tissue,x,y,z,.17,nucleusMaterial);orb(tissue,x+.025,y-.02,z+.02,.065,i%2?rose:blue);}
+
+
 
 // 1,100 restrained ambient motes. All textures are generated locally on canvas.
 const starCanvas=document.createElement('canvas');starCanvas.width=starCanvas.height=32;
@@ -432,35 +517,36 @@ function sheetGeometry(w,h,depth,frontOnly=false){
 }
 function wrapText(ctx,text,x,y,maxWidth,line){let words=text.split(/\s+/),row='';for(const word of words){let next=row?row+' '+word:word;if(ctx.measureText(next).width>maxWidth&&row){ctx.fillText(row,x,y);y+=line;row=word;}else row=next;}if(row)ctx.fillText(row,x,y);return y+line;}
 async function printedPaper(card){
- const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=1120;const c=canvas.getContext('2d');
+ const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=1800;const c=canvas.getContext('2d');
  await document.fonts.ready;
  const images=await Promise.all([...card.querySelectorAll('.pub-image')].map(el=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=el.src;})));
- c.fillStyle='#514a67';c.font='22px Arial';c.fillText('SCIENTIFIC CONTRIBUTIONS / 0'+card.dataset.pubId,70,72);
+ c.fillStyle='#514a67';c.font='24px Arial';c.fillText('RESEARCH / 0'+card.dataset.pubId,70,76);
  const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y+(h-img.height*r)/2,img.width*r,img.height*r);};
- fit(images[0],65,145,430,620);fit(images[1],65,800,205,200);fit(images[2],290,800,205,200);
- c.fillStyle='#302d44';c.font='52px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),550,210,970,66);
- c.font='33px Arial';c.fillStyle='#4b465e';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),550,y+35,955,48);
- c.font='italic 32px Georgia';c.fillStyle='#624f72';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),550,y+30,950,47);
- c.font='bold 30px Georgia';c.fillStyle='#353047';c.fillText((card.querySelector('.pub-impact')?.textContent||'').trim(),550,Math.min(1045,y+32));
+ fit(images[0],70,155,345,520);
+ c.fillStyle='#292537';c.font='56px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),470,160,1040,67);
+ c.font='34px Arial';c.fillStyle='#423c53';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),470,y+28,1040,47);
+ c.font='italic 34px Georgia';c.fillStyle='#51405e';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),470,y+22,1040,46);
+ const impact=(card.querySelector('.pub-impact')?.textContent||'').trim();if(impact){c.font='bold 32px Georgia';c.fillStyle='#353047';c.fillText(impact,470,y+23);y+=55;}
+ const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font='31px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.ceil(rows.length/2);rows.forEach((line,i)=>c.fillText(line,i<half?70:835,y+70+(i%half)*43));card.dataset.printBottom=String(y+70+half*43);}
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;return texture;
 }
 function initGlassCards(){
  if(glassCards.length)return;
  const cards=[...document.querySelectorAll('#publications .publication-card')];if(cards.length!==6)return;
- cards.forEach((card,i)=>{const group=new THREE.Group();glassScene.add(group);const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(['#e8e5ee','#e1e6ef','#eee5ec'][i%3]),roughness:.10,metalness:0,transparent:true,opacity:.55,depthWrite:false,transmission:.97,thickness:.065,ior:1.36,clearcoat:.10,clearcoatRoughness:.16,iridescence:.12,iridescenceThicknessRange:[180,320],envMapIntensity:.14,side:THREE.FrontSide});
- const sheet=new THREE.Mesh(sheetGeometry(7.1,4.97,.075),mat);group.add(sheet);
+ cards.forEach((card,i)=>{const group=new THREE.Group();glassScene.add(group);const mat=new THREE.MeshPhysicalMaterial({color:new THREE.Color(['#d4cede','#c4ccdf','#dbcede'][i%3]),roughness:.24,metalness:0,transmission:.86,thickness:.10,ior:1.40,clearcoat:.18,clearcoatRoughness:.22,iridescence:.12,iridescenceThicknessRange:[180,320],envMapIntensity:.25,side:THREE.FrontSide});
+ const sheet=new THREE.Mesh(sheetGeometry(7.1,7.99,.075),mat);group.add(sheet);
  // A second thin inset edge catches the light at grazing angles.
  const rim=new THREE.LineSegments(new THREE.EdgesGeometry(sheet.geometry,27),new THREE.LineBasicMaterial({color:'#f7eefb',transparent:true,opacity:.35}));group.add(rim);
- const ink=new THREE.Mesh(sheetGeometry(6.96,4.87,0,true),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,alphaTest:.01,toneMapped:false}));ink.position.z=.075;group.add(ink);printedPaper(card).then(texture=>{ink.material.map=texture;ink.material.needsUpdate=true;});glassCards.push(group);});
+ const ink=new THREE.Mesh(sheetGeometry(6.96,7.83,0,true),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,alphaTest:.01,toneMapped:false}));ink.position.z=.075;group.add(ink);printedPaper(card).then(texture=>{ink.material.map=texture;ink.material.needsUpdate=true;});glassCards.push(group);});
  root.classList.add('publication-webgl');
 }
 let paperPhase=0,paperSelection=-1;const paperMotion={phase:0};let paperTween;
 function moveGlassCards(){initGlassCards();const selected=window.PublicationStage?.index||0;if(selected!==paperSelection){paperSelection=selected;let diff=selected-paperMotion.phase;while(diff>3)diff-=6;while(diff< -3)diff+=6;paperTween?.kill();if(window.gsap&&!motion.matches)paperTween=window.gsap.to(paperMotion,{phase:paperMotion.phase+diff,duration:1.15,ease:'power2.inOut',overwrite:true});else paperMotion.phase+=diff;}paperPhase=paperMotion.phase;
- glassCards.forEach((group,i)=>{let d=i-paperPhase;while(d>3)d-=6;while(d< -3)d+=6;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*6.1,-d*6.6,3.2-distance*4.8);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
+ glassCards.forEach((group,i)=>{let d=i-paperPhase;while(d>3)d-=6;while(d< -3)d+=6;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*6.1,-d*8.6,3.2-distance*4.8);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
 }
 
 function publicationMode(){return skipped&&!!document.querySelector('#publications.active');}
-function paintGlass(time){moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
+function paintGlass(time){moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);if(!spineStudy){glassCamera.position.y=THREE.MathUtils.lerp(glassCamera.position.y,window.PublicationStage?.spineOffset||0,.14);glassCamera.lookAt(0,glassCamera.position.y,0);}splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
 if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);}
 let composer,bokeh;
 if(renderer){composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));bokeh=new BokehPass(scene,camera,{focus:15,aperture:.00012,maxblur:.009});composer.addPass(bokeh);composer.addPass(new OutputPass());}
@@ -473,25 +559,26 @@ let sectionTop=0,travel=1,focusStarted=0,copyIndex=-1,copyStarted=0,oldCopy=-1,o
 function measure(){
     sectionTop=section.getBoundingClientRect().top+scrollY;travel=Math.max(1,section.offsetHeight-innerHeight);
     const mobile=false;
-    [[life,3.4,.15,.68],[molecule,-3.8,-.1,.62],[evidence,3.6,.1,.68],[tissue,-3.8,-.2,.7],[publications,2.7,.3,.7]].forEach(([group,x,mx,scale])=>{group.position.x=mobile?mx:x;group.scale.setScalar(mobile?scale:1);});career.scale.x=mobile?.3:1;
-    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);if(composer)composer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
+    [[life,3.4,.15,.68],[molecule,-3.8,-.1,.62],[evidence,3.6,.1,.68],[publications,2.7,.3,.7]].forEach(([group,x,mx,scale])=>{group.position.x=mobile?mx:x;group.scale.setScalar(mobile?scale:1);});career.scale.x=mobile?.3:1;
+    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;orchidFrames[0].position.x=-edge+.18;orchidFrames[1].position.x=edge-.18;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);if(composer)composer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
 }
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
     skyUniforms.clock.value=time;groundClock.value=time;
-    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;tissue.visible=t>.4&&t<.64;career.visible=t>.48;publications.visible=t>.79;dna.visible=t>.055;membrane.visible=t>.38&&t<.76;
+    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.4&&t<.50;structureStudies.visible=t>.49&&t<.55;structureNote.hidden=!structureStudies.visible;career.visible=t>.48;pavilion.visible=t>.52&&t<.64;publications.visible=t>.79;dna.visible=t>.055;membrane.visible=false;
     const focus=Math.max(smooth(.002,.055,t),smooth(.6,4.2,time-focusStarted));
     host.style.setProperty('--scene-focus','0px');if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
     host.style.setProperty('--scene-light',String(.05+focus*.95));
-    foreground.visible=t<.2;silhouetteMat.opacity=.94*(1-smooth(.06,.19,t));veinMat.opacity=.65*(1-smooth(.06,.19,t));
-    backgroundAt(t);const emergence=smooth(.045,.11,t);scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;habitat.visible=t>.065;dust.visible=t>.065;life.position.x=-5.8+9.2*smooth(0,4.6,time-focusStarted);life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
+    foreground.visible=t<.2;silhouetteMat.uniforms.opacity.value=1-smooth(.06,.19,t);
+    backgroundAt(t);const emergence=smooth(.045,.11,t);scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;skyObjects.visible=t>.055&&t<.975;cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);habitat.visible=t>.055;dust.visible=t>.065;life.position.x=-5.8+9.2*smooth(0,4.6,time-focusStarted);life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
     cameraCurve.getPoint(t,camera.position);gazeCurve.getPoint(t,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade;});
     wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=time*2.5-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.22);pivot.rotation.x=Math.sin(phase-.25)*.025;});wings.position.y=Math.sin(time*.9)*.09;
-    dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;tissue.rotation.y=time*.025;
-    dust.position.y=Math.sin(time*.12)*.15;publications.rotation.z=Math.sin(time*.13)*.04;
+    dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
+    evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
+    structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
     paperLeaves.forEach((leaf,i)=>{const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
     const active=captions.findIndex(c=>t>=c[0]&&t<c[1]);
@@ -511,7 +598,7 @@ function paint(t,time){
     if(!skipped)intro.style.setProperty('opacity',String(smooth(.975,1,t)),'important');
     section.querySelector('.journey-scroll').style.opacity=String(1-smooth(.01,.06,t));
     host.dataset.progress=t.toFixed(3);host.dataset.background='#'+scene.background.getHexString();host.style.backgroundColor=host.dataset.background;host.dataset.camera='CatmullRomCurve3';
-    if(composer)composer.render();else if(renderer)renderer.render(scene,camera);
+    if(composer&&focus<.995)composer.render();else if(renderer)renderer.render(scene,camera);
 }
 function isVisible(){return !document.hidden&&(!skipped||publicationMode())&&!motion.matches&&!root.classList.contains('hero-locked');}
 function tick(now){frame=0;if(!isVisible())return;if(now-previous<1000/30){frame=requestAnimationFrame(tick);return;}const dt=Math.min((now-previous)/1000||.016,.06);previous=now;elapsed+=dt;current+=(target-current)*(1-Math.exp(-dt*10));if(Math.abs(target-current)<.0001)current=target;if(publicationMode())paintGlass(elapsed);else paint(current,elapsed);if(publicationMode()||current<1||target<1||elapsed-oldCopyStarted<.8)frame=requestAnimationFrame(tick);}
@@ -557,6 +644,8 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
+const previewScenes={orchids:1,sky:1,meadow:9,bilayer:7,signals:8,ncc:12,papers:22};
+const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')showScene();else addEventListener('load',showScene,{once:true});}
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
 }

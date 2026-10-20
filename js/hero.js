@@ -208,6 +208,11 @@
     }
     function playCurtain(lang) {
         if (dismissed) return;
+        if(window.ParticlePrelude&&!motion.matches){
+            dismissed=true;unbindHero();
+            window.ParticlePrelude.play(function(){if(window.SiteI18n&&lang)window.SiteI18n.apply(lang);revealHome();});
+            return;
+        }
         var curtain = document.getElementById('pageCurtain');
         var countEl = document.getElementById('pageCurtainCount');
         var title = document.querySelector('#intro h1');

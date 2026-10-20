@@ -31,7 +31,7 @@
         '    gl_FragColor=vec4(0.0);',
         '    return;',
         '  }',
-        '  vec2 offset=vec2(0.0); float light=0.0;',
+        '  vec2 slopeField=vec2(0.0); float activity=0.0;',
         '  vec4 field=texture2D(uField,uv);',
         '  float signedDistance=((field.r*65280.0+field.g*255.0)/65535.0*1024.0-512.0)*uRect.z/1392.0;',
         '  float normalAngle=(field.b*2.0-1.0)*3.14159265;',
@@ -45,23 +45,33 @@
         '      float dropSdf=uContours[i];',
         '      float shaped=abs(signedDistance-dropSdf);',
         '      float nearShape=1.0-smoothstep(36.0,240.0,abs(dropSdf));',
-        '      float bend=nearShape*smoothstep(0.10,1.05,age);',
+        '      float bend=nearShape*smoothstep(0.10,1.05,age)*0.28;',
         '      radius=mix(radius,shaped,bend);',
         '      float side=signedDistance-dropSdf;',
         '      vec2 shapeDir=contourNormal*(side<0.0?-1.0:1.0);',
         '      direction=normalize(mix(direction,shapeDir,bend));',
-        '      float behind=age*165.0-radius;',
-        '      float envelope=smoothstep(-12.0,4.0,behind)*exp(-max(behind,0.0)*0.016);',
+        '      float behind=age*155.0-radius;',
+        '      float envelope=smoothstep(-10.0,8.0,behind)*exp(-max(behind,0.0)/(34.0+age*12.0));',
+        '      float spreading=inversesqrt(1.0+radius*0.018)*exp(-age*0.48);',
         '      float lifetime=uDrops[i].w<0.6?1.05:2.8;',
         '      float fade=smoothstep(0.0,0.10,age)*(1.0-smoothstep(0.20,lifetime,age));',
-        '      float phase=behind*0.21;',
-        '      float slope=cos(phase)*envelope*fade*uDrops[i].w;',
-        '      offset+=direction*slope*9.0;',
-        '      light+=slope*dot(direction,normalize(vec2(-0.6,-0.8)))*0.13;',
+        '      float phase=behind*0.16;',
+        '      float capillary=(age*204.0-radius)*0.29;',
+        '      float slope=(cos(phase)+0.24*cos(capillary))*envelope*fade*spreading*uDrops[i].w;',
+        '      slopeField+=direction*slope;',
+        '      activity+=abs(slope);',
         '    }',
         '  }',
-        '  vec3 color=texture2D(uImage,clamp(uv+offset/uRect.zw,vec2(0.001),vec2(0.999))).rgb;',
-        '  gl_FragColor=vec4(clamp(color+vec3(light*0.90,light*0.94,light),0.0,1.0),1.0);',
+        '  vec3 normal=normalize(vec3(-slopeField*0.24,1.0));',
+        '  vec2 refraction=normal.xy*25.0;',
+        '  vec3 color=texture2D(uImage,clamp(uv+refraction/uRect.zw,vec2(0.001),vec2(0.999))).rgb;',
+        '  vec3 key=normalize(vec3(-0.45,0.65,1.0));',
+        '  float diffuse=(dot(normal,key)-key.z)*0.12;',
+        '  vec3 reflected=reflect(vec3(0.0,0.0,-1.0),normal);',
+        '  float specular=pow(max(dot(reflected,key),0.0),92.0)*0.23;',
+        '  float fresnel=0.02+0.98*pow(1.0-normal.z,5.0);',
+        '  float shimmer=(specular+fresnel*0.15)*min(activity,1.0);',
+        '  gl_FragColor=vec4(clamp(color+vec3(diffuse)+vec3(0.86,0.90,1.0)*shimmer,0.0,1.0),1.0);',
         '}'
     ].join('\n');
 
@@ -109,7 +119,7 @@
     function resize() {
         if (stopped) return;
         width = hero.clientWidth; height = hero.clientHeight;
-        ratio = Math.min(window.devicePixelRatio || 1, 2);
+        ratio = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.uniform2f(uniforms.uSize, width, height);

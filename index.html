@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="preload" href="fonts/Producer_Regular.ttf" as="font" type="font/ttf" crossorigin>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -2980,6 +2981,8 @@
     <link rel="stylesheet" href="css/hero-effects.css?v=20261017-wave">
     <link rel="stylesheet" href="css/interaction-polish.css?v=20261019-italic3">
     <link rel="preload" href="image/hero-background.jpg" as="image" fetchpriority="high">
+<style>@font-face{font-family:Producer;src:url("fonts/Producer_Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:block;}#heroScreen .hero-focus,#heroScreen .hero-focus *{font-family:Producer,Georgia,serif!important;font-weight:400!important;}</style>
+<link rel="stylesheet" href="css/hero-lettering.css?v=20261020-mixed28">
 </head>
 <body>
     <div class="page-curtain" id="pageCurtain" aria-hidden="true">
@@ -3038,6 +3041,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+    <script src="js/hero-lettering.js?v=20261020-mixed28" defer></script>
     <script src="js/hero-rise.js?v=20261019-writing"></script>
     <script src="js/zh-copy.js?v=20261018-skills" defer></script>
     <script src="js/i18n.js?v=20261019-skills" defer></script>
@@ -3045,22 +3049,24 @@
     <link rel="stylesheet" href="css/skills-accordion.css?v=20261019-auto2">
     <script src="js/skills-accordion.js?v=20261019-auto2" defer></script>
     <link rel="stylesheet" href="css/pub-gallery.css?v=20261019-craft17">
-    <script src="js/pub-gallery.js?v=20261019-craft17" defer></script>
+    <script src="js/pub-gallery.js?v=20261020-spine28" defer></script>
     <script src="js/hero-magnet.js?v=20261018-glass" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna45" defer></script>
-    <script src="js/hero-water.js?v=20261019-restored" defer></script>
-    <script src="js/hero.js?v=20261019-craft17" defer></script>
+    <script src="js/hero-water.js?v=20261020-water25" defer></script>
+    <link rel="stylesheet" href="css/particle-prelude.css?v=4">
+    <script src="js/particle-prelude.js?v=4" defer></script>
+    <script src="js/hero.js?v=20261020-prelude" defer></script>
     <script src="js/nav-spotlight.js?v=20261018-glow" defer></script>
     <link rel="stylesheet" href="css/dream-glass.css?v=20261019-craft17">
     <script src="js/dream-glass.js?v=20261019" defer></script>
-    <link rel="stylesheet" href="css/footer-consistency.css?v=20261019-nav2">
+    <link rel="stylesheet" href="css/footer-consistency.css?v=20261020-no-publication-footer">
     <script src="js/page-motion.js?v=20261019-craft17" defer></script>
-    <link rel="stylesheet" href="js/research-journey/style.css?v=20261020-clear24">
-    <script type="module" src="js/research-journey/main.js?v=20261020-clear24"></script>
+    <link rel="stylesheet" href="js/research-journey/style.css?v=20261020-garden28">
+    <script type="module" src="js/research-journey/main.js?v=20261020-garden28"></script>
 
 
     <link rel="stylesheet" href="css/about-editorial.css?v=20261019-3">
-    <link rel="stylesheet" href="css/research-refinement.css?v=20261020-clear24">
+    <link rel="stylesheet" href="css/research-refinement.css?v=20261020-garden28">
     <script src="js/about-editorial.js?v=20261019-3" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
@@ -3363,13 +3369,14 @@
                         <div class="publication-card" data-pub-id="1">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/1-1.png" alt="Paper 1 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/1-2.jpg" alt="Paper 1 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/1-3.jpg" alt="Paper 1 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Identification of SARS-CoV-2-specific T cell and its receptor</h3>
                                 <p class="pub-authors">Zhang Q¹, Liang Q¹, Zhang R², Wang N¹, Xiao X, Shao J, Wang K.</p>
                                 <p class="pub-journal"><i>J Hematol Oncol.</i> 2024 Mar 27;17(1):15. (Published)</p>
+                                <p class="pub-summary" data-label="Abstract">The T-cell receptor (TCR) repertoires exhibits distinct signatures associated with COVID-19 severity. However, the precise identification of vaccine-induced SARS-CoV-2-specific TCRs and T-cell immunity mechanisms are unknown. We developed a machine-learning model that can differentiate COVID-19 patients from healthy individuals based on TCR sequence features with an accuracy of 95.7%. Additionally, we identified SARS-CoV-2-specific T cells and TCR in HLA-A*02 vaccinated individuals by peptide stimulation. The SARS-CoV-2-specific T cells exhibited higher cytotoxicity and prolonged survival when targeting spike-pulsed cells in vitro or in vivo. The top-performing TCR was further tested for its affinity and cytotoxic effect against SARS-CoV-2-associated epitopes. Furthermore, single-cell RNA sequencing (scRNA-seq), immune repertoire sequencing (IR-seq) and flow cytometry were used to access vaccine-induced cellular immunity, which demonstrated that robust T cell responses (T cell activation, tissue-resident memory T cell (Trm) generation, and TCR clonal expansion) could be induced by intranasal vaccination. In summary, we identified the SARS-CoV-2-associated TCR repertoires profile, specific TCRs and T cell responses. This study provides a theoretical basis for developing effective immunization strategies.</p>
                                 <span class="pub-impact">IF: 40.4</span>
                             </div>
                         </div>
@@ -3377,13 +3384,14 @@
                         <div class="publication-card" data-pub-id="2">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/2-1.png" alt="Paper 2 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/2-2.jpg" alt="Paper 2 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/2-3.jpg" alt="Paper 2 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Ccl2-Induced Regulatory T Cells Balance Inflammation Through Macrophage Polarization During Liver Reconstitution</h3>
                                 <p class="pub-authors">Wang R, Liang Q, Zhang Q, Zhao S, Lin Y, Liu B, Ma Y, Mai X, Fu Q, Bao X, Wang N, Chen B, Yan P, Zhu Y, Wang K.</p>
                                 <p class="pub-journal"><i>Adv Sci(Weinh).</i> 2024 Dec, 11(45):e2403849. (Published)</p>
+                                <p class="pub-summary" data-label="Abstract">Inflammation is highlighted as an initial factor that helps orchestrate liver reconstitution. However, the precise mechanisms controlling inflammation during liver reconstitution have not been fully elucidated. In this study, a clear immune response is demonstrated during hepatic reconstitution. Inhibition of the hepatic inflammatory response retards liver regeneration. During this process, Ccl2 is primarily produced by type 1 innate lymphoid cells (ILC1s), and ILC1-derived Ccl2 recruits peripheral ILC1s and regulatory T cells (Tregs) to the liver. Deletion of Ccl2 or Tregs exacerbates hepatic injury and inflammatory cytokine release, accelerating liver proliferation and regeneration. The adoption of Tregs and IL-10 injection reversed these effects on hepatocyte regenerative proliferation. Additionally, Treg-derived IL-10 can directly induce macrophage polarization from M1 to M2, which alleviated macrophage-secreted IL-6 and TNF-α and balanced the intrahepatic inflammatory milieu during liver reconstitution. This study reveals the capacity of Tregs to modulate the intrahepatic inflammatory milieu and liver reconstitution through IL-10-mediated macrophage polarization, providing a potential opportunity to improve hepatic inflammation and maintain homeostasis.</p>
                                 <span class="pub-impact">IF: 15.6</span>
                             </div>
                         </div>
@@ -3391,13 +3399,14 @@
                         <div class="publication-card" data-pub-id="3">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/3-1.png" alt="Paper 3 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/3-2.jpg" alt="Paper 3 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/3-3.jpg" alt="Paper 3 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">The intrarenal landscape of T cell receptor repertoire in clear cell renal cell cancer</h3>
                                 <p class="pub-authors">Zhang W, Zhang Q, Zhu C, Shi Z, Shao C, Chen Y, Wang N, Jiang Y, Liang Q, Wang K.</p>
                                 <p class="pub-journal"><i>J Transl Med.</i> 2022 Dec 3;20(1):558. (Published)</p>
+                                <p class="pub-summary" data-label="Abstract">Background: Clear cell renal cell cancer (ccRCC) is accompanied by T-cell infiltration. In this study, we sought to determine the difference in T-cell infiltration and the T-cell receptor (TCR) immune repertoire between ccRCC and peritumour tissue.<br>Methods: T-cell infiltration was examined using immunohistochemistry (IHC) and haematoxylin and eosin (HE) staining. The chi-squared test and Pearson correlation analysis were applied to evaluate the relationship between clinical traits and CD3, CD4, and CD8 expression. Immune repertoire sequencing (IR-Seq) was used to describe the profile of the TCR repertoire.<br>Results: The adjacent tissue showed increased expression of CD3, CD4 and CD8 compared with ccRCC tissue (P_CD3 = 0.033; P_CD4 = 0.014; P_CD8 = 0.004). Indicated CD3+ T-cell density in ccRCC tissue was positively correlated with that in peritumour tissue (P = 0.010, r = 0.514), which implied the T cells in peritumour tissue directly infect the number of cells infiltrating in ccRCC tissue. Moreover, there was a positive correlation between Vimentin expression and indicated positive T-cell marker in ccRCC tissue (P_CD3 = 0.035; P_CD4 = 0.020; P_CD8 = 0.027). Advanced stage revealed less CD4+ T-cell infiltration in ccRCC tissue (P_CD4 = 0.023). The results from IR-Seq revealed an obvious increase in VJ and VDJ segment usage, as well as higher complementarity-determining region 3 (CDR3) amino acid (aa) clonotypes in ccRCC. The matched antigen recognized by the TCR of ccRCC may be potential targets.<br>Conclusions: The current study collectively demonstrates diminished T-cell infiltration and increased CDR3 aa diversity in ccRCC, which may be associated with immunotherapeutic targets for ccRCC patients.</p>
                                 <span class="pub-impact">IF: 7.5</span>
                             </div>
                         </div>
@@ -3405,39 +3414,42 @@
                         <div class="publication-card" data-pub-id="4">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/4-1.png" alt="Paper 4 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/4-2.jpg" alt="Paper 4 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/4-3.jpg" alt="Paper 4 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Identification of the immune repertoire of γδ T-cell receptors in psoriasis</h3>
                                 <p class="pub-authors">Chen Y, Fu Q, Ma Y, Wang N, Yang, Liang Q, Wang K, Gao L.</p>
                                 <p class="pub-journal"><i>Immunol Cell Biol.</i> 2024 Aug, 102(7):570-577. (Published)</p>
+                                <p class="pub-summary" data-label="Abstract">The γδ T cells are a subpopulation of T cells that are abundantly found in the skin and mucous membranes. Their reactivity to self-antigens and ability to secrete various cytokines make them a key component in psoriasis development. Although the correlation between the immune repertoire (IR) of γδ T-cell receptors and the occurrence and severity of psoriasis remains incompletely explored, high-throughput sequencing of γδ T cells has led to a deeper understanding of IR in psoriasis. This study investigated the differences between γδ T cells in patients with psoriasis and healthy controls. The γδ T cells were identified via immunofluorescence staining and a correlation analysis was performed according to the psoriasis area and severity index (PASI) scores. The IR sequencing method was used to detect IR in the γδ T-cell receptors. The findings demonstrated more skin γδ T cells in patients with psoriasis, which were positively correlated with the PASI score. There were subtle differences in most variable (V), diversity (D) and joining (J) gene segments and VJ/VDJ combination segments between patients with psoriasis and healthy controls. However, a higher diversity of complementarity-determining region 3 (CDR3) was observed in patients with psoriasis. In summary, the IR of skin γδ T cells was significantly altered in patients with psoriasis, and the diversity in the cell&#x27;s CDR3 population is a promising biomarker for assessment of psoriasis severity.</p>
                             </div>
                         </div>
                         
                         <div class="publication-card" data-pub-id="5">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/5-1.png" alt="Paper 5 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/5-2.png" alt="Paper 5 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/5-3.png" alt="Paper 5 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">A multi-omics features-based approach integrating immunogenicity and inflammation enhances immunotherapy benefit in clear cell renal cell carcinoma</h3>
                                 <p class="pub-authors">Yanfeng Xue, Feng Han, Shuqing Wei, Yiqun Zhang, Nan Wang, Ning Liu, Zhen Chen, Zhihua Pei, Hailong Hao</p>
                                 <p class="pub-journal"><i>Front. Cell Dev. Biol.</i> (Published)</p>
+                                <p class="pub-summary" data-label="Abstract">Background: Programmed cell death 1 (PD-1) or PD-ligand 1 (PD-L1) blocker-based strategies have improved the survival outcomes of clear cell renal cell carcinomas (ccRCCs) in recent years, but only a small number of patients have benefited from them.<br>Methods: In this study, we developed a multi-omics machine learning model based on inflammatory and immune signatures (TIs) to predict the response and survival of ccRCC patients to immune checkpoint blockade (ICB) therapy. The research collected RNA-seq and single-cell RNA-seq (scRNA-seq) data from more than 1,900 patients with autoimmune nephropathy and analyzed the genomic and transcriptome profiles of ccRCC patients. The predictive power of the method was validated in more than 1,000 ccRCC patients treated with ICB, and compared to single biomarkers (e.g., PD-L1 expression, TMB).<br>Results: Inflammatory signaling was found to be strongly associated with ICB outcome, and 716 inflammation-related genes were identified that are enriched in the &quot;lymphocyte activation regulation&quot; pathway. The findings suggested that ccRCC patients can be categorized into two subtypes with different treatment responses and prognosis by these features. In addition, the TIs-ML model exhibited superior predictive capabilities compared to an individual biomarker (AUC &gt; 0.997) across multiple independent datasets. It demonstrated the capacity to accurately differentiate between responders and non-responders. Furthermore, the model performed more effectively than existing genetic models and functional scores in predicting survival.<br>Conclusion: We propose a TIs-ML prediction model based on multi-omics features that can effectively predict ICB treatment response in ccRCC patients. The model integrates inflammatory and immune features, and its high generalization ability was validated in multiple cohorts. Overall, the TIs-ML approach provides a novel method for guiding precise immunotherapy in ccRCC.</p>
                             </div>
                         </div>
                         
                         <div class="publication-card" data-pub-id="6">
                             <div class="pub-image-wrapper">
                                 <img src="image/paper/6-1.jpg" alt="Paper 6 image 1" class="pub-image" loading="lazy">
-                                <img src="image/paper/6-2.png" alt="Paper 6 image 2" class="pub-image" loading="lazy">
-                                <img src="image/paper/6-3.png" alt="Paper 6 image 3" class="pub-image" loading="lazy">
+
+
                             </div>
                             <div class="pub-content">
                                 <h3 class="pub-title">Molecular and Clinicopathological Characteristics Profiling of Macrotrabecular Massive HCC Subtype Reveals Key Features Related to Early Reccurence</h3>
                                 <p class="pub-authors">Yi Yi, Bo-lun Zhang, Nan Wang, Shun Wang, et al.</p>
                                 <p class="pub-journal"><i>Clin Transl Med.</i> (Reviewed)</p>
+
                             </div>
                         </div>
                     </div>

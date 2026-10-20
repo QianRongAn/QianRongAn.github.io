@@ -14,3 +14,5 @@ html.projects-view #footer { display: none !important; }
 #top-header { z-index: 20000 !important; isolation: isolate; transform: translateZ(0); }
 #top-header .nav-links { position: relative; z-index: 3; }
 #top-header .nav-links li, #top-header .nav-link, #top-header .nav-link span { position: relative; transform: translateZ(0); backface-visibility: hidden; }
+
+html.publication-view #footer{display:none!important}

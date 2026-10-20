@@ -1,0 +1,8 @@
+4C2U: Crystal structure of Deinococcus radiodurans UvrD in complex with DNA, Form 1.
+https://www.rcsb.org/structure/4C2U
+https://doi.org/10.2210/pdb4C2U/pdb
+6UGG: Structure of unmodified E. coli tRNA(Asp). Chain A is used.
+https://www.rcsb.org/structure/6UGG
+https://doi.org/10.2210/pdb6UGG/pdb
+Coordinates obtained from RCSB PDB. Uniform centering and scaling only; deposited atomic coordinates are not deformed. Alternate conformer A is selected. Water and non-polymer hetero atoms are omitted from the decorative atomic representation.
+These are independent molecular structure studies, not models of the PRRX2/SPP1 signaling mechanism described by the adjoining text.

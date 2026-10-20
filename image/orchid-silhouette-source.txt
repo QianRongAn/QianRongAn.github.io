@@ -1,0 +1,3 @@
+Source: two orchid reference photographs supplied by the site owner in this conversation.
+Transparent silhouette atlas created with imagegen, then revised to remove all internal petal and leaf lines.
+The website uses the alpha channel only, rendered as solid black; no perspective distortion.
