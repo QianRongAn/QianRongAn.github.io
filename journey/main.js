@@ -399,16 +399,41 @@ for(let i=0;i<bp.count;i++){const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i);const r
 const forest=new THREE.Group();habitat.add(forest);
 const barkMaterial=matte(palette.violet,.015);barkMaterial.roughness=.97;barkMaterial.clearcoat=0;barkMaterial.bumpMap=microTexture;barkMaterial.bumpScale=.13;
 const canopyMaterial=matte(palette.blue,.015);canopyMaterial.roughness=1;canopyMaterial.clearcoat=0;canopyMaterial.sheen=0;canopyMaterial.flatShading=true;
-const treeCount=72,dabsPerTree=70,branchCount=5;
+const treeCount=72,dabsPerTree=70,branchCount=5,treePlacements=[];
 const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.10,.22,1,7,5),barkMaterial,treeCount*(branchCount+1));
 const canopy=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),canopyMaterial,treeCount*dabsPerTree),treeDummy=new THREE.Object3D();
 function forestBranch(index,a,b,r){treeDummy.position.copy(a).lerp(b,.5);treeDummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());treeDummy.scale.set(r,a.distanceTo(b),r);treeDummy.updateMatrix();trunks.setMatrixAt(index,treeDummy.matrix);}
 for(let i=0;i<treeCount;i++){
- const side=i%2?1:-1,z=14-Math.floor(i/2)*3.4,x=side*(11+random()*7),floor=meadowFloor(x,z),height=4.2+random()*4.3;
+ const side=i%2?1:-1,z=14-Math.floor(i/2)*3.4,x=side*(11+random()*7),floor=meadowFloor(x,z),height=4.2+random()*4.3;treePlacements.push({x,z,floor,height});
  forestBranch(i*6,new THREE.Vector3(x,floor,z),new THREE.Vector3(x+side*.35,floor+height,z-.2),1);
  for(let b=0;b<branchCount;b++){const a=b*2.4+i,spread=1.2+random()*1.3;forestBranch(i*6+b+1,new THREE.Vector3(x,floor+height*(.35+b*.08),z),new THREE.Vector3(x+Math.cos(a)*spread,floor+height*(.63+b*.06),z+Math.sin(a)*spread),.48);}
  for(let j=0;j<dabsPerTree;j++){const a=random()*Math.PI*2,h=random()*2-1,r=Math.sqrt(1-h*h)*(1.1+random()*1.5);treeDummy.position.set(x+Math.cos(a)*r,floor+height*.75+h*height*.31,z+Math.sin(a)*r);treeDummy.rotation.set(random()*.9,random()*6,random()*.7);treeDummy.scale.set(.45+random()*.8,.15+random()*.32,.32+random()*.6);treeDummy.updateMatrix();canopy.setMatrixAt(i*dabsPerTree+j,treeDummy.matrix);const tint=new THREE.Color(palette.blue).lerp(new THREE.Color(j%7===0?palette.dusk:palette.mist),.10+random()*.26).multiplyScalar(.72+random()*.32);canopy.setColorAt(i*dabsPerTree+j,tint);}
 }forest.add(trunks,canopy);
+// Reuse the approved fir model across the complete forest; the original camera is unchanged.
+const firRamp=new THREE.DataTexture(new Uint8Array([75,86,98,111,125,140,156,171,186,199,211,221,230,237,243,249]),16,1,THREE.RedFormat);firRamp.minFilter=firRamp.magFilter=THREE.LinearFilter;firRamp.needsUpdate=true;
+new GLTFLoader().load('models/watercolour-fir.glb',gltf=>{
+ gltf.scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(gltf.scene),center=bounds.getCenter(new THREE.Vector3()),height=bounds.max.y-bounds.min.y;
+ if(!(height>0))return;
+ const parts=[];
+ gltf.scene.traverse(part=>{
+  if(!part.isMesh)return;
+  const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld);geometry.translate(-center.x,-bounds.min.y,-center.z);
+  const bark=part.name==='Cone',material=new THREE.MeshToonMaterial({color:bark?'#65556f':'#9891b5',gradientMap:firRamp,side:THREE.DoubleSide,transparent:true});
+  material.userData.baseOpacity=1;materials.push(material);
+  material.onBeforeCompile=shader=>{
+   shader.vertexShader='varying vec3 pigmentPosition;\n'+shader.vertexShader;
+   shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\npigmentPosition=position;');
+   shader.fragmentShader='varying vec3 pigmentPosition;\n'+shader.fragmentShader;
+   shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat wash=sin(pigmentPosition.x*2.3+sin(pigmentPosition.y*1.7))*sin(pigmentPosition.z*2.1-pigmentPosition.y*.8);diffuseColor.rgb*=.94+wash*.06;');
+  };
+  const batch=new THREE.InstancedMesh(geometry,material,treeCount),dummy=new THREE.Object3D();
+  treePlacements.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor,tree.z);dummy.rotation.set(0,i*2.39996,Math.sin(i*1.7)*.035);dummy.scale.set(scale*1.12,scale,scale*1.12);dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#aaaed5':'#d4bdda'),.08+(i%7)*.025));});
+  batch.computeBoundingSphere();parts.push(batch);
+ });
+ if(!parts.length)return;
+ forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();forest.add(...parts);host.dataset.forest='watercolour-fir-72';
+},undefined,()=>{host.dataset.forest='fallback';});
+
 const grassGeometry=new THREE.PlaneGeometry(.075,1,1,9);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(.12+.88*Math.sin(Math.PI*h))*(1-h*.65)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
 const grassMaterial=matte(palette.blue,.01);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
 const grass=new THREE.InstancedMesh(grassGeometry,grassMaterial,18000);
