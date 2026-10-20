@@ -92,3 +92,5 @@ html.experience-crystal #experience .content-item,html.experience-crystal #exper
 html.experience-crystal #experience .dream-kicker{display:none!important}
 
 html:not(.skip-hero) #heroScreen .hero-bg,html:not(.skip-hero) #heroScreen::before,html:not(.skip-hero) #heroScreen::after{display:none!important;background:none!important}
+
+html.publication-view .pub-directory{color:#f0eaf7!important}html.publication-view .pub-paper-index button{color:#d5cce2!important}html.publication-view .pub-paper-index button.is-current{color:#fff!important}html.publication-view .pub-paper-index button span:first-child{color:#e4cced!important}html.publication-view .pub-counter,html.publication-view .pub-directory>small{color:#e9e1f0!important}

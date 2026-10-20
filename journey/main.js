@@ -387,11 +387,11 @@ const stamens=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),pearl,flow
 const flowerDummy=new THREE.Object3D(),flowerRoot=new THREE.Object3D(),flowerPositions=[];
 const blossomColors=[palette.dusk,palette.mist,palette.blue];
 for(let i=0;i<flowerCount;i++){
- const side=i%2?1:-1,patch=Math.floor(i/60),z=12-patch*14-random()*12,x=side*((i%5===0?.4:2.2)+random()*7.5),floor=meadowFloor(x,z),height=(.55+random()*1.15)*(Math.hypot(x-3.4,z+66)<7?.30:1),scale=(.45+random()*.60)*(Math.hypot(x-3.4,z+66)<7?.27:1),bend=random()*Math.PI*2,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
+ const cluster=Math.floor(i/12),side=cluster%2?1:-1,patch=Math.floor(cluster/6),z=12-patch*15-(cluster%6)*2+random()*1.1,x=side*(3.4+(cluster%3)*1.5)+(random()-.5)*1.1,floor=meadowFloor(x,z),height=(.55+random()*1.15)*(Math.hypot(x-3.4,z+66)<7?.30:1),scale=(.45+random()*.60)*(Math.hypot(x-3.4,z+66)<7?.27:1),bend=random()*Math.PI*2,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
  flowerPositions.push({x,y:floor,z,height});
  flowerDummy.position.set(x,floor,z);flowerDummy.rotation.set(0,bend,0);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
  flowerRoot.position.set(hx,floor+height,hz);flowerRoot.rotation.set((random()-.5)*.85,random()*Math.PI,(random()-.5)*.75);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
- for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(0,j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[i%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
+ for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(0,j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[Math.floor(i/12)%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
  flowerDummy.position.set(hx,floor+height+.10*scale,hz);flowerDummy.rotation.set(0,0,0);flowerDummy.scale.set(.17*scale,.09*scale,.17*scale);flowerDummy.updateMatrix();flowerCenters.setMatrixAt(i,flowerDummy.matrix);
  for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;flowerDummy.position.set(hx+Math.cos(angle)*.12*scale,floor+height+.15*scale,hz+Math.sin(angle)*.12*scale);flowerDummy.scale.setScalar(.025*scale);flowerDummy.updateMatrix();stamens.setMatrixAt(i*9+j,flowerDummy.matrix);}
  for(let j=0;j<3;j++){flowerDummy.position.set(x+j*.05,floor+height*(.25+j*.17),z);flowerDummy.rotation.set(.48,j*2.4+i*.2,0);flowerDummy.scale.setScalar(Math.hypot(x-3.4,z+66)<7?.16:.43);flowerDummy.updateMatrix();leaves.setMatrixAt(i*3+j,flowerDummy.matrix);}
@@ -568,7 +568,7 @@ async function printedPaper(card){
  await document.fonts.ready;
  const images=await Promise.all([...card.querySelectorAll('.pub-image')].map(el=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=el.src;})));
  c.fillStyle='#514a67';c.font='24px Arial';c.fillText('RESEARCH / 0'+card.dataset.pubId,70,76);
- const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y+(h-img.height*r)/2,img.width*r,img.height*r);};
+ const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y,img.width*r,img.height*r);};
  fit(images[0],70,155,345,520);
  c.fillStyle='#292537';c.font='56px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),470,197,1040,67);
  c.font='34px Arial';c.fillStyle='#423c53';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),470,y+28,1040,47);
