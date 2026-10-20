@@ -73,3 +73,11 @@ html.spine-study #container{pointer-events:none}
 #extracurricular .activity-wave :is(.activity-wave-stage,canvas,.activity-wave-controls,button){pointer-events:auto!important}
 
 #journeyCanvas canvas.journey-butterfly-layer{position:absolute;inset:0;pointer-events:none;filter:none;will-change:filter;transform:translateZ(0)}
+
+#journeyCanvas .journey-orchid-screen{position:absolute;z-index:2;transform:translate(-50%,-50%);pointer-events:none;background:#000;mask-image:url(../../image/orchid-silhouette-atlas.png);mask-size:200% 100%;mask-repeat:no-repeat;-webkit-mask-image:url(../../image/orchid-silhouette-atlas.png);-webkit-mask-size:200% 100%;-webkit-mask-repeat:no-repeat}
+
+html:not(.skip-hero) #heroScreen{position:fixed!important;inset:0!important;z-index:1000!important;background:none!important;pointer-events:none!important;animation:none!important;transition:none!important}
+html:not(.skip-hero) #heroScreen .hero-art,html:not(.skip-hero) #heroScreen canvas,html:not(.skip-hero) #heroScreen .hero-fill,html:not(.skip-hero) #heroScreen .hero-bottom,html:not(.skip-hero) #heroScreen .hero-social,html:not(.skip-hero) #heroScreen .hero-left,html:not(.skip-hero) #heroScreen .hero-enter,html:not(.skip-hero) #heroScreen .hero-scroll{display:none!important}
+html:not(.skip-hero) #heroScreen .hero-title{position:fixed!important;top:9vh!important;left:5vw!important;margin:0!important;transform:none!important}
+html:not(.skip-hero) #heroScreen .hero-focus{position:fixed!important;top:auto!important;bottom:8vh!important;right:5vw!important;left:auto!important;transform:none!important}
+html:not(.intro-text-active) .signature path{animation-play-state:paused!important}

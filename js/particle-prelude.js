@@ -4,7 +4,7 @@
  if(document.documentElement.classList.contains('skip-hero')||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))return;
  var overlay=document.createElement('section');overlay.className='particle-prelude';overlay.hidden=true;
  overlay.setAttribute('aria-label','Particle butterfly introduction');
- overlay.innerHTML='<div class="particle-prelude-label">NAN WANG <span>COMPUTATIONAL BIOLOGY · BIOMEDICAL AI</span></div><video muted playsinline preload="auto" poster="media/particle-butterfly-poster.jpg?v=final34"><source src="media/particle-butterfly-final.mp4?v=final34" type="video/mp4"></video><div class="particle-prelude-caption">Life, in <i>patterns.</i></div><div class="particle-prelude-track"><span></span></div><button type="button">Skip intro ↗</button>';
+ overlay.innerHTML='<div class="particle-prelude-label">NAN WANG <span>COMPUTATIONAL BIOLOGY · BIOMEDICAL AI</span></div><video muted playsinline preload="auto" poster="media/particle-butterfly-poster.jpg?v=final34"><source src="media/particle-butterfly-final-4k.mp4?v=4k35" type="video/mp4"></video><div class="particle-prelude-caption">Life, in <i>patterns.</i></div><div class="particle-prelude-track"><span></span></div><button type="button">Skip intro ↗</button>';
  document.body.appendChild(overlay);
  var video=overlay.querySelector('video'),track=overlay.querySelector('.particle-prelude-track span');
  var failedAt=0;
