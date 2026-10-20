@@ -1,34 +1,22 @@
-/* One quiet glass reading surface over the original wallpaper. Desktop only. */
 @media(min-width:769px){
-html.about-editorial #container { max-width:1120px; width:calc(100% - 112px); padding:125px 0 0; margin:0 auto; }
-html.about-editorial #content-wrapper { margin:0; }
-html.about-editorial #about { padding:0; }
-html.about-editorial #about > section { display:grid; grid-template-columns:250px minmax(0,1fr); gap:40px 55px; padding:48px 52px 42px; margin-bottom:70px; }
-.about-masthead { grid-column:1/-1; display:grid; grid-template-columns:250px 1fr; column-gap:55px; border-bottom:1px solid #ffffff75; padding-bottom:36px; }
-#about .about-eyebrow { grid-column:1; font:500 11px/1.6 Inter,sans-serif !important; letter-spacing:.13em; margin:0 0 14px; color:#454258; }
-html.about-editorial #about#about .section-title { grid-column:1; font:300 30px/1.2 'Recoleta',Georgia,serif !important; color:#343148; margin:0; padding:0; text-align:left; align-self:start; }
-html.about-editorial #about#about .section-title span { font-family:inherit !important; }
-html.about-editorial #about .section-title::after { display:none; }
-html.about-editorial #about#about .about-deck { grid-column:2; grid-row:1/span 2; font:300 clamp(34px,3.4vw,49px)/1.1 'Recoleta',Georgia,serif !important; color:#343148; letter-spacing:-.035em; margin:0; }
-html.about-editorial #about#about .about-deck em { font-family:inherit !important; font-style:italic; }
-html.about-editorial #intro { grid-column:1; display:block; min-height:0; margin:0; padding:0; text-align:left; align-self:start; }
-html.about-editorial #intro .profile-photo { width:86px; height:86px; border-radius:50%; display:block; margin:0 0 20px; object-fit:cover; transform:none; box-shadow:0 0 0 5px #ffffff30; }
-html.about-editorial #intro h1 { font:300 34px/1.15 'Recoleta',Georgia,serif !important; color:#343148; letter-spacing:-.03em; margin:0 0 10px; opacity:1; animation:none; }
-html.about-editorial #intro p[data-i18n="intro.role"] { font:400 13px/1.65 Inter,sans-serif !important; color:#454258; padding:0; margin:0 0 25px; }
-html.about-editorial #intro .intro-meta { margin:0; }
-html.about-editorial #intro .contact-info { display:flex; flex-direction:column; gap:10px; align-items:flex-start; margin:0 0 26px; }
-html.about-editorial #intro .contact-info a { font:400 11px/1.6 Inter,sans-serif !important; color:#3e3a53; padding:0; border:0; border-radius:0; background:none; box-shadow:none; }
-html.about-editorial #intro .intro-line { display:flex; flex-wrap:wrap; gap:7px 12px; justify-content:flex-start; margin:0 0 15px; }
-html.about-editorial #intro .skill-group { font:400 11px/1.6 Inter,sans-serif !important; color:#454258; padding:0; background:none; border:0; }
-html.about-editorial #intro .skill-group i { font-size:10px; opacity:.65; }
-html.about-editorial #intro #scroll-target-others { border-top:1px solid #ffffff65; padding-top:17px; }
-.about-research-copy { grid-column:2; border-left:1px solid #ffffff60; padding-left:30px; }
-html.about-editorial #about#about .about-paragraph { font:400 15px/1.9 Inter,'Microsoft YaHei',sans-serif !important; color:#363248; margin:0 0 20px; text-align:left; }
-html.about-editorial #about#about .about-paragraph strong { font-family:inherit !important; font-weight:600; color:#302c42; }
-.about-research-copy > div { text-align:left !important; margin-top:24px !important; }
-#about .about-evidence { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #ffffff75; padding-top:28px; gap:30px; }
-#about .about-evidence > div { display:grid; grid-template-columns:auto 1fr; column-gap:16px; align-items:center; }
-#about .about-evidence strong { grid-row:1/span 2; font:300 37px/1.15 'Recoleta',Georgia,serif !important; color:#3a344e; }
-#about .about-evidence span { font:500 12px/1.6 Inter,sans-serif !important; color:#3d374f; }
-#about .about-evidence small { font:400 10px/1.7 Inter,sans-serif !important; color:#514b61; }
+html.about-crystal{background:#d6eef4!important}html.about-crystal body{background:#d6eef4!important;overflow:hidden!important;height:100vh!important}
+html.about-crystal body::before,html.about-crystal body::after{display:none!important}
+html.about-crystal #container{position:fixed!important;inset:0;width:100%;max-width:none;padding:0!important;margin:0!important;overflow:hidden!important}
+html.about-crystal #content-wrapper{margin:0!important;min-height:0!important}
+html.about-crystal #about{position:fixed!important;inset:0;padding:0!important;margin:0!important;overflow:hidden!important;z-index:2}
+html.about-crystal #about>section{position:absolute!important;inset:0;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:none!important;backdrop-filter:none!important}
+.about-crystal-card{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:min(760px,62vw);box-sizing:border-box;padding:32px 42px;border:1px solid #ffffffbb;border-radius:24px;background:#f4fcff35;backdrop-filter:blur(17px) saturate(1.08);box-shadow:inset 0 1px 1px #fff9,0 18px 65px #73a6bc12;animation:about-card-reveal 1s 1.7s both}
+#about .about-crystal-card .about-paragraph{font:300 clamp(15px,1.2vw,19px)/1.6 'Recoleta',Georgia,serif!important;letter-spacing:.005em;color:#172731!important;text-align:left!important;margin:0 0 14px!important}
+#about .about-crystal-card .about-paragraph:last-child{margin-bottom:0!important}#about .about-crystal-card strong{font:inherit!important}
+.about-crystal-label{position:absolute;bottom:5vh;left:5vw;font:300 clamp(30px,3.4vw,49px)/1.1 'Recoleta',Georgia,serif;color:#0b151b;letter-spacing:-.035em}
+.about-crystal-contacts{position:absolute;right:5vw;bottom:5vh;display:flex;flex-direction:column;gap:9px;align-items:flex-end;font:300 clamp(16px,1.45vw,22px)/1.35 'Recoleta',Georgia,serif;color:#0b151b}
+.about-crystal-contacts a{color:inherit!important;text-decoration:none!important;border:0!important;background:none!important;padding:0!important}.about-crystal-contacts i{font-size:.72em;margin-right:9px}.about-crystal-contacts>div{display:flex;gap:22px}
+html.about-crystal #intro,html.about-crystal #footer{display:none!important}
+html.about-crystal #top-header .nav-link{color:#172731!important}
+#crystalPagesCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}#crystalPagesCanvas canvas{display:block;width:100%;height:100%}
+@keyframes about-card-reveal{from{opacity:0;translate:0 20px}to{opacity:1;translate:0 0}}
 }
+
+html.about-crystal #about#about .about-crystal-card .about-paragraph,html.about-crystal #about#about .about-crystal-card .about-paragraph *{font-family:'Recoleta',Georgia,serif!important;font-weight:300!important;text-indent:0!important}
+html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-family:'Recoleta',Georgia,serif!important}
+html.about-crystal #about .about-crystal-contacts i{font-family:'Font Awesome 5 Free'!important;font-weight:900!important}html.about-crystal #about .about-crystal-contacts .fab{font-family:'Font Awesome 5 Brands'!important}

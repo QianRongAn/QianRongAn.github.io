@@ -81,3 +81,14 @@ html:not(.skip-hero) #heroScreen .hero-art,html:not(.skip-hero) #heroScreen canv
 html:not(.skip-hero) #heroScreen .hero-title{position:fixed!important;top:9vh!important;left:5vw!important;margin:0!important;transform:none!important}
 html:not(.skip-hero) #heroScreen .hero-focus{position:fixed!important;top:auto!important;bottom:8vh!important;right:5vw!important;left:auto!important;transform:none!important}
 html:not(.intro-text-active) .signature path{animation-play-state:paused!important}
+
+html.experience-crystal body{background:#d6eef4!important;overflow:hidden!important;height:100vh!important}html.experience-crystal body::before,html.experience-crystal body::after{display:none!important}
+html.experience-crystal #container{position:fixed!important;inset:0;max-width:none;width:100%;padding:0!important;margin:0!important}html.experience-crystal #content-wrapper{margin:0!important}
+html.experience-crystal #experience{position:fixed!important;inset:0;overflow:hidden!important;padding:0!important;z-index:2}html.experience-crystal #experience>section{position:absolute;inset:0;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}
+html.experience-crystal #experience .content-item,html.experience-crystal #experience .section-title,html.experience-crystal #footer{display:none!important}
+.experience-growth-labels{position:absolute;inset:0;pointer-events:none}.experience-growth-copy{position:absolute;width:35%;max-width:560px;color:#233541;transition:opacity .25s;transform:translateY(-20%);font:inherit}.experience-growth-copy[data-side="-1"]{left:7%}.experience-growth-copy[data-side="1"]{right:7%}
+.experience-growth-copy h3{font:inherit;font-size:24px;font-weight:500;margin:0 0 9px}.experience-growth-copy .date-location{font-size:13px;line-height:1.5;margin-bottom:12px}.experience-growth-copy p{font:inherit;font-size:16px;line-height:1.65;margin:0}
+
+html.experience-crystal #experience .dream-kicker{display:none!important}
+
+html:not(.skip-hero) #heroScreen .hero-bg,html:not(.skip-hero) #heroScreen::before,html:not(.skip-hero) #heroScreen::after{display:none!important;background:none!important}

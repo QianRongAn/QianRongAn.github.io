@@ -24,7 +24,7 @@ export function initActivityWave() {
     const camera = new THREE.PerspectiveCamera(40,1,.1,40); camera.position.z=8.4;
     const raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2(), cards=[];
     const period=images.length*4.4;
-    let target=0, current=0, frame=0, previous=0, dragging=null, activeIndex=0;
+    let hoverSpeed=0,target=0, current=0, frame=0, previous=0, dragging=null, activeIndex=0;
     images.forEach((image,index)=>{
         const geometry=new THREE.PlaneGeometry(4.1,2.9,32,16);
         const material=new THREE.MeshBasicMaterial({color:'#ffffff',side:THREE.DoubleSide});
@@ -49,6 +49,7 @@ export function initActivityWave() {
     function render(now){
         frame=0;if(document.hidden||!page.classList.contains('active'))return;
         const dt=Math.min((now-previous)/1000||.016,.05);previous=now;
+        if(!dragging&&!reduce.matches)target+=hoverSpeed*dt*5;
         current=reduce.matches?target:THREE.MathUtils.damp(current,target,7,dt);
         cards.forEach(({mesh,original},index)=>{
             const center=THREE.MathUtils.euclideanModulo(index*4.4-current+period/2,period)-period/2;
@@ -63,13 +64,14 @@ export function initActivityWave() {
         activeIndex=THREE.MathUtils.euclideanModulo(Math.round(current/4.4),images.length);
         controls.querySelector('span').textContent=(activeIndex+1)+' / '+images.length;
         renderer.render(scene,camera);
-        if(Math.abs(target-current)>.001)frame=requestAnimationFrame(render);
+        if(Math.abs(target-current)>.001||Math.abs(hoverSpeed)>.01)frame=requestAnimationFrame(render);
     }
     function schedule(){if(!frame){previous=performance.now();frame=requestAnimationFrame(render);}}
     function step(direction){target=(Math.round(target/4.4)+direction)*4.4;schedule();}
     controls.querySelectorAll('button').forEach((button,index)=>button.addEventListener('click',()=>step(index?1:-1)));
     stage.addEventListener('pointerdown',e=>{dragging={x:e.clientX,start:e.clientX,target};stage.setPointerCapture(e.pointerId);});
-    stage.addEventListener('pointermove',e=>{if(!dragging)return;target=dragging.target+(dragging.x-e.clientX)*.013;schedule();});
+    stage.addEventListener('pointerleave',()=>{hoverSpeed=0;});
+    stage.addEventListener('pointermove',e=>{const rect=stage.getBoundingClientRect(),x=(e.clientX-rect.left)/rect.width*2-1;hoverSpeed=Math.abs(x)<.12?0:x;if(!dragging){schedule();return;}target=dragging.target+(dragging.x-e.clientX)*.013;schedule();});
     stage.addEventListener('pointerup',e=>{
         if(!dragging)return;const moved=Math.abs(e.clientX-dragging.start);dragging=null;
         if(moved<6){const rect=stage.getBoundingClientRect();pointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(cards.map(c=>c.mesh))[0];if(hit)images[hit.object.userData.index].click();}

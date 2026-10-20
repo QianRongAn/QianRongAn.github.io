@@ -1,12 +1,15 @@
 import * as THREE from 'three';
+import { initStructureStudy } from './structure-study.js';
+initStructureStudy();
 import './style.css';
+import { initCrystalPages } from './crystal-pages.js';
 import { initActivityWave } from './activity-wave.js';
 initActivityWave();
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
+if (!document.body.hasAttribute('data-structure-preview') && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
 const root = document.documentElement;
 const spineStudy=new URLSearchParams(location.search).get('study')==='spine';
 if(spineStudy)root.classList.add('spine-study');
@@ -187,16 +190,9 @@ const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<clou
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
-const moonGeometry=new THREE.SphereGeometry(3.1,64,40);
-const lunarCanvas=document.createElement('canvas');lunarCanvas.width=1024;lunarCanvas.height=512;const lunarContext=lunarCanvas.getContext('2d');
-lunarContext.fillStyle='#efbdad';lunarContext.fillRect(0,0,1024,512);
-for(let i=0;i<160;i++){const x=random()*1024,y=random()*512,r=10+random()*110;for(const offset of [-1024,0,1024]){const wash=lunarContext.createRadialGradient(x+offset,y,0,x+offset,y,r);wash.addColorStop(0,i%3?'rgba(112,88,100,.065)':'rgba(255,225,206,.13)');wash.addColorStop(1,'rgba(190,140,140,0)');lunarContext.fillStyle=wash;lunarContext.fillRect(x+offset-r,y-r,r*2,r*2);}}
-for(let i=0;i<400;i++){const x=random()*1024,y=random()*512,r=1+random()*5;const wash=lunarContext.createRadialGradient(x,y,0,x,y,r);wash.addColorStop(0,'rgba(112,88,100,.08)');wash.addColorStop(1,'rgba(190,140,140,0)');lunarContext.fillStyle=wash;lunarContext.fillRect(x-r,y-r,r*2,r*2);}
-const lunarTexture=new THREE.CanvasTexture(lunarCanvas);lunarTexture.colorSpace=THREE.SRGBColorSpace;
-const moonMaterial=new THREE.MeshBasicMaterial({map:lunarTexture,color:'#fff0e7',fog:false,transparent:true});materials.push(moonMaterial);
-const moon=new THREE.Mesh(moonGeometry,moonMaterial);moon.position.set(6.7,9.3,-92);skyObjects.add(moon);
-const satellite=new THREE.Mesh(new THREE.SphereGeometry(1.25,32,24),blue);satellite.position.set(-25,16,-78);skyObjects.add(satellite);
-const orbit=new THREE.Mesh(new THREE.TorusGeometry(2.1,.012,5,100),gold);orbit.rotation.set(.95,.2,.1);satellite.add(orbit);
+const lunarTexture=new THREE.TextureLoader().load('image/white-planet-surface.png');lunarTexture.colorSpace=THREE.SRGBColorSpace;
+const moonMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:lunarTexture},opacity:{value:0}},vertexShader:'varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vUv=uv;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(normalMatrix*normal);vView=normalize(-p.xyz);gl_Position=projectionMatrix*p;}',fragmentShader:'uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float sun=max(dot(n,normalize(vec3(-.65,.4,.7))),0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);vec3 color=stone*(.27+.73*sun)+vec3(.10,.12,.15)*rim;gl_FragColor=vec4(color,opacity);}'});
+const moon=new THREE.Mesh(new THREE.SphereGeometry(26,96,64),moonMaterial);moon.position.set(-2,17,-165);skyObjects.add(moon);
 
 // Meta-ACDC: side-chain contact graph with a peptide ribbon and one risk core.
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
@@ -299,7 +295,7 @@ const pavilion=new THREE.Group();pavilion.position.set(3.4,meadowFloor(3.4,-66)+
 const stone=matte(palette.white,.02);stone.roughness=.86;stone.clearcoat=0;stone.bumpMap=microTexture;stone.bumpScale=.016;
 const stoneShade=matte('#dcd8e0',.015);stoneShade.roughness=.9;stoneShade.clearcoat=0;
 function pavilionCylinder(radius,height,y,material=stone){const part=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,64),material);part.position.y=y;pavilion.add(part);return part;}
-[[2.22,.16,.08],[2.08,.16,.24],[1.94,.16,.40]].forEach(args=>pavilionCylinder(...args));
+pavilionCylinder(2.22,.46,.23);pavilionCylinder(2.12,.10,.49);const baseRim=[[2.13,.45],[2.23,.45],[2.27,.48],[2.28,.52],[2.26,.55],[2.20,.56],[2.13,.56]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(baseRim,96),stone));
 const columnProfile=[new THREE.Vector2(.25,0),new THREE.Vector2(.25,.08),new THREE.Vector2(.21,.13),new THREE.Vector2(.18,.17),new THREE.Vector2(.14,.24)];
 const footGeometry=new THREE.LatheGeometry(columnProfile,24),shaftGeometry=new THREE.CylinderGeometry(.105,.14,2.14,20),capitalGeometry=new THREE.LatheGeometry(columnProfile.map(v=>new THREE.Vector2(v.x,v.y*-.8)),24);
 for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.cos(a)*1.62,z=Math.sin(a)*1.62;
@@ -310,26 +306,31 @@ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.cos(a)*1.62,z=Math.sin(a)*1.62
 const corniceProfile=[[1.76,2.91],[1.89,2.96],[1.89,3.06],[2.00,3.10],[2.04,3.16],[2.04,3.22],[1.96,3.26],[1.99,3.33],[2.11,3.38],[2.11,3.46],[2.02,3.52]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(corniceProfile,72),stone));
 pavilionCylinder(1.79,.08,2.95,stoneShade);
 const dome=new THREE.Mesh(new THREE.SphereGeometry(2.02,64,28,0,Math.PI*2,0,Math.PI/2),stone);dome.scale.y=.71;dome.position.y=3.48;pavilion.add(dome);
-for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.021,stoneShade,40);}
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.043,stone,40);}
 const dentils=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.12,.10),stoneShade,48),pavilionDummy=new THREE.Object3D();for(let i=0;i<48;i++){const a=i/48*Math.PI*2;pavilionDummy.position.set(Math.cos(a)*1.92,3.09,Math.sin(a)*1.92);pavilionDummy.rotation.y=-a;pavilionDummy.updateMatrix();dentils.setMatrixAt(i,pavilionDummy.matrix);}pavilion.add(dentils);
-pavilionCylinder(.10,.09,4.98);orb(pavilion,0,5.08,0,.075,stone);
+
 // Recessed frieze panels, dentil band, abaci and a front stair match the reference rotunda.
 const panelRecess=matte('#c7c3ce');panelRecess.roughness=1;panelRecess.clearcoat=0;
 for(let i=0;i<40;i++){const a=i/40*Math.PI*2;
- const panel=new THREE.Mesh(new THREE.BoxGeometry(.23,.095,.026),panelRecess);panel.position.set(Math.sin(a)*1.994,3.285,Math.cos(a)*1.994);panel.rotation.y=a;pavilion.add(panel);
+ const panel=new THREE.Mesh(new THREE.BoxGeometry(.23,.13,.026),panelRecess);panel.position.set(Math.sin(a)*1.994,3.285,Math.cos(a)*1.994);panel.rotation.y=a;pavilion.add(panel);
  const rail=new THREE.Mesh(new THREE.BoxGeometry(.265,.023,.045),stone);rail.position.copy(panel.position);rail.position.y+=.061;rail.rotation.y=a;pavilion.add(rail);
 }
 const zigzag=Array.from({length:161},(_,i)=>{const a=i/160*Math.PI*2;return new THREE.Vector3(Math.cos(a)*1.91,3.035+(i%2?.032:-.032),Math.sin(a)*1.91);});tube(pavilion,zigzag,.014,stoneShade,160);
 for(let i=0;i<6;i++){const a=i/6*Math.PI*2;const abacus=new THREE.Mesh(new THREE.BoxGeometry(.36,.075,.36),stone);abacus.position.set(Math.cos(a)*1.62,2.97,Math.sin(a)*1.62);abacus.rotation.y=-a;pavilion.add(abacus);}
-for(let i=0;i<3;i++){const step=new THREE.Mesh(new THREE.BoxGeometry(1.85,.14,1.18-i*.22),stone);step.position.set(0,.07+i*.14,2.16-i*.08);pavilion.add(step);}
+for(let i=0;i<3;i++){const shape=new THREE.Shape(),w=2.2,d=1.35-i*.28,r=.065;shape.moveTo(-w/2+r,-d/2);shape.lineTo(w/2-r,-d/2);shape.quadraticCurveTo(w/2,-d/2,w/2,-d/2+r);shape.lineTo(w/2,d/2-r);shape.quadraticCurveTo(w/2,d/2,w/2-r,d/2);shape.lineTo(-w/2+r,d/2);shape.quadraticCurveTo(-w/2,d/2,-w/2,d/2-r);shape.lineTo(-w/2,-d/2+r);shape.quadraticCurveTo(-w/2,-d/2,-w/2+r,-d/2);const geometry=new THREE.ExtrudeGeometry(shape,{depth:.14,bevelEnabled:true,bevelSize:.018,bevelThickness:.018,bevelSegments:3,steps:1});geometry.rotateX(-Math.PI/2);const step=new THREE.Mesh(geometry,stone);step.position.set(0,.015+i*.15,2.2-i*.1);pavilion.add(step);}
 for(const x of [-1.1,1.1]){const plinth=new THREE.Mesh(new THREE.BoxGeometry(.46,.56,.68),stone);plinth.position.set(x,.28,2.1);pavilion.add(plinth);const cap=new THREE.Mesh(new THREE.BoxGeometry(.57,.08,.78),stone);cap.position.set(x,.60,2.1);pavilion.add(cap);}
 const finialProfile=[[.13,4.91],[.14,4.97],[.095,5.03],[.09,5.1],[.045,5.17],[.07,5.21],[0,5.33]].map(([x,y])=>new THREE.Vector2(x,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(finialProfile,28),stone));
 
+const ivyMaterial=matte('#7b8b7a');ivyMaterial.roughness=.9;ivyMaterial.clearcoat=0;const ivyShape=new THREE.Shape();ivyShape.moveTo(0,-.08);ivyShape.bezierCurveTo(-.10,.02,-.06,.12,0,.065);ivyShape.bezierCurveTo(.07,.12,.1,.02,0,-.08);const ivyLeafGeometry=new THREE.ShapeGeometry(ivyShape,6),ivyLeaves=new THREE.InstancedMesh(ivyLeafGeometry,ivyMaterial,240),ivyDummy=new THREE.Object3D();ivyMaterial.side=THREE.DoubleSide;let ivyCount=0;
+for(const angle of [Math.PI*2/3,Math.PI*4/3]){const x=Math.cos(angle)*1.62,z=Math.sin(angle)*1.62,pts=Array.from({length:60},(_,j)=>new THREE.Vector3(x+Math.cos(j*.29)*.15,.52+j*.042,z+Math.sin(j*.29)*.15));tube(pavilion,pts,.012,ivyMaterial,64);for(let j=0;j<60;j++){ivyDummy.position.copy(pts[j]);ivyDummy.rotation.set(j*.4,j*.8,j*.7);ivyDummy.scale.setScalar(.65+(j%5)*.15);ivyDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyCount++,ivyDummy.matrix);}}
+for(let j=0;j<120;j++){const a=2.1+j*.018,theta=.5+(j%17)/17*.85,r=2.045*Math.sin(theta);ivyDummy.position.set(Math.cos(a)*r,3.48+1.46*Math.cos(theta),Math.sin(a)*r);ivyDummy.rotation.set(-theta,a,j*.7);ivyDummy.scale.setScalar(.8+(j%4)*.15);ivyDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyCount++,ivyDummy.matrix);}pavilion.add(ivyLeaves);
+
 // Six paper-like leaves gradually resolve into a light, abstract constellation.
 const publications = new THREE.Group(); publications.position.set(2.7, .7, -107); world.add(publications);
-const paperLeaves = [];
+const paperLeaves = [],paperBreeze={x:0,y:0},paperWind={x:0,y:0};
+addEventListener('pointermove',event=>{paperBreeze.x=(event.clientX/innerWidth-.5)*2;paperBreeze.y=(event.clientY/innerHeight-.5)*2;},{passive:true});
 for(let i=0;i<6;i++) {
-    const a=i/6*Math.PI*2, mesh=new THREE.Mesh(pageGeometry,evidencePaper(i,true));
+    const a=i/6*Math.PI*2, mesh=new THREE.Mesh(pageGeometry.clone(),evidencePaper(i,true));mesh.userData.rest=mesh.geometry.attributes.position.array.slice();
     mesh.position.set(Math.cos(a)*2.3,Math.sin(a)*2,.2*Math.cos(a)); mesh.rotation.set(-.15,a*.2,Math.sin(a)*.15);publications.add(mesh);paperLeaves.push(mesh);
     orb(publications,mesh.position.x,mesh.position.y,mesh.position.z,.085,gold);
 }
@@ -419,13 +420,17 @@ for(let i=0;i<treeCount;i++){
  for(let j=0;j<dabsPerTree;j++){const a=random()*Math.PI*2,h=random()*2-1,r=Math.sqrt(1-h*h)*(1.1+random()*1.5);treeDummy.position.set(x+Math.cos(a)*r,floor+height*.75+h*height*.31,z+Math.sin(a)*r);treeDummy.rotation.set(random()*.9,random()*6,random()*.7);treeDummy.scale.set(.45+random()*.8,.15+random()*.32,.32+random()*.6);treeDummy.updateMatrix();canopy.setMatrixAt(i*dabsPerTree+j,treeDummy.matrix);const tint=new THREE.Color(palette.blue).lerp(new THREE.Color(j%7===0?palette.dusk:palette.mist),.10+random()*.26).multiplyScalar(.72+random()*.32);canopy.setColorAt(i*dabsPerTree+j,tint);}
 }forest.add(trunks,canopy);
 // Reuse the approved fir model across the complete forest; the original camera is unchanged.
-const paintedForest=new THREE.Group();forest.add(paintedForest);
-const firPainting=new THREE.TextureLoader().load('image/watercolour-fir-painted.png',()=>{
- forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='painted-watercolour-72';
-});firPainting.colorSpace=THREE.SRGBColorSpace;
-const paintedTreeMaterial=new THREE.MeshBasicMaterial({map:firPainting,transparent:true,alphaTest:.18,depthWrite:true,side:THREE.DoubleSide,fog:false});paintedTreeMaterial.userData.baseOpacity=1;materials.push(paintedTreeMaterial);
-const paintedTreeGeometry=new THREE.PlaneGeometry(1,1);paintedTreeGeometry.translate(0,.5,0);
-treePlacements.forEach((tree,i)=>{const sprite=new THREE.Mesh(paintedTreeGeometry,paintedTreeMaterial);sprite.position.set(tree.x,tree.floor,tree.z);sprite.scale.set(tree.height*2/3,tree.height,1);sprite.userData.tree=true;paintedForest.add(sprite);});
+const detailedForest=new THREE.Group();forest.add(detailedForest);
+new GLTFLoader().load('models/watercolour-fir.glb',gltf=>{
+ gltf.scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(gltf.scene),center=bounds.getCenter(new THREE.Vector3()),height=bounds.max.y-bounds.min.y;
+ gltf.scene.traverse((part)=>{if(!part.isMesh)return;for(let variant=0;variant<3;variant++){
+ const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld);geometry.translate(-center.x,-bounds.min.y,-center.z);const positions=geometry.attributes.position;
+ for(let k=0;k<positions.count;k++){let x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k);const r=Math.hypot(x,z),a=Math.atan2(z,x),weight=r/2;const variation=1+.10*Math.sin(y*1.8+variant*2.1+a*3);positions.setXYZ(k,x*variation,y-Math.pow(r,1.3)*(.10+variant*.035)+Math.sin(a*5+y)*weight*.06,z*variation);}geometry.computeVertexNormals();
+ const material=new THREE.MeshStandardMaterial({color:part.material.color?.clone()||new THREE.Color('#a8acc8'),roughness:.94,metalness:0,side:THREE.DoubleSide,transparent:true});material.userData.baseOpacity=1;materials.push(material);
+ const trees=treePlacements.filter((_,i)=>i%3===variant),batch=new THREE.InstancedMesh(geometry,material,trees.length),dummy=new THREE.Object3D();
+ trees.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor,tree.z);dummy.rotation.set(Math.sin(i*2.1)*.035,i*2.39996+variant,.025*Math.cos(i));dummy.scale.set(scale*(1.05+Math.sin(i)*.13),scale,scale*(.96+Math.cos(i)*.13));dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#b5c0dc':'#dfc8de'),.08+(i%5)*.04));});batch.computeBoundingSphere();detailedForest.add(batch);
+ }});forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='volumetric-fir-3-variants';
+});
 
 const botanicalSpecies=['bellflower','cymbidium','daisy','chrysanthemum','pompon','rose','peony','evening_primrose','camellia','phalaenopsis','lavender','water_lily','gladiolus'];
 new GLTFLoader().load('models/meadow-flowers.glb',gltf=>{
@@ -433,11 +438,20 @@ new GLTFLoader().load('models/meadow-flowers.glb',gltf=>{
  gltf.scene.traverse(part=>{if(!part.isMesh)return;const species=botanicalSpecies.indexOf(part.name);if(species<0)return;speciesCount++;
  const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld),material=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.82,clearcoat:0,sheen:.25,side:THREE.DoubleSide,transparent:true,bumpMap:microTexture,bumpScale:.014});material.userData.baseOpacity=1;materials.push(material);
  const batch=new THREE.InstancedMesh(geometry,material,60),dummy=new THREE.Object3D();
- for(let j=0;j<60;j++){const cluster=Math.floor(j/10),a=j*2.39996+species,r=.16+Math.sqrt((j%10)/10)*.85,cx=(cluster%2?1:-1)*(2.8+(species%4)*1.5),cz=10-cluster*20-species*.72,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,near=Math.hypot(x-3.4,z+66)<7,scale=(.55+(Math.sin(j*12+species)*.5+.5)*.35)*(near?.7:1);
+ for(let j=0;j<60;j++){const cluster=Math.floor(j/10),a=j*2.39996+species,r=.16+Math.sqrt((j%10)/10)*.85,cx=((cluster+species)%2?1:-1)*(2.8+(species%4)*1.45),cz=9-((species*8.5+cluster*21)%115),x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,near=Math.hypot(x-3.4,z+66)<7,scale=(.55+(Math.sin(j*12+species)*.5+.5)*.35)*(near?.7:1);
  dummy.position.set(x,meadowFloor(x,z)+.035,z);dummy.rotation.set(Math.sin(a*2)*.12,a,Math.cos(a)*.13);dummy.scale.setScalar(scale);dummy.updateMatrix();batch.setMatrixAt(j,dummy.matrix);}
  batch.computeBoundingSphere();meadow.add(batch);
  });host.dataset.botanicalSpecies=String(speciesCount);
 },undefined,()=>{host.dataset.botanicalSpecies='unavailable';});
+
+const wisteria=new THREE.Group();wisteria.position.set(-1.5,meadowFloor(-1.5,-116),-116);habitat.add(wisteria);
+new GLTFLoader().load('models/wisteria-tree.glb',gltf=>{
+ gltf.scene.updateMatrixWorld(true);const dummy=new THREE.Object3D();
+ gltf.scene.traverse(part=>{if(!part.isMesh)return;const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld),raceme=part.name.includes('Raceme'),material=matte(raceme?'#c0abd6':'#736575',.015);material.roughness=raceme?.28:.92;material.clearcoat=raceme?.4:0;material.userData.baseOpacity=1;material.userData.wisteria=true;
+ if(!raceme){wisteria.add(new THREE.Mesh(geometry,material));return;}const batch=new THREE.InstancedMesh(geometry,material,480);
+ for(let i=0;i<480;i++){const a=i*2.39996,r=Math.sqrt((i+.5)/480)*9.2;dummy.position.set(Math.cos(a)*r,6.8+.7*Math.cos(r*.5),Math.sin(a)*r);dummy.rotation.set(Math.sin(i)*.06,i*.13,Math.cos(i)*.06);dummy.scale.set(1,1+(i%9)*.12,1);dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color(i%5?'#d4c3e5':'#eff0ff'));}batch.computeBoundingSphere();wisteria.add(batch);
+ });host.dataset.wisteria='480-cascades';
+});
 
 const grassGeometry=new THREE.PlaneGeometry(.075,1,1,9);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(.12+.88*Math.sin(Math.PI*h))*(1-h*.65)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
 const grassMaterial=matte(palette.blue,.01);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
@@ -458,11 +472,10 @@ const portalPoints=Array.from({length:80},(_,i)=>{const a=i/79*Math.PI;return ne
 const membraneGeometry=new THREE.PlaneGeometry(70,54,70,70);membraneGeometry.rotateX(-Math.PI/2);const mp=membraneGeometry.attributes.position;
 for(let i=0;i<mp.count;i++)mp.setY(i,Math.sin(mp.getX(i)*.22+mp.getZ(i)*.3)*.12);membraneGeometry.computeVertexNormals();
 const membraneMaterial=new THREE.MeshBasicMaterial({color:palette.mist,transparent:true,opacity:.065,depthWrite:false,side:THREE.DoubleSide});materials.push(membraneMaterial);const membrane=new THREE.Mesh(membraneGeometry,membraneMaterial);membrane.position.set(0,.2,-42);habitat.add(membrane);
-// Foreground cell membranes, with nested pores and connecting filaments.
-for(let i=0;i<24;i++){
-    const side=i%2?1:-1,z=8-i*4.6,group=new THREE.Group();group.position.set(side*(5.5+random()*2),1+random()*3,z);group.rotation.set(random(),random()*2,random());habitat.add(group);
-    const membrane=new THREE.Mesh(new THREE.TorusGeometry(.65+random()*.5,.08,9,52),i%3?ridgeMaterial:rose);group.add(membrane);
-    for(let n=0;n<7;n++){const a=n/7*Math.PI*2;orb(group,Math.cos(a)*.55,Math.sin(a)*.55,.06,.055,pearl);}
+const skyMoleculeMaterial=matte('#c3e7f3',.015);skyMoleculeMaterial.roughness=.07;skyMoleculeMaterial.transmission=.8;skyMoleculeMaterial.thickness=.25;skyMoleculeMaterial.ior=1.46;skyMoleculeMaterial.clearcoat=1;
+const waterOxygenGeometry=new THREE.SphereGeometry(.34,24,16),waterHydrogenGeometry=new THREE.SphereGeometry(.21,20,12);
+for(let i=0;i<18;i++){const side=i%2?1:-1,z=8-i*6.4,group=new THREE.Group();group.position.set(side*(5.8+(i%4)*1.2),3.5+(i%5)*1.7,z);group.rotation.set(i*.7,i*.9,i*.4);habitat.add(group);group.add(new THREE.Mesh(waterOxygenGeometry,skyMoleculeMaterial));
+ for(const sign of [-1,1]){const a=sign*THREE.MathUtils.degToRad(52.25),tip=new THREE.Vector3(Math.sin(a)*.77,Math.cos(a)*.77,0),hydrogen=new THREE.Mesh(waterHydrogenGeometry,skyMoleculeMaterial);hydrogen.position.copy(tip);group.add(hydrogen);tube(group,[new THREE.Vector3(),tip],.055,skyMoleculeMaterial,12);}
 }
 
 const surveyDetails=new THREE.Group();habitat.add(surveyDetails);
@@ -537,7 +550,7 @@ if(renderer){
 }
 // Curved solid glass sheets and printed content share the same world coordinates.
 const glassCards=[];
-const backdrop=new THREE.Mesh(new THREE.PlaneGeometry(160,90),new THREE.ShaderMaterial({depthWrite:false,uniforms:{},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;void main(){vec3 blue=vec3(.592,.620,.718),lilac=vec3(.83,.79,.86);float glow=exp(-8.*distance(vUv,vec2(.64,.68)));gl_FragColor=vec4(mix(blue,lilac,glow*.9),1.);}'}));backdrop.position.z=-26;glassScene.add(backdrop);
+const backdrop=new THREE.Mesh(new THREE.PlaneGeometry(160,90),new THREE.ShaderMaterial({depthWrite:false,uniforms:{},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;void main(){vec3 blue=vec3(.22,.27,.43),lilac=vec3(.43,.39,.58);float glow=exp(-8.*distance(vUv,vec2(.64,.68)));gl_FragColor=vec4(mix(blue,lilac,glow*.9),1.);}'}));backdrop.position.z=-26;glassScene.add(backdrop);
 function sheetGeometry(w,h,depth,frontOnly=false){
  const nx=72,ny=36,positions=[],uvs=[],indices=[],stride=nx+1;
  // Rounded corners and a shallow cylindrical bend with a soft rolled rim.
@@ -557,11 +570,11 @@ async function printedPaper(card){
  c.fillStyle='#514a67';c.font='24px Arial';c.fillText('RESEARCH / 0'+card.dataset.pubId,70,76);
  const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y+(h-img.height*r)/2,img.width*r,img.height*r);};
  fit(images[0],70,155,345,520);
- c.fillStyle='#292537';c.font='56px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),470,160,1040,67);
+ c.fillStyle='#292537';c.font='56px Recoleta, Georgia';let y=wrapText(c,card.querySelector('.pub-title').textContent.trim(),470,197,1040,67);
  c.font='34px Arial';c.fillStyle='#423c53';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),470,y+28,1040,47);
  c.font='italic 34px Georgia';c.fillStyle='#51405e';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),470,y+22,1040,46);
  const impact=(card.querySelector('.pub-impact')?.textContent||'').trim();if(impact){c.font='bold 32px Georgia';c.fillStyle='#353047';c.fillText(impact,470,y+23);y+=55;}
- const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font='31px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.ceil(rows.length/2);rows.forEach((line,i)=>c.fillText(line,i<half?70:835,y+70+(i%half)*43));card.dataset.printBottom=String(y+70+half*43);}
+ const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font=([3,5].includes(Number(card.dataset.pubId))?'31':'34')+'px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.ceil(rows.length/2);rows.forEach((line,i)=>c.fillText(line,i<half?70:835,y+70+(i%half)*43));card.dataset.printBottom=String(y+70+half*43);}
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;return texture;
 }
 function initGlassCards(){
@@ -575,8 +588,8 @@ function initGlassCards(){
  root.classList.add('publication-webgl');
 }
 let paperPhase=0,paperSelection=-1;const paperMotion={phase:0};let paperTween;
-function moveGlassCards(){initGlassCards();const selected=window.PublicationStage?.index||0;if(selected!==paperSelection){paperSelection=selected;let diff=selected-paperMotion.phase;while(diff>3)diff-=6;while(diff< -3)diff+=6;paperTween?.kill();if(window.gsap&&!motion.matches)paperTween=window.gsap.to(paperMotion,{phase:paperMotion.phase+diff,duration:1.15,ease:'power2.inOut',overwrite:true});else paperMotion.phase+=diff;}paperPhase=paperMotion.phase;
- glassCards.forEach((group,i)=>{let d=i-paperPhase;while(d>3)d-=6;while(d< -3)d+=6;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*6.1,-d*8.6,3.2-distance*4.8);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
+function moveGlassCards(){initGlassCards();const selected=window.PublicationStage?.index||0;if(selected!==paperSelection){paperSelection=selected;let diff=selected-paperMotion.phase;paperTween?.kill();if(window.gsap&&!motion.matches)paperTween=window.gsap.to(paperMotion,{phase:paperMotion.phase+diff,duration:1.15,ease:'power2.inOut',overwrite:true});else paperMotion.phase+=diff;}paperPhase=paperMotion.phase;
+ glassCards.forEach((group,i)=>{let d=i-paperPhase;let a=d*.95;const distance=Math.abs(d);group.position.set(1.8+Math.sin(a)*6.1,-d*8.6,3.2-distance*4.8);group.rotation.set(.025*Math.sin(a),a*.72-.08,.018*Math.sin(a));});
 }
 
 function publicationMode(){return skipped&&!!document.querySelector('#publications.active');}
@@ -606,7 +619,7 @@ function measure(){
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
-    paintedForest.children.forEach(tree=>{tree.rotation.y=Math.atan2(camera.position.x-tree.position.x,camera.position.z-tree.position.z);});
+    moonMaterial.uniforms.opacity.value=smooth(.30,.55,t)*(1-smooth(.97,1,t));
     skyUniforms.clock.value=time;groundClock.value=time;
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=t>.78&&t<.90;career.visible=t>.48&&t<.821;pavilion.visible=t>.47&&t<.78;publications.visible=t>.845;dna.visible=t>.12;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
@@ -624,13 +637,14 @@ function paint(t,time){
     if(t<.12){if(wings.parent!==butterflyScene)butterflyScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
-    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
+    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.wisteria?smooth(.60,.73,t):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
     wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
     evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
     crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U';});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
-    paperLeaves.forEach((leaf,i)=>{const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
+    paperWind.x+=(paperBreeze.x-paperWind.x)*.07;paperWind.y+=(paperBreeze.y-paperWind.y)*.07;
+    paperLeaves.forEach((leaf,i)=>{const pos=leaf.geometry.attributes.position,rest=leaf.userData.rest;for(let k=0;k<pos.count;k++){const x=rest[k*3],y=rest[k*3+1];pos.setZ(k,rest[k*3+2]+(paperWind.x*.11+paperWind.y*.05)*Math.sin(x*3+y*1.7+time*1.5+i)*Math.pow(Math.abs(x)/.725,1.4));}pos.needsUpdate=true;leaf.geometry.computeVertexNormals();const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
     const active=captions.findIndex(c=>t>=c[0]&&t<c[1]);
     if(active!==copyIndex){oldCopy=copyIndex;oldCopyStarted=time;copyIndex=active;copyStarted=time;}
     panels.forEach((panel,i)=>{
@@ -700,6 +714,7 @@ root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
 const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,ncc:13,crispr:17,papers:23};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')showScene();else addEventListener('load',showScene,{once:true});}
+initCrystalPages(wings);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
 }
