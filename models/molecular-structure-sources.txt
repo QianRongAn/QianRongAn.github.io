@@ -6,3 +6,7 @@ https://www.rcsb.org/structure/6UGG
 https://doi.org/10.2210/pdb6UGG/pdb
 Coordinates obtained from RCSB PDB. Uniform centering and scaling only; deposited atomic coordinates are not deformed. Alternate conformer A is selected. Water and non-polymer hetero atoms are omitted from the decorative atomic representation.
 These are independent molecular structure studies, not models of the PRRX2/SPP1 signaling mechanism described by the adjoining text.
+
+4OO8: Crystal structure of Streptococcus pyogenes Cas9 in complex with guide RNA and target DNA. First complex (chains A, B, C).
+https://www.rcsb.org/structure/4OO8
+https://doi.org/10.2210/pdb4OO8/pdb

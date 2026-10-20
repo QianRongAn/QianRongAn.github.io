@@ -54,7 +54,7 @@ const progressBar = section.querySelector('.journey-progress-fill');
 const progressNumber = section.querySelector('.journey-progress-number');
 function localize() {
     const zh = root.lang.startsWith('zh');
-    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';if(i===11){p.style.setProperty('color','#f0dfba','important');p.style.textShadow='0 2px 12px rgba(18,8,72,.7)';} });
+    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';if([11,14,15].includes(i)){p.style.setProperty('color','#f0dfba','important');p.style.textShadow='0 2px 12px rgba(18,8,72,.7)';} });
     section.querySelector('.journey-scroll').textContent = zh ? '向下滚动，探索研究之旅' : 'SCROLL TO EXPLORE';
 }
 localize();
@@ -268,12 +268,14 @@ for(let i=0;i<5;i++){const x=-2.3+i*.9,z=.8,y=.19*Math.sin(x*.9)+.09*Math.cos(z*
 // Deposited structures: UvrD-DNA (4C2U) and unmodified tRNA(Asp), chain A (6UGG).
 const structureNote=document.createElement('small');structureNote.className='journey-structure-note';structureNote.textContent='Molecular studies: UvrD–DNA (4C2U) / tRNA(Asp) (6UGG)';copyLayer.appendChild(structureNote);
 const structureStudies=new THREE.Group(),structureView=new THREE.PerspectiveCamera(47,1,.1,160);structureView.position.copy(cameraCurve.getPoint(.525));structureView.lookAt(gazeCurve.getPoint(.525));structureView.updateMatrixWorld();structureStudies.position.copy(new THREE.Vector3(-2.8,0,-9.5).applyMatrix4(structureView.matrixWorld));structureStudies.quaternion.copy(structureView.quaternion);world.add(structureStudies);
-for(const [code,position,size] of [['4c2u',[-.7,-.75,0],3],['6ugg',[.9,1.8,0],1.6]])fetch('models/'+code+'-atoms.json').then(r=>{if(!r.ok)throw new Error('Structure '+code+' unavailable');return r.json();}).then(data=>{
+const crisprStudy=new THREE.Group(),crisprView=new THREE.PerspectiveCamera(47,1,.1,160);crisprView.position.copy(cameraCurve.getPoint(.83125));crisprView.lookAt(gazeCurve.getPoint(.83125));crisprView.updateMatrixWorld();crisprStudy.position.copy(new THREE.Vector3(-2.8,-.1,-9.5).applyMatrix4(crisprView.matrixWorld));crisprStudy.quaternion.copy(crisprView.quaternion);world.add(crisprStudy);
+const crisprNote=document.createElement('small');crisprNote.className='journey-structure-note';crisprNote.textContent='CRISPR-Cas9 / guide RNA / target DNA · 4OO8';copyLayer.appendChild(crisprNote);
+for(const [code,position,size] of [['4c2u',[-.7,-.75,0],3],['6ugg',[.9,1.8,0],1.6],['4oo8',[0,0,0],3.7]])fetch('models/'+code+'-atoms.json').then(r=>{if(!r.ok)throw new Error('Structure '+code+' unavailable');return r.json();}).then(data=>{
  const coords=data.atoms.map(a=>new THREE.Vector3(a[0],a[1],a[2])),box=new THREE.Box3().setFromPoints(coords),center=box.getCenter(new THREE.Vector3()),extent=box.getSize(new THREE.Vector3()),scale=size/Math.max(extent.x,extent.y,extent.z),positions=[],colors=[];
- data.atoms.forEach((atom,i)=>{const p=coords[i].sub(center).multiplyScalar(scale);positions.push(p.x,p.y,p.z);const color=new THREE.Color(atom[3]==='P'?'#8cdae4':atom[3]==='N'?'#8d9dea':atom[3]==='O'?'#e3d4ee':'#7696d0');colors.push(color.r,color.g,color.b);});
+ data.atoms.forEach((atom,i)=>{const p=coords[i].sub(center).multiplyScalar(scale);positions.push(p.x,p.y,p.z);const color=new THREE.Color(code==='4oo8'?(atom[4]==='A'?'#e4e1e7':atom[4]==='B'?'#b6a6d6':'#8ec5b5'):(atom[3]==='P'?'#8cdae4':atom[3]==='N'?'#8d9dea':atom[3]==='O'?'#e3d4ee':'#7696d0'));colors.push(color.r,color.g,color.b);});
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
  const material=new THREE.ShaderMaterial({vertexColors:true,transparent:true,depthWrite:true,vertexShader:'varying vec3 vColor;void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(60./-p.z,1.8,12.);}',fragmentShader:'varying vec3 vColor;void main(){vec2 p=gl_PointCoord*2.-1.;float r=dot(p,p);if(r>1.)discard;float z=sqrt(1.-r);float light=.38+.62*max(0.,dot(normalize(vec3(-.4,.7,1.)),vec3(p,z)));gl_FragColor=vec4(vColor*light,smoothstep(1.,.65,r));#include <colorspace_fragment>}'.replace(';#include',';\n#include')});
- const points=new THREE.Points(geometry,material);points.position.fromArray(position);points.rotation.set(.2,-.4,.35);points.userData.pdb=code.toUpperCase();structureStudies.add(points);
+ const points=new THREE.Points(geometry,material);points.position.fromArray(position);points.rotation.set(.2,-.4,.35);points.userData.pdb=code.toUpperCase();(code==='4oo8'?crisprStudy:structureStudies).add(points);
 }).catch(error=>{host.dataset.structureError=error.message;});
 
 // The research timeline is one continuous sand-gold curve through four stations.
@@ -289,6 +291,7 @@ careerNodes.forEach((p, i) => {
     for(let j=0;j<5;j++){const mote=orb(node,(random()-.5)*1.7,-1.2+random()*2.7,(random()-.5)*1.3,.025+random()*.025,gold);rising.push({mesh:mote,base:mote.position.y,phase:random()});}
 });
 // Xiamen garden rotunda: six columns, moulded cornice, ribbed dome and climbing ivy.
+const careerMaterials=new Map();career.traverse(object=>{if(!object.isMesh)return;const source=object.material;if(!careerMaterials.has(source)){const local=source.clone();local.userData.careerTimeline=true;careerMaterials.set(source,local);materials.push(local);}object.material=careerMaterials.get(source);});
 const pavilion=new THREE.Group();pavilion.position.set(3.4,meadowFloor(3.4,-66)+.10,-66);pavilion.scale.setScalar(.82);world.add(pavilion);
 const stone=matte(palette.white,.02);stone.roughness=.86;stone.clearcoat=0;stone.bumpMap=microTexture;stone.bumpScale=.016;
 const stoneShade=matte(palette.mist,.015);stoneShade.roughness=.9;stoneShade.clearcoat=0;
@@ -566,7 +569,7 @@ function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
     skyUniforms.clock.value=time;groundClock.value=time;
-    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.4&&t<.50;structureStudies.visible=t>.49&&t<.55;structureNote.hidden=!structureStudies.visible;career.visible=t>.48;pavilion.visible=t>.52&&t<.64;publications.visible=t>.79;dna.visible=t>.055;membrane.visible=false;
+    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.4&&t<.50;structureStudies.visible=t>.49&&t<.55;structureNote.hidden=!structureStudies.visible;crisprStudy.visible=t>.8125&&t<.85;crisprNote.hidden=!crisprStudy.visible;career.visible=t>.48&&t<.821;pavilion.visible=t>.52&&t<.64;publications.visible=t>.845;dna.visible=t>.055;membrane.visible=false;
     const focus=Math.max(smooth(.002,.055,t),smooth(.6,4.2,time-focusStarted));
     host.style.setProperty('--scene-focus','0px');if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
     host.style.setProperty('--scene-light',String(.05+focus*.95));
@@ -574,11 +577,11 @@ function paint(t,time){
     backgroundAt(t);const emergence=smooth(.045,.11,t);scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;skyObjects.visible=t>.055&&t<.975;cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);habitat.visible=t>.055;dust.visible=t>.065;life.position.x=-5.8+9.2*smooth(0,4.6,time-focusStarted);life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
     cameraCurve.getPoint(t,camera.position);gazeCurve.getPoint(t,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
-    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade;});
+    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
     wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=time*2.5-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.22);pivot.rotation.x=Math.sin(phase-.25)*.025;});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
     evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
-    structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
+    crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
     paperLeaves.forEach((leaf,i)=>{const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
     const active=captions.findIndex(c=>t>=c[0]&&t<c[1]);
@@ -644,7 +647,7 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
-const previewScenes={orchids:1,sky:1,meadow:9,bilayer:7,signals:8,ncc:12,papers:22};
+const previewScenes={orchids:1,sky:1,meadow:9,bilayer:7,signals:8,ncc:12,crispr:16,papers:22};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')showScene();else addEventListener('load',showScene,{once:true});}
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
