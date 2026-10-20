@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
+import { initActivityWave } from './activity-wave.js';
+initActivityWave();
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -54,7 +56,7 @@ const progressBar = section.querySelector('.journey-progress-fill');
 const progressNumber = section.querySelector('.journey-progress-number');
 function localize() {
     const zh = root.lang.startsWith('zh');
-    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';if([11,14,15].includes(i)){p.style.setProperty('color','#f0dfba','important');p.style.textShadow='0 2px 12px rgba(18,8,72,.7)';} });
+    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';p.style.removeProperty('color');p.style.textShadow='none'; });
     section.querySelector('.journey-scroll').textContent = zh ? '向下滚动，探索研究之旅' : 'SCROLL TO EXPLORE';
 }
 localize();
@@ -78,7 +80,8 @@ const gazeCurve = new THREE.CatmullRomCurve3([
 // A close, black organic silhouette gives the first reveal a real foreground.
 scene.add(camera);
 const foreground=new THREE.Group();camera.add(foreground);
-const orchidAtlas=new THREE.TextureLoader().load('image/orchid-silhouette-atlas.png');
+let orchidsReady=false;
+const orchidAtlas=new THREE.TextureLoader().load('image/orchid-silhouette-atlas.png',()=>{orchidsReady=true;});
 const silhouetteMat=new THREE.ShaderMaterial({uniforms:{map:{value:orchidAtlas},opacity:{value:.94}},transparent:true,depthWrite:false,side:THREE.DoubleSide,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform sampler2D map;uniform float opacity;varying vec2 vUv;void main(){float a=texture2D(map,vUv).a;if(a<.03)discard;gl_FragColor=vec4(vec3(0.),a*opacity);}'});
 const orchidFrames=[];
 for(let i=0;i<2;i++){const geometry=new THREE.PlaneGeometry(2.1,2.8),uv=geometry.attributes.uv;for(let j=0;j<uv.count;j++)uv.setX(j,uv.getX(j)*.5+i*.5);const plant=new THREE.Mesh(geometry,silhouetteMat);plant.position.set(i?2:-2,-.15,-3);foreground.add(plant);orchidFrames.push(plant);}
@@ -186,14 +189,14 @@ const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<clou
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
-const moonGeometry=new THREE.SphereGeometry(3.3,64,40),moonVertices=moonGeometry.attributes.position;
-const craters=Array.from({length:24},()=>{const n=new THREE.Vector3(random()-.5,random()-.5,random()-.5).normalize();return {n,r:.06+random()*.16};});
-for(let i=0;i<moonVertices.count;i++){const n=new THREE.Vector3().fromBufferAttribute(moonVertices,i).normalize();let relief=.004*Math.sin(n.x*63+n.z*37)*Math.sin(n.y*51);for(const crater of craters){const d=n.distanceTo(crater.n)/crater.r;relief+=-.025*Math.exp(-d*d*3)+.009*Math.exp(-Math.pow((d-1)*5,2));}moonVertices.setXYZ(i,n.x*3.3*(1+relief),n.y*3.3*(1+relief),n.z*3.3*(1+relief));}moonGeometry.computeVertexNormals();
-const moonMaterial=new THREE.MeshPhysicalMaterial({color:palette.mist,roughness:1,metalness:0,bumpMap:microTexture,bumpScale:.035,emissive:palette.mist,emissiveIntensity:.055,transparent:true});materials.push(moonMaterial);
-const lunarCanvas=document.createElement('canvas');lunarCanvas.width=1024;lunarCanvas.height=512;const lunarContext=lunarCanvas.getContext('2d');lunarContext.fillStyle='#b9b9c6';lunarContext.fillRect(0,0,1024,512);
-for(let i=0;i<360;i++){const x=random()*1024,y=random()*512,r=1+Math.pow(random(),2)*23;for(const offset of [-1024,0,1024]){const crater=lunarContext.createRadialGradient(x+offset-r*.18,y-r*.2,r*.08,x+offset,y,r);crater.addColorStop(0,'rgba(67,69,91,.28)');crater.addColorStop(.65,'rgba(106,107,126,.20)');crater.addColorStop(.84,'rgba(239,237,244,.26)');crater.addColorStop(1,'rgba(185,185,198,0)');lunarContext.fillStyle=crater;lunarContext.fillRect(x+offset-r,y-r,r*2,r*2);}}
-const lunarTexture=new THREE.CanvasTexture(lunarCanvas);lunarTexture.colorSpace=THREE.SRGBColorSpace;moonMaterial.map=lunarTexture;moonMaterial.bumpMap=lunarTexture;moonMaterial.bumpScale=.07;moonMaterial.color.set(palette.white);moonMaterial.fog=false;moonMaterial.emissiveIntensity=.10;
-const moon=new THREE.Mesh(moonGeometry,moonMaterial);moon.position.set(7,13,-92);skyObjects.add(moon);
+const moonGeometry=new THREE.SphereGeometry(3.1,64,40);
+const lunarCanvas=document.createElement('canvas');lunarCanvas.width=1024;lunarCanvas.height=512;const lunarContext=lunarCanvas.getContext('2d');
+lunarContext.fillStyle='#efbdad';lunarContext.fillRect(0,0,1024,512);
+for(let i=0;i<160;i++){const x=random()*1024,y=random()*512,r=10+random()*110;for(const offset of [-1024,0,1024]){const wash=lunarContext.createRadialGradient(x+offset,y,0,x+offset,y,r);wash.addColorStop(0,i%3?'rgba(112,88,100,.065)':'rgba(255,225,206,.13)');wash.addColorStop(1,'rgba(190,140,140,0)');lunarContext.fillStyle=wash;lunarContext.fillRect(x+offset-r,y-r,r*2,r*2);}}
+for(let i=0;i<400;i++){const x=random()*1024,y=random()*512,r=1+random()*5;const wash=lunarContext.createRadialGradient(x,y,0,x,y,r);wash.addColorStop(0,'rgba(112,88,100,.08)');wash.addColorStop(1,'rgba(190,140,140,0)');lunarContext.fillStyle=wash;lunarContext.fillRect(x-r,y-r,r*2,r*2);}
+const lunarTexture=new THREE.CanvasTexture(lunarCanvas);lunarTexture.colorSpace=THREE.SRGBColorSpace;
+const moonMaterial=new THREE.MeshBasicMaterial({map:lunarTexture,color:'#fff0e7',fog:false,transparent:true});materials.push(moonMaterial);
+const moon=new THREE.Mesh(moonGeometry,moonMaterial);moon.position.set(6.7,9.3,-92);skyObjects.add(moon);
 const satellite=new THREE.Mesh(new THREE.SphereGeometry(1.25,32,24),blue);satellite.position.set(-25,16,-78);skyObjects.add(satellite);
 const orbit=new THREE.Mesh(new THREE.TorusGeometry(2.1,.012,5,100),gold);orbit.rotation.set(.95,.2,.1);satellite.add(orbit);
 
@@ -266,16 +269,16 @@ for(let i=0;i<6;i++){const a=i/6*Math.PI*2;const helix=Array.from({length:40},(_
 for(let i=0;i<5;i++){const x=-2.3+i*.9,z=.8,y=.19*Math.sin(x*.9)+.09*Math.cos(z*1.5)+.55;const root=new THREE.Vector3(x,y,z),tip=new THREE.Vector3(x+.13,y+.65,z);tube(bilayer,[root,new THREE.Vector3(x-.1,y+.3,z),tip],.022,gold,20);for(let j=0;j<3;j++){const end=new THREE.Vector3(x+.13+(j-1)*.20,y+.9-Math.abs(j-1)*.1,z+.06);tube(bilayer,[tip,end],.018,gold,12);orb(bilayer,end.x,end.y,end.z,.065,pearl);}}
 
 // Deposited structures: UvrD-DNA (4C2U) and unmodified tRNA(Asp), chain A (6UGG).
-const structureNote=document.createElement('small');structureNote.className='journey-structure-note';structureNote.textContent='Molecular studies: UvrD–DNA (4C2U) / tRNA(Asp) (6UGG)';copyLayer.appendChild(structureNote);
+
 const structureStudies=new THREE.Group(),structureView=new THREE.PerspectiveCamera(47,1,.1,160);structureView.position.copy(cameraCurve.getPoint(.525));structureView.lookAt(gazeCurve.getPoint(.525));structureView.updateMatrixWorld();structureStudies.position.copy(new THREE.Vector3(-2.8,0,-9.5).applyMatrix4(structureView.matrixWorld));structureStudies.quaternion.copy(structureView.quaternion);world.add(structureStudies);
 const crisprStudy=new THREE.Group(),crisprView=new THREE.PerspectiveCamera(47,1,.1,160);crisprView.position.copy(cameraCurve.getPoint(.83125));crisprView.lookAt(gazeCurve.getPoint(.83125));crisprView.updateMatrixWorld();crisprStudy.position.copy(new THREE.Vector3(-2.8,-.1,-9.5).applyMatrix4(crisprView.matrixWorld));crisprStudy.quaternion.copy(crisprView.quaternion);world.add(crisprStudy);
-const crisprNote=document.createElement('small');crisprNote.className='journey-structure-note';crisprNote.textContent='CRISPR-Cas9 / guide RNA / target DNA · 4OO8';copyLayer.appendChild(crisprNote);
-for(const [code,position,size] of [['4c2u',[-.7,-.75,0],3],['6ugg',[.9,1.8,0],1.6],['4oo8',[0,0,0],3.7]])fetch('models/'+code+'-atoms.json').then(r=>{if(!r.ok)throw new Error('Structure '+code+' unavailable');return r.json();}).then(data=>{
- const coords=data.atoms.map(a=>new THREE.Vector3(a[0],a[1],a[2])),box=new THREE.Box3().setFromPoints(coords),center=box.getCenter(new THREE.Vector3()),extent=box.getSize(new THREE.Vector3()),scale=size/Math.max(extent.x,extent.y,extent.z),positions=[],colors=[];
- data.atoms.forEach((atom,i)=>{const p=coords[i].sub(center).multiplyScalar(scale);positions.push(p.x,p.y,p.z);const color=new THREE.Color(code==='4oo8'?(atom[4]==='A'?'#e4e1e7':atom[4]==='B'?'#b6a6d6':'#8ec5b5'):(atom[3]==='P'?'#8cdae4':atom[3]==='N'?'#8d9dea':atom[3]==='O'?'#e3d4ee':'#7696d0'));colors.push(color.r,color.g,color.b);});
- const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
- const material=new THREE.ShaderMaterial({vertexColors:true,transparent:true,depthWrite:true,vertexShader:'varying vec3 vColor;void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(60./-p.z,1.8,12.);}',fragmentShader:'varying vec3 vColor;void main(){vec2 p=gl_PointCoord*2.-1.;float r=dot(p,p);if(r>1.)discard;float z=sqrt(1.-r);float light=.38+.62*max(0.,dot(normalize(vec3(-.4,.7,1.)),vec3(p,z)));gl_FragColor=vec4(vColor*light,smoothstep(1.,.65,r));#include <colorspace_fragment>}'.replace(';#include',';\n#include')});
- const points=new THREE.Points(geometry,material);points.position.fromArray(position);points.rotation.set(.2,-.4,.35);points.userData.pdb=code.toUpperCase();(code==='4oo8'?crisprStudy:structureStudies).add(points);
+
+for(const [code,position,size] of [['4c2u',[0,0,0],3.5],['6ugg',[0,0,-6],3.0],['4oo8',[0,0,0],3.7]])fetch('models/'+code+'-atoms.json').then(r=>{if(!r.ok)throw new Error('Structure '+code+' unavailable');return r.json();}).then(data=>{
+ const coords=data.atoms.map(a=>new THREE.Vector3(a[0],a[1],a[2])),box=new THREE.Box3().setFromPoints(coords),center=box.getCenter(new THREE.Vector3()),extent=box.getSize(new THREE.Vector3()),scale=size/Math.max(extent.x,extent.y,extent.z);
+ const model=new THREE.Group(),surfaceMaterial=matte('#c8cddd',.025);surfaceMaterial.roughness=.48;surfaceMaterial.clearcoat=.12;surfaceMaterial.userData.baseOpacity=1;
+ const atoms=new THREE.InstancedMesh(new THREE.SphereGeometry(1,8,5),surfaceMaterial,data.atoms.length),dummy=new THREE.Object3D();
+ data.atoms.forEach((atom,i)=>{dummy.position.copy(coords[i]).sub(center).multiplyScalar(scale);const radius=({C:1.7,N:1.55,O:1.52,P:1.8,S:1.8}[atom[3]]||1.6)*scale;dummy.scale.setScalar(radius);dummy.updateMatrix();atoms.setMatrixAt(i,dummy.matrix);atoms.setColorAt(i,new THREE.Color(code==='4oo8'?(atom[4]==='A'?'#c8cddd':atom[4]==='B'?'#d5b1c9':'#89a8d5'):(atom[3]==='P'?'#d5b1c9':atom[3]==='O'?'#bcc4d9':'#c8cddd')));});
+ model.add(atoms);model.position.fromArray(position);model.rotation.set(.2,-.4,.35);model.userData.pdb=code.toUpperCase();(code==='4oo8'?crisprStudy:structureStudies).add(model);if(code==='6ugg'){const view=new THREE.PerspectiveCamera(47,1,.1,160);view.position.copy(cameraCurve.getPoint(.19));view.lookAt(gazeCurve.getPoint(.19));view.updateMatrixWorld();structureStudies.updateMatrixWorld(true);model.position.copy(structureStudies.worldToLocal(new THREE.Vector3(3,0,-10).applyMatrix4(view.matrixWorld)));}
 }).catch(error=>{host.dataset.structureError=error.message;});
 
 // The research timeline is one continuous sand-gold curve through four stations.
@@ -354,14 +357,12 @@ const pavilionMound=new THREE.Mesh(new THREE.SphereGeometry(1,32,16),terrainMate
 // Ground flowers are solid curved petals, stems and leaves, batched as instances.
 function meadowFloor(x,z){const localZ=-(z+48);return -4+Math.pow(Math.min(Math.abs(x)/12,2),1.7)*3.2+Math.sin(x*.62+localZ*.14)*.4+Math.sin(x*1.4-localZ*.23)*.15+Math.sin(localZ*.38)*.22-8/(1+Math.exp((localZ-10)*.18));}
 function petalGeometry(){
- const positions=[],indices=[],nx=4,ny=10,stride=nx+1,count=stride*(ny+1);
- for(let back=0;back<2;back++)for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
-  const u=j/ny,v=i/nx*2-1,w=.28*Math.pow(Math.sin(Math.PI*u),.65)+.018;
-  positions.push(v*w,.14*Math.sin(u*Math.PI)+.28*u*u+.075*v*v*Math.sin(Math.PI*u)+(back?-.009:.009),.07+u*.75);
+ const positions=[],indices=[],nx=8,ny=16,stride=nx+1;
+ for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
+  const u=j/ny,v=i/nx*2-1,w=.20*Math.pow(Math.sin(Math.PI*u),.7)+.008;
+  positions.push(v*w,.12*Math.sin(u*Math.PI)+.24*u*u+.065*v*v*Math.sin(Math.PI*u),.07+u*.75);
  }
- for(let back=0;back<2;back++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=back*count+j*stride+i,b=a+1,c=a+stride,d=c+1;if(back)indices.push(a,b,c,b,d,c);else indices.push(a,c,b,b,c,d);}
- const boundary=[];for(let i=0;i<=nx;i++)boundary.push(i);for(let j=1;j<=ny;j++)boundary.push(j*stride+nx);for(let i=nx-1;i>=0;i--)boundary.push(ny*stride+i);for(let j=ny-1;j>0;j--)boundary.push(j*stride);
- boundary.forEach((a,i)=>{const b=boundary[(i+1)%boundary.length];indices.push(a,b,a+count,b,b+count,a+count);});
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=j*stride+i;indices.push(a,a+stride,a+1,a+1,a+stride,a+stride+1);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;
 }
 const meadow=new THREE.Group();habitat.add(meadow);
@@ -380,7 +381,7 @@ for(let i=0;i<flowerCount;i++){
  flowerPositions.push({x,y:floor,z,height});
  flowerDummy.position.set(x,floor,z);flowerDummy.rotation.set(0,bend,0);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
  flowerRoot.position.set(hx,floor+height,hz);flowerRoot.rotation.set((random()-.5)*.85,random()*Math.PI,(random()-.5)*.75);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
- for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(.05*Math.sin(j*2),j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[i%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
+ for(let j=0;j<petalsPerFlower;j++){flowerDummy.position.set(0,0,0);flowerDummy.rotation.set(0,j/petalsPerFlower*Math.PI*2,0);flowerDummy.scale.set(1,1,1);flowerDummy.updateMatrix();petals.setMatrixAt(i*petalsPerFlower+j,new THREE.Matrix4().multiplyMatrices(flowerRoot.matrix,flowerDummy.matrix));petals.setColorAt(i*petalsPerFlower+j,new THREE.Color(blossomColors[i%3]).lerp(new THREE.Color(palette.mist),random()*.3));}
  flowerDummy.position.set(hx,floor+height+.10*scale,hz);flowerDummy.rotation.set(0,0,0);flowerDummy.scale.set(.17*scale,.09*scale,.17*scale);flowerDummy.updateMatrix();flowerCenters.setMatrixAt(i,flowerDummy.matrix);
  for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;flowerDummy.position.set(hx+Math.cos(angle)*.12*scale,floor+height+.15*scale,hz+Math.sin(angle)*.12*scale);flowerDummy.scale.setScalar(.025*scale);flowerDummy.updateMatrix();stamens.setMatrixAt(i*9+j,flowerDummy.matrix);}
  for(let j=0;j<3;j++){flowerDummy.position.set(x+j*.05,floor+height*(.25+j*.17),z);flowerDummy.rotation.set(.48,j*2.4+i*.2,0);flowerDummy.scale.set(.43,.50,.60);flowerDummy.updateMatrix();leaves.setMatrixAt(i*3+j,flowerDummy.matrix);}
@@ -408,10 +409,10 @@ for(let i=0;i<treeCount;i++){
  for(let b=0;b<branchCount;b++){const a=b*2.4+i,spread=1.2+random()*1.3;forestBranch(i*6+b+1,new THREE.Vector3(x,floor+height*(.35+b*.08),z),new THREE.Vector3(x+Math.cos(a)*spread,floor+height*(.63+b*.06),z+Math.sin(a)*spread),.48);}
  for(let j=0;j<dabsPerTree;j++){const a=random()*Math.PI*2,h=random()*2-1,r=Math.sqrt(1-h*h)*(1.1+random()*1.5);treeDummy.position.set(x+Math.cos(a)*r,floor+height*.75+h*height*.31,z+Math.sin(a)*r);treeDummy.rotation.set(random()*.9,random()*6,random()*.7);treeDummy.scale.set(.45+random()*.8,.15+random()*.32,.32+random()*.6);treeDummy.updateMatrix();canopy.setMatrixAt(i*dabsPerTree+j,treeDummy.matrix);const tint=new THREE.Color(palette.blue).lerp(new THREE.Color(j%7===0?palette.dusk:palette.mist),.10+random()*.26).multiplyScalar(.72+random()*.32);canopy.setColorAt(i*dabsPerTree+j,tint);}
 }forest.add(trunks,canopy);
-const grassGeometry=new THREE.PlaneGeometry(.11,1,1,5);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(1-h)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
+const grassGeometry=new THREE.PlaneGeometry(.075,1,1,9);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(.12+.88*Math.sin(Math.PI*h))*(1-h*.65)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
 const grassMaterial=matte(palette.blue,.01);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
 const grass=new THREE.InstancedMesh(grassGeometry,grassMaterial,18000);
-for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(random()-.5)*.6,z=cz+(random()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)-.01,z);treeDummy.rotation.set((random()-.5)*.3,random()*6.28,(random()-.5)*.65);treeDummy.scale.set(.7+random()*1.3,(Math.abs(x)<2?.15:.35)+random()*(Math.abs(x)<2?.25:.85),1);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.30+random()*.42));}meadow.add(grass);
+for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(random()-.5)*.6,z=cz+(random()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)+.055,z);treeDummy.rotation.set((random()-.5)*.18,random()*6.28,(random()-.5)*.4);treeDummy.scale.set(.7+random()*1.3,(Math.abs(x)<2?.15:.35)+random()*(Math.abs(x)<2?.25:.85),1);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.30+random()*.42));}meadow.add(grass);
 // A high, open chamber transitions into a submerged molecular garden.
 for(let j=0;j<10;j++){
  const island=new THREE.Mesh(boulderGeometry,terrainMaterial);island.position.set((j%2?1:-1)*(5+random()*7),8+random()*9,7-j*6);island.scale.set(1.2+random()*2,1.5+random()*3,1+random()*2);island.rotation.z=random();habitat.add(island);
@@ -569,19 +570,20 @@ function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
     skyUniforms.clock.value=time;groundClock.value=time;
-    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.4&&t<.50;structureStudies.visible=t>.49&&t<.55;structureNote.hidden=!structureStudies.visible;crisprStudy.visible=t>.8125&&t<.85;crisprNote.hidden=!crisprStudy.visible;career.visible=t>.48&&t<.821;pavilion.visible=t>.52&&t<.64;publications.visible=t>.845;dna.visible=t>.055;membrane.visible=false;
-    const focus=Math.max(smooth(.002,.055,t),smooth(.6,4.2,time-focusStarted));
-    host.style.setProperty('--scene-focus','0px');if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
-    host.style.setProperty('--scene-light',String(.05+focus*.95));
-    foreground.visible=t<.2;silhouetteMat.uniforms.opacity.value=1-smooth(.06,.19,t);
-    backgroundAt(t);const emergence=smooth(.045,.11,t);scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;skyObjects.visible=t>.055&&t<.975;cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);habitat.visible=t>.055;dust.visible=t>.065;life.position.x=-5.8+9.2*smooth(0,4.6,time-focusStarted);life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
+    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=(t>.13&&t<.27)||(t>.48&&t<.59);crisprStudy.visible=t>.78&&t<.90;career.visible=t>.48&&t<.821;pavilion.visible=t>.47&&t<.78;publications.visible=t>.845;dna.visible=t>.055;membrane.visible=false;
+    if(!orchidsReady)focusStarted=time;
+    const focus=smooth(0,3.6,time-focusStarted);
+    host.style.setProperty('--scene-focus',`${42*(1-focus)}px`);if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
+    host.style.setProperty('--scene-light',String(.72+focus*.28));
+    foreground.visible=t<.2;silhouetteMat.uniforms.opacity.value=focus*(1-smooth(.06,.19,t));
+    backgroundAt(t);const emergence=focus;scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;skyObjects.visible=focus>.002&&t<.975;cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);habitat.visible=focus>.002;dust.visible=focus>.002;life.position.x=3.4;life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
     cameraCurve.getPoint(t,camera.position);gazeCurve.getPoint(t,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
     wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=time*2.5-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.22);pivot.rotation.x=Math.sin(phase-.25)*.025;});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
     evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
-    crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
+    crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U'?t>.48:t<.27;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
     paperLeaves.forEach((leaf,i)=>{const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
     const active=captions.findIndex(c=>t>=c[0]&&t<c[1]);
@@ -590,7 +592,7 @@ function paint(t,time){
         let opacity=0,entry=0,exit=0;
         if(i===copyIndex){entry=smooth(0,.72,time-copyStarted);opacity=entry;}
         else if(i===oldCopy){entry=1;exit=smooth(0,.36,time-oldCopyStarted);opacity=1-exit;}
-        panel.style.color=i>=8?palette.ink:palette.white;panel.classList.toggle('journey-panel--light-ink',i<8);panel.style.opacity=String(Math.min(1,opacity*1.7));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
+        panel.style.color=i>=8&&i<=15?'#f0dfba':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.classList.toggle('journey-panel--light-ink',i<8);panel.style.opacity=String(Math.min(1,opacity*1.7));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
         panel.querySelectorAll('.journey-title-line > span').forEach((line,j)=>{const lift=clamp((entry-j*.12)/(1-j*.12),0,1);line.style.transform=`translateY(${(1-lift)*112}%)`;});
         const subtitle=panel.querySelector('p');subtitle.style.transform=`translateY(${(1-smooth(.25,1,entry))*24}px)`;subtitle.style.opacity=String(smooth(.25,1,entry)*(1-exit));
     });

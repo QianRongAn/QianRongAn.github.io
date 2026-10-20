@@ -107,3 +107,11 @@ html.dream-view .cube-page.active { padding: 145px max(7vw, 24px) 80px; box-sizi
     #education#education .content-item { margin-bottom: 24px !important; }
     #experience#experience .glass-well, #education#education .glass-well { padding: 24px; }
 }
+
+/* Education photographs keep the whole original composition. */
+#education .education-gallery{align-items:start;gap:28px}
+#education .education-item{overflow:hidden;padding:14px 14px 22px}
+#education .education-item .education-image{display:block;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;aspect-ratio:auto!important;border-radius:22px;margin:0!important;transform:none!important}
+#education .education-caption{padding:16px 10px 0}
+
+#education .education-item{display:block!important}

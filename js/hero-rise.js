@@ -34,7 +34,7 @@
         });
         title.setAttribute('aria-label', 'Nan Wang');
         title.replaceChildren(svg); title.classList.add('signature-ready');
-        if (focus && !reduced) focus.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: 900, fill: 'backwards', easing: 'ease-out' });
+        // Subtitle lines retain their independent masked curtain rise.
         title.dataset.animation = 'stroke-writing';
         reveal();
     }

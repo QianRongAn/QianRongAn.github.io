@@ -61,3 +61,13 @@ html.spine-study #container{pointer-events:none}
 #publications .pub-summary{font-family:Recoleta,Georgia,serif;font-size:16px;line-height:1.5;color:#302b40;margin-top:1.2em;}
 
 .journey-structure-note{position:absolute;left:7.5vw;bottom:15vh;max-width:38vw;color:#fff;font:13px/1.5 Georgia,serif;text-shadow:0 1px 8px #120848;pointer-events:none}.journey-structure-note[hidden]{display:none}
+
+#extracurricular .activities-gallery.activity-wave{display:block!important;grid-template-columns:none!important;width:calc(100% + 10vw);margin-left:-5vw;overflow:hidden;z-index:1!important}
+.activity-wave-stage{width:100%;height:clamp(360px,48vw,600px);cursor:grab;touch-action:pan-y}
+.activity-wave-stage:active{cursor:grabbing}
+.activity-wave-stage canvas{display:block;max-width:100%;outline-offset:-5px}
+.activity-wave-controls{display:flex;justify-content:center;align-items:center;gap:30px;padding:10px 0 24px;color:#423c52;font:16px Georgia,serif}
+.activity-wave-controls button{border:0;background:transparent;color:inherit;font:28px Georgia,serif;cursor:pointer;padding:10px 18px}
+.activity-wave-sources{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+
+#extracurricular .activity-wave :is(.activity-wave-stage,canvas,.activity-wave-controls,button){pointer-events:auto!important}
