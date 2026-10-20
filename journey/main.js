@@ -5,10 +5,6 @@ initActivityWave();
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
 const root = document.documentElement;
@@ -83,6 +79,7 @@ const foreground=new THREE.Group();camera.add(foreground);
 let orchidsReady=false;
 const orchidAtlas=new THREE.TextureLoader().load('image/orchid-silhouette-atlas.png',()=>{orchidsReady=true;});
 const silhouetteMat=new THREE.ShaderMaterial({uniforms:{map:{value:orchidAtlas},opacity:{value:.94}},transparent:true,depthWrite:false,side:THREE.DoubleSide,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'uniform sampler2D map;uniform float opacity;varying vec2 vUv;void main(){float a=texture2D(map,vUv).a;if(a<.03)discard;gl_FragColor=vec4(vec3(0.),a*opacity);}'});
+const orchidGlow=new THREE.Mesh(new THREE.PlaneGeometry(5,4),new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{opacity:{value:.16}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.48,.44,.57),a*opacity);}'}));orchidGlow.position.set(0,-.1,-3.2);foreground.add(orchidGlow);
 const orchidFrames=[];
 for(let i=0;i<2;i++){const geometry=new THREE.PlaneGeometry(2.1,2.8),uv=geometry.attributes.uv;for(let j=0;j<uv.count;j++)uv.setX(j,uv.getX(j)*.5+i*.5);const plant=new THREE.Mesh(geometry,silhouetteMat);plant.position.set(i?2:-2,-.15,-3);foreground.add(plant);orchidFrames.push(plant);}
 const world = new THREE.Group(); scene.add(world);
@@ -575,10 +572,15 @@ function moveGlassCards(){initGlassCards();const selected=window.PublicationStag
 }
 
 function publicationMode(){return skipped&&!!document.querySelector('#publications.active');}
-function paintGlass(time){moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);if(!spineStudy){glassCamera.position.y=THREE.MathUtils.lerp(glassCamera.position.y,window.PublicationStage?.spineOffset||0,.14);glassCamera.lookAt(0,glassCamera.position.y,0);}splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
+function paintGlass(time){if(butterflyRenderer)butterflyRenderer.domElement.style.display='none';moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);if(!spineStudy){glassCamera.position.y=THREE.MathUtils.lerp(glassCamera.position.y,window.PublicationStage?.spineOffset||0,.14);glassCamera.lookAt(0,glassCamera.position.y,0);}splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
 if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);}
-let composer,bokeh;
-if(renderer){composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));bokeh=new BokehPass(scene,camera,{focus:15,aperture:.00012,maxblur:.009});composer.addPass(bokeh);composer.addPass(new OutputPass());}
+// Only the butterfly is blurred; the orchids and black stage stay sharp.
+const butterflyScene=new THREE.Scene(),butterflyCamera=new THREE.PerspectiveCamera(47,1,.1,80);
+butterflyCamera.position.set(0,0,14);butterflyCamera.lookAt(0,0,0);
+[...scene.children].filter(item=>item.isLight).forEach(light=>butterflyScene.add(light.clone()));
+let butterflyRenderer;
+if(renderer){butterflyRenderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});butterflyRenderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));butterflyRenderer.outputColorSpace=THREE.SRGBColorSpace;butterflyRenderer.domElement.className='journey-butterfly-layer';host.appendChild(butterflyRenderer.domElement);}
+
 const gazePoint=new THREE.Vector3();
 const clamp=THREE.MathUtils.clamp;
 const whiteInk=new THREE.Color(palette.white),charcoalInk=new THREE.Color(palette.ink),textInk=new THREE.Color();
@@ -589,23 +591,30 @@ function measure(){
     sectionTop=section.getBoundingClientRect().top+scrollY;travel=Math.max(1,section.offsetHeight-innerHeight);
     const mobile=false;
     [[life,3.4,.15,.68],[molecule,-3.8,-.1,.62],[evidence,3.6,.1,.68],[publications,2.7,.3,.7]].forEach(([group,x,mx,scale])=>{group.position.x=mobile?mx:x;group.scale.setScalar(mobile?scale:1);});career.scale.x=mobile?.3:1;
-    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;orchidFrames[0].position.x=-edge+.18;orchidFrames[1].position.x=edge-.18;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);if(composer)composer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
+    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;orchidFrames[0].position.x=-edge+.18;orchidFrames[1].position.x=edge-.18;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);if(butterflyRenderer){butterflyRenderer.setSize(innerWidth,innerHeight);butterflyCamera.aspect=camera.aspect;butterflyCamera.updateProjectionMatrix();}host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
 }
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
     skyUniforms.clock.value=time;groundClock.value=time;
-    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=(t>.13&&t<.27)||(t>.48&&t<.59);crisprStudy.visible=t>.78&&t<.90;career.visible=t>.48&&t<.821;pavilion.visible=t>.47&&t<.78;publications.visible=t>.845;dna.visible=t>.055;membrane.visible=false;
-    if(!orchidsReady)focusStarted=time;
-    const focus=smooth(0,3.6,time-focusStarted);
-    host.style.setProperty('--scene-focus',`${42*(1-focus)}px`);if(bokeh){bokeh.uniforms.aperture.value=THREE.MathUtils.lerp(.0011,.000035,focus);bokeh.uniforms.focus.value=THREE.MathUtils.lerp(6,15,focus);}
-    host.style.setProperty('--scene-light',String(.72+focus*.28));
-    foreground.visible=t<.2;silhouetteMat.uniforms.opacity.value=focus*(1-smooth(.06,.19,t));
-    backgroundAt(t);const emergence=focus;scene.background.multiplyScalar(emergence);scene.fog.color.copy(scene.background);atmosphere.visible=emergence>.02&&t<.975;skyObjects.visible=focus>.002&&t<.975;cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);habitat.visible=focus>.002;dust.visible=focus>.002;life.position.x=3.4;life.position.y=(1-focus)*-.6+Math.sin(time*.55)*.09;life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
-    cameraCurve.getPoint(t,camera.position);gazeCurve.getPoint(t,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=(t>.13&&t<.27)||(t>.48&&t<.59);crisprStudy.visible=t>.78&&t<.90;career.visible=t>.48&&t<.821;pavilion.visible=t>.47&&t<.78;publications.visible=t>.845;dna.visible=t>.12;membrane.visible=false;
+    const flight=smooth(0,.065,t),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
+    host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');
+    foreground.visible=t<.20;silhouetteMat.uniforms.opacity.value=1-smooth(.14,.20,t);
+    const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;
+    orchidFrames.forEach((plant,i)=>{plant.position.x=THREE.MathUtils.lerp(i?-.75:.75,i?edge-.18:-edge+.18,opening);plant.scale.setScalar(.8+opening*.2);});
+    orchidGlow.material.uniforms.opacity.value=.24*(1-opening);
+    backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
+    atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
+    cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);
+    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
+    const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
+    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    if(t<.12){if(wings.parent!==butterflyScene)butterflyScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
+    else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
-    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
-    wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=time*2.5-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.22);pivot.rotation.x=Math.sin(phase-.25)*.025;});wings.position.y=Math.sin(time*.9)*.09;
+    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
+    wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=time*(t<.12?10:2.5)-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*(t<.12?.75:.22));pivot.rotation.x=Math.sin(phase-.25)*.025;});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
     evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
     crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U'?t>.48:t<.27;});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
@@ -617,7 +626,7 @@ function paint(t,time){
         let opacity=0,entry=0,exit=0;
         if(i===copyIndex){entry=smooth(0,.72,time-copyStarted);opacity=entry;}
         else if(i===oldCopy){entry=1;exit=smooth(0,.36,time-oldCopyStarted);opacity=1-exit;}
-        panel.style.color=i>=8&&i<=15?'#f0dfba':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.classList.toggle('journey-panel--light-ink',i<8);panel.style.opacity=String(Math.min(1,opacity*1.7));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
+        panel.style.color=i>=8&&i<=15?'#f0dfba':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.classList.toggle('journey-panel--light-ink',i<8);panel.style.opacity=String(Math.min(1,opacity*1.7)*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
         panel.querySelectorAll('.journey-title-line > span').forEach((line,j)=>{const lift=clamp((entry-j*.12)/(1-j*.12),0,1);line.style.transform=`translateY(${(1-lift)*112}%)`;});
         const subtitle=panel.querySelector('p');subtitle.style.transform=`translateY(${(1-smooth(.25,1,entry))*24}px)`;subtitle.style.opacity=String(smooth(.25,1,entry)*(1-exit));
     });
@@ -628,7 +637,9 @@ function paint(t,time){
     if(!skipped)intro.style.setProperty('opacity',String(smooth(.975,1,t)),'important');
     section.querySelector('.journey-scroll').style.opacity=String(1-smooth(.01,.06,t));
     host.dataset.progress=t.toFixed(3);host.dataset.background='#'+scene.background.getHexString();host.style.backgroundColor=host.dataset.background;host.dataset.camera='CatmullRomCurve3';
-    if(composer&&focus<.995)composer.render();else if(renderer)renderer.render(scene,camera);
+    if(renderer)renderer.render(scene,camera);
+    if(butterflyRenderer){const canvas=butterflyRenderer.domElement;canvas.style.display=t<.12?'block':'none';canvas.style.filter=`blur(${68*(1-flight)}px)`;canvas.style.opacity=String(smooth(0,.008,t));if(t<.12){wings.traverse(part=>{if(part.material&&part.material.opacity!==undefined)part.material.opacity=(part.material.userData.baseOpacity??1)*fade;});butterflyCamera.copy(camera);wings.position.y+=life.position.y;butterflyScene.environment=scene.environment;butterflyRenderer.render(butterflyScene,butterflyCamera);}}
+    host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
 }
 function isVisible(){return !document.hidden&&(!skipped||publicationMode())&&!motion.matches&&!root.classList.contains('hero-locked');}
 function tick(now){frame=0;if(!isVisible())return;if(now-previous<1000/30){frame=requestAnimationFrame(tick);return;}const dt=Math.min((now-previous)/1000||.016,.06);previous=now;elapsed+=dt;current+=(target-current)*(1-Math.exp(-dt*10));if(Math.abs(target-current)<.0001)current=target;if(publicationMode())paintGlass(elapsed);else paint(current,elapsed);if(publicationMode()||current<1||target<1||elapsed-oldCopyStarted<.8)frame=requestAnimationFrame(tick);}
@@ -639,7 +650,7 @@ function finishReduced(){skipped=true;root.classList.add('journey-reduced','jour
 window.SiteJourney={start,skip};
 new MutationObserver(resume).observe(document.getElementById('publications'),{attributes:true,attributeFilter:['class']});
 // Treat the initial reveal as its own stop; forward/backward share identical anchors.
-const beatStops=[0,...captions.map(c=>(c[0]+c[1])*.5)];
+const beatStops=[0,.065,.12,...captions.slice(1).map(c=>(c[0]+c[1])*.5)];
 function moveToBeat(beat){
  requestedBeat=beat;scrollTween?.kill();scrollMotion.y=scrollY;
  const destination=sectionTop+travel*beatStops[beat];
@@ -674,7 +685,7 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
-const previewScenes={orchids:1,sky:1,meadow:9,bilayer:7,signals:8,ncc:12,crispr:16,papers:22};
+const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,ncc:13,crispr:17,papers:23};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')showScene();else addEventListener('load',showScene,{once:true});}
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 

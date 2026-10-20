@@ -71,3 +71,5 @@ html.spine-study #container{pointer-events:none}
 .activity-wave-sources{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 
 #extracurricular .activity-wave :is(.activity-wave-stage,canvas,.activity-wave-controls,button){pointer-events:auto!important}
+
+#journeyCanvas canvas.journey-butterfly-layer{position:absolute;inset:0;pointer-events:none;filter:none;will-change:filter;transform:translateZ(0)}
