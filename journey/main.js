@@ -191,8 +191,8 @@ for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
 const lunarTexture=new THREE.TextureLoader().load('image/white-planet-surface.png');lunarTexture.colorSpace=THREE.SRGBColorSpace;
-const moonMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:lunarTexture},opacity:{value:0}},vertexShader:'varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vUv=uv;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(normalMatrix*normal);vView=normalize(-p.xyz);gl_Position=projectionMatrix*p;}',fragmentShader:'uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float sun=max(dot(n,normalize(vec3(-.65,.4,.7))),0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);vec3 color=stone*(.27+.73*sun)+vec3(.10,.12,.15)*rim;gl_FragColor=vec4(color,opacity);}'});
-const moon=new THREE.Mesh(new THREE.SphereGeometry(26,96,64),moonMaterial);moon.position.set(-2,17,-165);skyObjects.add(moon);
+const moonMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:lunarTexture},opacity:{value:0}},vertexShader:'varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vUv=uv;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(normalMatrix*normal);vView=normalize(-p.xyz);gl_Position=projectionMatrix*p;}',fragmentShader:'uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float sun=max(dot(n,normalize(vec3(-.65,.4,.7))),0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);vec3 color=stone*(.27+.73*sun)+vec3(.10,.12,.15)*rim;gl_FragColor=vec4(color,opacity);\n#include <colorspace_fragment>\n}'});
+const moon=new THREE.Mesh(new THREE.SphereGeometry(22,96,64),moonMaterial);moon.position.set(-2,12,-165);skyObjects.add(moon);
 
 // Meta-ACDC: side-chain contact graph with a peptide ribbon and one risk core.
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
@@ -278,6 +278,7 @@ for(const [code,position,size] of [['4c2u',[0,0,0],3.5],['6ugg',[0,0,-6],3.0],['
 }).catch(error=>{host.dataset.structureError=error.message;});
 
 // The research timeline is one continuous sand-gold curve through four stations.
+const crisprOrigin=crisprStudy.position.clone();
 const careerNodes = [new THREE.Vector3(3.4, -2, -63), new THREE.Vector3(-3.1, -.5, -72), new THREE.Vector3(3.5, .8, -82), new THREE.Vector3(-3.3, 1.4, -92)];
 const careerCurve = new THREE.CatmullRomCurve3(careerNodes);
 const career = new THREE.Group(); world.add(career);
@@ -445,9 +446,12 @@ new GLTFLoader().load('models/meadow-flowers.glb',gltf=>{
 },undefined,()=>{host.dataset.botanicalSpecies='unavailable';});
 
 const wisteria=new THREE.Group();wisteria.position.set(-1.5,meadowFloor(-1.5,-116),-116);habitat.add(wisteria);
+const wisteriaCrownMaterial=matte('#b9a6cf');wisteriaCrownMaterial.roughness=.68;wisteriaCrownMaterial.clearcoat=.12;wisteriaCrownMaterial.userData.wisteria=true;wisteriaCrownMaterial.userData.baseOpacity=1;
+const crownFlorets=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),wisteriaCrownMaterial,1600),crownDummy=new THREE.Object3D();
+for(let i=0;i<1600;i++){const a=i*2.39996,r=Math.sqrt((i+.5)/1600)*9;crownDummy.position.set(Math.cos(a)*r,6.75+.7*Math.cos(r*.5)+Math.sin(i*17.1)*.22,Math.sin(a)*r);crownDummy.rotation.set(i*.7,i,i*.3);crownDummy.scale.set(.19+(i%4)*.035,.13+(i%3)*.04,.24);crownDummy.updateMatrix();crownFlorets.setMatrixAt(i,crownDummy.matrix);crownFlorets.setColorAt(i,new THREE.Color(i%4?'#bfb0d7':'#ece1ed'));}crownFlorets.computeBoundingSphere();wisteria.add(crownFlorets);
 new GLTFLoader().load('models/wisteria-tree.glb',gltf=>{
  gltf.scene.updateMatrixWorld(true);const dummy=new THREE.Object3D();
- gltf.scene.traverse(part=>{if(!part.isMesh)return;const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld),raceme=part.name.includes('Raceme'),material=matte(raceme?'#c0abd6':'#736575',.015);material.roughness=raceme?.28:.92;material.clearcoat=raceme?.4:0;material.userData.baseOpacity=1;material.userData.wisteria=true;
+ gltf.scene.traverse(part=>{if(!part.isMesh)return;const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld),raceme=(part.name.includes('Raceme')||part.parent?.name.includes('Raceme')),material=matte(raceme?'#c0abd6':'#736575',.015);material.roughness=raceme?.28:.92;material.clearcoat=raceme?.4:0;material.userData.baseOpacity=1;material.userData.wisteria=true;
  if(!raceme){wisteria.add(new THREE.Mesh(geometry,material));return;}const batch=new THREE.InstancedMesh(geometry,material,480);
  for(let i=0;i<480;i++){const a=i*2.39996,r=Math.sqrt((i+.5)/480)*9.2;dummy.position.set(Math.cos(a)*r,6.8+.7*Math.cos(r*.5),Math.sin(a)*r);dummy.rotation.set(Math.sin(i)*.06,i*.13,Math.cos(i)*.06);dummy.scale.set(1,1+(i%9)*.12,1);dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color(i%5?'#d4c3e5':'#eff0ff'));}batch.computeBoundingSphere();wisteria.add(batch);
  });host.dataset.wisteria='480-cascades';
@@ -641,7 +645,7 @@ function paint(t,time){
     wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.y=time*.055;molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
     evidenceTurn.z+=(evidencePointer.x*Math.PI*1.1-evidenceTurn.z)*.17;evidenceTurn.y+=(evidencePointer.y*.45-evidenceTurn.y)*.17;evidenceRotor.rotation.set(0,evidenceTurn.y,evidenceTurn.z+Math.sin(time*.18)*.06);bilayer.rotation.y=.12+Math.sin(time*.11)*.10;
-    crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U';});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
+    crisprStudy.position.x=crisprOrigin.x-14*smooth(.835,.87,t);crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U';});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
     paperWind.x+=(paperBreeze.x-paperWind.x)*.07;paperWind.y+=(paperBreeze.y-paperWind.y)*.07;
     paperLeaves.forEach((leaf,i)=>{const pos=leaf.geometry.attributes.position,rest=leaf.userData.rest;for(let k=0;k<pos.count;k++){const x=rest[k*3],y=rest[k*3+1];pos.setZ(k,rest[k*3+2]+(paperWind.x*.11+paperWind.y*.05)*Math.sin(x*3+y*1.7+time*1.5+i)*Math.pow(Math.abs(x)/.725,1.4));}pos.needsUpdate=true;leaf.geometry.computeVertexNormals();const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
@@ -712,7 +716,7 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
-const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,ncc:13,crispr:17,papers:23};
+const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,ncc:13,crispr:17,papers:18};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')showScene();else addEventListener('load',showScene,{once:true});}
 initCrystalPages(wings);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
