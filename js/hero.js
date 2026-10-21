@@ -7,9 +7,9 @@
  function reveal(){
   if(!window.SiteJourney){setTimeout(reveal,80);return;}
   hero.hidden=false;hero.style.display='block';hero.inert=true;
-  root.classList.remove('hero-locked');root.classList.add('intro-text-active');
+  root.classList.remove('hero-locked','intro-boot');root.classList.add('intro-text-active');
   window.SiteJourney.start();document.dispatchEvent(new Event('journey:reveal'));
  }
  function begin(){if(window.ParticlePrelude)window.ParticlePrelude.play(reveal);else reveal();}
- if(document.readyState==='complete')begin();else addEventListener('load',begin,{once:true});
+ if(document.readyState==='loading')addEventListener('DOMContentLoaded',begin,{once:true});else begin();
 })();

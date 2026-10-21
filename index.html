@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>if(new URLSearchParams(location.search).get('enter')!=='about')document.documentElement.classList.add('intro-boot');</script>
+    <style>html.intro-boot{background:#000!important}html.intro-boot body{background:#000!important}html.intro-boot body>*{visibility:hidden!important}html.intro-boot body>.particle-prelude{visibility:visible!important}html:not(.intro-text-active) #heroScreen{display:none!important}</style>
     <link rel="preload" href="fonts/Producer_Regular.ttf" as="font" type="font/ttf" crossorigin>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -2995,7 +2997,7 @@
             document.documentElement.classList.add('skip-hero');
         }
     </script>
-    <div class="hero-screen" id="heroScreen">
+    <div class="hero-screen" id="heroScreen" hidden style="display:none">
         <div class="hero-fill hero-fill-l"></div>
         <div class="hero-fill hero-fill-r"></div>
         <div class="hero-fill hero-fill-t"></div>
@@ -3055,19 +3057,19 @@
     <script src="js/hero-water.js?v=20261020-water32" defer></script>
     <link rel="stylesheet" href="css/particle-prelude.css?v=late32">
     <script src="js/particle-prelude.js?v=4k35" defer></script>
-    <script src="js/hero.js?v=20261021-direct35" defer></script>
+    <script src="js/hero.js?v=20261021-direct38" defer></script>
     <script src="js/nav-spotlight.js?v=20261018-glow" defer></script>
     <link rel="stylesheet" href="css/dream-glass.css?v=20261020-craft32">
     <script src="js/dream-glass.js?v=20261019" defer></script>
     <link rel="stylesheet" href="css/footer-consistency.css?v=20261020-no-publication-footer">
     <script src="js/page-motion.js?v=20261019-craft17" defer></script>
-    <link rel="stylesheet" href="js/research-journey/style.css?v=20261021-garden37">
-    <script type="module" src="js/research-journey/main.js?v=20261021-garden37"></script>
+    <link rel="stylesheet" href="js/research-journey/style.css?v=20261021-garden38">
+    <script type="module" src="js/research-journey/main.js?v=20261021-garden38"></script>
 
 
-    <link rel="stylesheet" href="css/about-editorial.css?v=20261021-crystal37">
+    <link rel="stylesheet" href="css/about-editorial.css?v=20261021-crystal38">
     <link rel="stylesheet" href="css/research-refinement.css?v=20261020-garden31">
-    <script src="js/about-editorial.js?v=20261021-crystal37" defer></script>
+    <script src="js/about-editorial.js?v=20261021-crystal38" defer></script>
     <!-- 移动端提示 -->
     <div class="mobile-warning" id="mobileWarning">
         <div class="mobile-warning-content">
