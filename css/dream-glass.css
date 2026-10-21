@@ -115,3 +115,6 @@ html.dream-view .cube-page.active { padding: 145px max(7vw, 24px) 80px; box-sizi
 #education .education-caption{padding:16px 10px 0}
 
 #education .education-item{display:block!important}
+
+#education .glass-medallion>span{width:96px;height:100px;border-radius:0;background:transparent url('../image/education-pearl-lily.png') center/contain no-repeat;box-shadow:none}
+#education .content-item:nth-of-type(2) .glass-medallion>span{width:90px;height:110px;background-image:url('../image/education-pearl-petal.png')}

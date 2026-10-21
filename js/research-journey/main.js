@@ -29148,7 +29148,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const Y = (U ? ue : tt).getPoint(T), Q = U ? -0.05 : 0.25;
     return new A(P * (0.12 + (Y.x - 0.12) * _), Q + (Y.y - Q) * _, Math.sin(_ * Math.PI) * 0.32 + Math.pow(_, 3) * (0.18 + Math.sin(T * 7) * 0.1) + Math.pow(_, 9) * Math.sin(T * 48) * 0.025 + (U ? -0.12 : 0));
   }, Ce = function(_, T) {
-    return new En({ transparent: !0, depthWrite: !1, uniforms: { surface: { value: we }, opacity: { value: 0 }, horizon: { value: _ }, shadowFade: { value: T } }, vertexShader: ne, fragmentShader: re });
+    return new En({ transparent: !0, depthWrite: !1, uniforms: { surface: { value: we }, opacity: { value: 0 }, horizon: { value: _ }, shadowFade: { value: T }, lightDepth: { value: T ? 0.04 : 0.8 } }, vertexShader: ne, fragmentShader: re });
   }, Ct = function(_, T = !1) {
     var pe;
     const P = document.createElement("canvas");
@@ -29595,12 +29595,12 @@ void main(){
   }
   const we = new xh().load("image/white-planet-surface.png");
   we.colorSpace = Yt;
-  const ne = "varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vUv=uv;vWorld=(modelMatrix*vec4(position,1.)).xyz;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-vWorld);gl_Position=projectionMatrix*p;}", re = `uniform sampler2D surface;uniform float opacity;uniform float horizon;uniform float shadowFade;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float light=dot(n,normalize(vec3(.95,.12,.04)));float sun=max(light,0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);float phase=mix(1.,smoothstep(-.08,.40,light),shadowFade);float above=smoothstep(horizon-.5,horizon+.5,vWorld.y);vec3 color=stone*(.22+.78*sqrt(sun))+vec3(.07)*rim;gl_FragColor=vec4(color,opacity*phase*above);
+  const ne = "varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vUv=uv;vWorld=(modelMatrix*vec4(position,1.)).xyz;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-vWorld);gl_Position=projectionMatrix*p;}", re = `uniform sampler2D surface;uniform float opacity;uniform float horizon;uniform float shadowFade;uniform float lightDepth;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float light=dot(n,normalize(vec3(.95,.12,lightDepth)));float sun=max(light,0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);float phase=mix(1.,smoothstep(-.08,.40,light),shadowFade);float above=smoothstep(horizon-.5,horizon+.5,vWorld.y);vec3 color=stone*(.22+.78*sqrt(sun))+vec3(.07)*rim;gl_FragColor=vec4(color,opacity*phase*above);
 #include <colorspace_fragment>
 }`, Ye = Ce(-6, 1), De = new Xe(new on(44, 96, 64), Ye);
   De.position.set(-2, -6, -165), xt.add(De);
   const Le = Ce(-100, 0), $e = new Xe(new on(2.6, 64, 48), Le);
-  $e.position.set(-7, 10, -62), xt.add($e);
+  $e.position.set(-5, 7, -98), xt.add($e);
   const Ge = new dt();
   Ge.position.set(-3.8, 0.2, -21), S.add(Ge);
   const nt = [];
