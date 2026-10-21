@@ -7,6 +7,7 @@ function enter(page){
  if(context){context.revert();context=null;}legacy.forEach(function(a){a.cancel();});legacy=[];
  if(matchMedia('(prefers-reduced-motion: reduce)').matches||page.id==='skills'||page.id==='projects')return;
  var selector=page.id==='about'?'.about-masthead > *, .about-identity, .contact-info, .intro-meta, .about-research-copy, .about-evidence > div':page.id==='publications'?'.pub-directory-label, .pub-paper-index, .pub-controls, .pub-directory > small':'.dream-kicker, .section-title, .glass-card-head, .glass-well, .education-item';
+ if(page.id==='education')selector='.dream-kicker, .section-title, .glass-well, .education-item';
  var elements=Array.from(page.querySelectorAll(selector)).filter(function(el){var r=el.getBoundingClientRect();return r.height>0&&r.top<innerHeight+40&&r.bottom>0;});
  if(!elements.length)return;
  if(window.gsap){context=window.gsap.context(function(){window.gsap.fromTo(elements,{autoAlpha:0,y:22},{autoAlpha:1,y:0,duration:.72,stagger:.065,ease:'power3.out',overwrite:'auto',clearProps:'opacity,visibility,transform'});},page);}
