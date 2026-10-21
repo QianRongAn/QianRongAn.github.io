@@ -13,7 +13,7 @@
 
 /* A small tracking adjustment preserves the original glyph proportions. */
 #heroScreen .hero-focus{letter-spacing:.025em}
-#heroScreen .hero-focus-line{overflow:hidden;padding:.14em .1em;margin:-.14em -.1em}
-#heroScreen .hero-focus-line>.hero-line-rise{display:block;will-change:transform}
+#heroScreen .hero-focus-line{overflow:visible;padding:.14em .1em;margin:-.14em -.1em}
+#heroScreen .hero-focus-line>.hero-line-rise{display:block}
 
 #heroScreen .hero-focus .hero-letter{display:inline-block;white-space:pre}

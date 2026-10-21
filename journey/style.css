@@ -36,7 +36,7 @@ html.journey-reduced #journeyCanvas{background:#979eb7}
 
 .journey-title-line { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; }
 .journey-title-line > span { display: block; will-change: transform; }
-.journey-panel p { will-change: transform, opacity; }
+.journey-panel p { transform:none;opacity:1; }
 
 #journeyCanvas canvas { filter: blur(var(--scene-focus,0px)) brightness(var(--scene-light,1)); }
 html.journey-dark #journeyCanvas::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 62% 43%,transparent 30%,#03030a65 100%); }
@@ -74,7 +74,7 @@ html.spine-study #container{pointer-events:none}
 
 #journeyCanvas canvas.journey-butterfly-layer{position:absolute;inset:0;pointer-events:none;filter:none;will-change:filter;transform:translateZ(0)}
 
-#journeyCanvas .journey-orchid-screen{position:absolute;z-index:2;transform:translate(-50%,-50%);pointer-events:none;background:#000;mask-image:url(../../image/orchid-silhouette-atlas.png);mask-size:200% 100%;mask-repeat:no-repeat;-webkit-mask-image:url(../../image/orchid-silhouette-atlas.png);-webkit-mask-size:200% 100%;-webkit-mask-repeat:no-repeat}
+#journeyCanvas .journey-orchid-screen{position:absolute;z-index:2;transform:translate3d(0,0,0);will-change:transform,opacity;contain:layout paint;pointer-events:none;background:#000;mask-image:url(../../image/orchid-silhouette-atlas.png);mask-size:200% 100%;mask-repeat:no-repeat;-webkit-mask-image:url(../../image/orchid-silhouette-atlas.png);-webkit-mask-size:200% 100%;-webkit-mask-repeat:no-repeat}
 
 html:not(.skip-hero) #heroScreen{position:fixed!important;inset:0!important;z-index:1000!important;background:none!important;pointer-events:none!important;animation:none!important;transition:none!important}
 html:not(.skip-hero) #heroScreen .hero-art,html:not(.skip-hero) #heroScreen canvas,html:not(.skip-hero) #heroScreen .hero-fill,html:not(.skip-hero) #heroScreen .hero-bottom,html:not(.skip-hero) #heroScreen .hero-social,html:not(.skip-hero) #heroScreen .hero-left,html:not(.skip-hero) #heroScreen .hero-enter,html:not(.skip-hero) #heroScreen .hero-scroll{display:none!important}

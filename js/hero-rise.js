@@ -34,7 +34,7 @@
         });
         title.setAttribute('aria-label', 'Nan Wang');
         title.replaceChildren(svg); title.classList.add('signature-ready');
-        // Subtitle lines retain their independent masked curtain rise.
+        // Subtitle lines are visible immediately with the opening scene.
         title.dataset.animation = 'stroke-writing';
         reveal();
     }
