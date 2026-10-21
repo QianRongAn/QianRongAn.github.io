@@ -26,3 +26,9 @@ body:has(.is-open) main{margin-top:24px;padding-bottom:35px}body:has(.is-open) .
 .embedded main,.embedded body:has(.is-open) main{margin-top:132px;padding-bottom:36px}
 .embedded .intro-line{margin-bottom:22px}
 @media(max-width:850px){.embedded main,.embedded body:has(.is-open) main{margin-top:110px}}
+
+/* Added research context follows the existing two-column project layout. */
+.project-context{font-size:15px;line-height:1.65;color:var(--ink);margin:0 0 22px;max-width:60ch}
+.research-note{margin-top:24px;color:#615347;max-width:60ch}
+.research-note h4{font-size:14px;line-height:1.5;font-weight:500;color:var(--ink);margin:0 0 9px}
+.research-note p{font-size:13px;line-height:1.75;margin:0 0 12px}

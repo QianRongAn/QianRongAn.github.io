@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nan Wang — Selected Projects / Concept Preview</title><link rel="preload" href="assets/inter.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="style.css?v=20261019-live"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nan Wang — Selected Research Projects</title><link rel="preload" href="assets/inter.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="style.css?v=20261021-content39"></head>
 <body>
 <script>if(new URLSearchParams(location.search).has('embedded'))document.documentElement.classList.add('embedded');</script>
   <div class="dna-background is-on" id="pageCurtain" aria-hidden="true"><canvas id="curtain-dna"></canvas></div>
@@ -14,11 +14,15 @@
           <div class="copy-column">
             <h3 class="project-subtitle">Equivariant Graph Neural Networks for TCR Off-Target Risk Prediction</h3>
             <p class="categories">Biomedical AI | Computational Immunology | Graph Deep Learning</p>
+            <p class="project-context">Can molecular contacts help distinguish peptides that look structurally similar, but carry different risks of unintended TCR recognition?</p>
             <div class="full-copy" tabindex="0" role="region" aria-label="Meta-ACDC full project introduction">
+              <p><strong>My contribution</strong>Independently led the project end to end, connecting structural feature engineering, equivariant graph modelling, ablation experiments, domain adaptation, and active-learning screening.</p>
               <p><strong>Goal</strong>address potential immunotherapy safety risks arising from T-cell receptor (TCR) cross-reactivity by building a molecular-structure-based compatibility scoring model that identifies off-target peptides at risk of unintended TCR recognition, and explore active-learning candidate screening strategies.</p>
               <p><strong>Feature engineering and ablation</strong>to separate structurally similar off-target peptides that traditional backbone-geometry features cannot distinguish, designed backbone versus side-chain contact ablation experiments; backbone coordinates alone yielded AUROC 0.500 on a grafted-decoy discrimination task, rising to 0.933 after adding side-chain contact features, confirming the decisive contribution of side-chain chemistry.</p>
               <p><strong>Generalization and domain adaptation</strong>to bridge the distribution gap between crystal-structure training data and predicted structures in application, introduced predicted-complex data for domain adaptation, raising cross-instance ranking concordance from 0.447 to 0.802.</p>
               <p><strong>Active learning and candidate screening</strong>designed candidate sampling strategies based on expected information gain (EIG) and BALD, achieving approximately 2x the positive-recall gain of random-sampling and equivalent baselines at a 6% sampling budget in a simulated screen of about 4.65 million candidate peptides.</p>
+              <p><strong>How the workflow fits together</strong>The molecular structure provides the starting point. Backbone geometry and side-chain contacts form the structural representation used by the EGNN to score compatibility. Ablation experiments test which information drives discrimination; domain-adaptation experiments then examine transfer to predicted complexes. Active learning uses those scores and model uncertainty to prioritize the next candidates for screening.</p>
+              <p><strong>Reading the results</strong>The AUROC comparison concerns a specific grafted-decoy task, while ranking concordance measures a separate transfer experiment. The candidate-screening result comes from simulation. Together, these experiments examine representation, transfer, and sampling efficiency; they do not establish clinical safety or experimentally validated off-target recognition.</p>
               <p><strong>Tech stack</strong>Python, PyTorch, EGNN, NumPy, SciPy, scikit-learn, structural bioinformatics.</p>
             </div>
             <div class="stack"><strong>STRUCTURE → GRAPH → RECOGNITION</strong><br>Structural bioinformatics meets geometric deep learning.</div>
@@ -29,6 +33,7 @@
             <p class="image-caption">A structural view of TCR–peptide compatibility. Concept illustration.</p>
             <div class="metrics"><div class="metric"><span class="metric-value">0.933</span><span class="metric-label">Grafted-decoy AUROC<br>with side-chain contacts</span></div><div class="metric"><span class="metric-value">0.802</span><span class="metric-label">Cross-instance<br>ranking concordance</span></div><div class="metric"><span class="metric-value">≈2×</span><span class="metric-label">Positive-recall gain<br>at a 6% sampling budget</span></div></div>
             <p class="metric-note">Reported experiments · Candidate-screening result is simulation-based.</p>
+            <div class="research-note"><h4>What the experiments show</h4><p>Side-chain contacts improved grafted-decoy discrimination from 0.500 to 0.933 AUROC. Introducing predicted complexes for domain adaptation improved ranking concordance from 0.447 to 0.802.</p><p>The screening study then asks a different question: how much more efficiently can a limited sampling budget recover positive candidates?</p></div>
           </div>
         </div></div></div>
       </article>
@@ -38,12 +43,16 @@
           <div class="copy-column">
             <h3 class="project-subtitle">Evidence-Based Medicine Literature QA and Retraction-Risk Modelling</h3>
             <p class="categories">Medical NLP | Evidence Retrieval | Machine Learning</p>
+            <p class="project-context">How can a medical answer show its sources, expose conflicting evidence, and make the limits of a risk prediction inspectable?</p>
             <div class="full-copy" tabindex="0" role="region" aria-label="MedLit Evidence full project introduction">
+              <p><strong>My contribution</strong>Independently developed the literature-analysis tool and retraction-risk modelling workflow, spanning retrieval, evidence structuring, source traceability, model interpretation, and data-leakage auditing.</p>
               <p><strong>Goal</strong>for clinical researchers and medical editors, build an evidence-analysis tool spanning medical-question retrieval, evidence grading, conclusion-conflict identification, and source traceability, together with a retraction-risk prediction model based on paper metadata.</p>
               <p><strong>Evidence retrieval and analysis</strong>built a PubMed literature retrieval and question-answering pipeline on FastAPI using BM25 retrieval, PICO (population, intervention, comparator, outcome) question structuring, study-design identification, and five-level evidence grading; evidence disagreement is surfaced explicitly through support, oppose, and neutral conclusion classification with conflict detection, and conclusions in answers are traceable to specific PMIDs.</p>
               <p><strong>Retraction-risk prediction</strong>built a retraction-risk dataset from 27,978 papers, modelled with LightGBM and interpreted with SHAP feature-contribution analysis; in the cross-validation experiments reported in the repository, LightGBM reached AUROC 0.856 and PR-AUC 0.812.</p>
               <p><strong>Data-quality and leakage audit</strong>identified and handled publication-type label leakage and implicit leakage from cleared or replaced post-retraction abstracts, and assessed generalization through temporal extrapolation validation split by publication year; SHAP analysis revealed pronounced temporal censoring bias in publication year, avoiding mistaking superficial predictive performance for a genuine risk signal.</p>
               <p><strong>Engineering and validation</strong>implemented online PubMed retrieval, offline corpus fallback, TTL caching, and flagging of retracted, questioned, or corrected literature; the project includes 30 unit tests, with repository-reported cache-hit latency of about 6 ms.</p>
+              <p><strong>From question to evidence</strong>PICO structuring separates the population, intervention, comparator, and outcome before evidence is reviewed. Retrieved studies are organized by design and evidence level, and their conclusions are classified as supporting, opposing, or neutral. PMID links let readers return to the underlying paper and inspect disagreements rather than relying on a single unqualified answer.</p>
+              <p><strong>Interpreting retraction risk</strong>The metadata model is a separate analytical component from the question-answering pipeline. SHAP helps inspect which features contribute to its predictions. Leakage checks and publication-year splits address whether performance reflects information available at prediction time, rather than signals introduced after retraction. The reported cross-validation scores should be read alongside those audits, not as proof of prospective reliability.</p>
               <p><strong>Tech stack</strong>Python, FastAPI, BM25, PICO, LightGBM, SHAP, PubMed API.</p>
             </div>
             <div class="stack"><strong>QUESTION → EVIDENCE → TRACEABILITY</strong><br>Connecting medical questions with inspectable evidence.</div>
@@ -54,6 +63,7 @@
             <p class="image-caption">Existing project interface · Click to inspect the full image.</p>
             <div class="metrics"><div class="metric"><span class="metric-value">27,978</span><span class="metric-label">Papers in the<br>retraction-risk dataset</span></div><div class="metric"><span class="metric-value">0.856</span><span class="metric-label">LightGBM AUROC<br>in cross-validation</span></div><div class="metric"><span class="metric-value">≈6 ms</span><span class="metric-label">Repository-reported<br>cache-hit latency</span></div></div>
             <p class="metric-note">Repository-reported metrics · PR-AUC 0.812 · 30 unit tests.</p>
+            <div class="research-note"><h4>Evidence that can be checked</h4><p>The retrieval workflow retains PMID traceability and makes conflicting conclusions visible. Retraction, concern, and correction flags add context when reviewing the retrieved literature.</p><p>For the separate risk model, the leakage audit is part of the result: publication-type labels, altered abstracts, and temporal censoring can otherwise make predictive performance misleading.</p></div>
           </div>
         </div></div></div>
       </article>
