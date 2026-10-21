@@ -11,3 +11,5 @@
 .particle-prelude-track{position:absolute;bottom:6vh;left:7vw;width:32vw;height:1px;background:#a8a9bd44;opacity:var(--prelude-fade)}
 .particle-prelude-track span{display:block;width:100%;height:100%;background:#d0ba98;transform:scaleX(0);transform-origin:left}
 .particle-prelude.is-bursting video{opacity:0}
+
+.particle-prelude.is-loading{background:#000}.particle-prelude.is-loading video,.particle-prelude.is-loading .particle-prelude-label,.particle-prelude.is-loading .particle-prelude-caption{visibility:hidden}.particle-prelude.is-loading .particle-prelude-track span{transform:scaleX(.15)!important;animation:prelude-loading 1.2s ease-in-out infinite alternate}@keyframes prelude-loading{to{transform:scaleX(.85)}}

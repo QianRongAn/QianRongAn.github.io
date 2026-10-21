@@ -7,7 +7,8 @@
  overlay.innerHTML='<div class="particle-prelude-label">NAN WANG <span>COMPUTATIONAL BIOLOGY · BIOMEDICAL AI</span></div><video muted playsinline preload="auto" poster="media/particle-butterfly-poster.jpg?v=final34"><source src="media/particle-butterfly-final-4k.mp4?v=4k35" type="video/mp4"></video><div class="particle-prelude-caption">Life, in <i>patterns.</i></div><div class="particle-prelude-track"><span></span></div><button type="button">Skip intro ↗</button>';
  document.body.appendChild(overlay);
  var video=overlay.querySelector('video'),track=overlay.querySelector('.particle-prelude-track span');
- var failedAt=0;
+ var failedAt=0,preparation=null;
+ function prepare(){if(preparation)return preparation;preparation=fetch(video.querySelector('source').src,{cache:'force-cache'}).then(function(response){if(!response.ok)throw new Error('Video preload failed');return response.blob();}).then(function(blob){return new Promise(function(resolve,reject){video.addEventListener('loadeddata',resolve,{once:true});video.addEventListener('error',reject,{once:true});video.src=URL.createObjectURL(blob);video.load();});}).catch(function(error){preparation=null;throw error;});return preparation;}
  var active=false,burstAt=0,frame=0,continuation=null,didContinue=false,timer;
  function continueOnce(){if(didContinue)return;didContinue=true;continuation?.();}
  function cleanup(){cancelAnimationFrame(frame);clearTimeout(timer);video.pause();overlay.hidden=true;overlay.classList.remove('is-bursting');active=false;document.documentElement.classList.remove('particle-prelude-active');removeEventListener('wheel',guard,true);removeEventListener('keydown',keys,true);}
@@ -27,6 +28,6 @@
  window.ParticlePrelude={play:function(done){
   if(active)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches){done();return;}
   continuation=done;didContinue=false;active=true;burstAt=0;failedAt=0;overlay.hidden=false;overlay.style.opacity='1';overlay.style.setProperty('--prelude-fade','1');document.documentElement.classList.add('particle-prelude-active');
-  video.currentTime=0;video.play().catch(function(){failedAt=performance.now();});addEventListener('wheel',guard,{capture:true,passive:false});addEventListener('keydown',keys,true);frame=requestAnimationFrame(render);timer=setTimeout(function(){if(!burstAt)burst();},20000);
+  overlay.classList.add('is-loading');overlay.setAttribute('aria-busy','true');prepare().then(function(){if(!active)return;overlay.classList.remove('is-loading');overlay.setAttribute('aria-busy','false');video.currentTime=0;return video.play();}).catch(function(){overlay.classList.remove('is-loading');failedAt=performance.now();});addEventListener('wheel',guard,{capture:true,passive:false});addEventListener('keydown',keys,true);frame=requestAnimationFrame(render);
  }};
 })();

@@ -5,7 +5,7 @@ html.about-crystal #container{position:fixed!important;inset:0;width:100%;max-wi
 html.about-crystal #content-wrapper{margin:0!important;min-height:0!important}
 html.about-crystal #about{position:fixed!important;inset:0;padding:0!important;margin:0!important;overflow:hidden!important;z-index:2}
 html.about-crystal #about>section{position:absolute!important;inset:0;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:none!important;backdrop-filter:none!important}
-.about-crystal-card{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:min(760px,62vw);box-sizing:border-box;padding:32px 42px;border:1px solid #ffffffbb;border-radius:24px;background:#f4fcff35;backdrop-filter:blur(17px) saturate(1.08);box-shadow:inset 0 1px 1px #fff9,0 18px 65px #73a6bc12;animation:none}
+.about-crystal-card{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);width:min(760px,62vw);box-sizing:border-box;padding:32px 42px;border:1px solid #ffffffbb;border-radius:24px;background:#f4fcff35;backdrop-filter:blur(17px) saturate(1.08);box-shadow:inset 0 1px 1px #fff9,0 18px 65px #73a6bc12;animation:none}
 #about .about-crystal-card .about-paragraph{font:300 clamp(15px,1.2vw,19px)/1.6 'Recoleta',Georgia,serif!important;letter-spacing:.005em;color:#172731!important;text-align:left!important;margin:0 0 14px!important}
 #about .about-crystal-card .about-paragraph:last-child{margin-bottom:0!important}#about .about-crystal-card strong{font:inherit!important}
 .about-crystal-label{position:absolute;bottom:5vh;left:5vw;font:300 clamp(30px,3.4vw,49px)/1.1 'Recoleta',Georgia,serif;color:#0b151b;letter-spacing:-.035em}
@@ -20,3 +20,5 @@ html.about-crystal #top-header .nav-link{color:#172731!important}
 html.about-crystal #about#about .about-crystal-card .about-paragraph,html.about-crystal #about#about .about-crystal-card .about-paragraph *{font-family:'Recoleta',Georgia,serif!important;font-weight:300!important;text-indent:0!important}
 html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-family:'Recoleta',Georgia,serif!important}
 html.about-crystal #about .about-crystal-contacts i{font-family:'Font Awesome 5 Free'!important;font-weight:900!important}html.about-crystal #about .about-crystal-contacts .fab{font-family:'Font Awesome 5 Brands'!important}
+
+html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-weight:400!important}
