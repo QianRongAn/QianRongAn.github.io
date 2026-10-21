@@ -647,7 +647,7 @@ function paint(t,time){
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.wisteria?smooth(.60,.73,t):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
-    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar(1-smooth(.10,.24,t));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
+    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     const dnaDepth=12,dnaHalfHeight=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*dnaDepth;
     dna.position.set(dnaHalfHeight*camera.aspect*.56,-.15,-dnaDepth);dna.scale.setScalar(dnaHalfHeight*.14);dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;

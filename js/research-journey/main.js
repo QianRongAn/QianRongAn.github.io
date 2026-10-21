@@ -263,7 +263,7 @@ function Ft(s, e) {
       throw new Error("THREE.MathUtils: Invalid component type.");
   }
 }
-const Ht = {
+const kt = {
   DEG2RAD: pr,
   RAD2DEG: Mr,
   /**
@@ -3618,7 +3618,7 @@ const eu = class eu {
   }
 };
 eu.prototype.isVector4 = !0;
-let Vt = eu;
+let Ht = eu;
 class Um extends fs {
   /**
    * Render target options.
@@ -3667,7 +3667,7 @@ class Um extends fs {
       depth: 1,
       multiview: !1,
       useArrayDepthTexture: !1
-    }, n), this.isRenderTarget = !0, this.width = e, this.height = t, this.depth = n.depth, this.scissor = new Vt(0, 0, e, t), this.scissorTest = !1, this.viewport = new Vt(0, 0, e, t), this.textures = [];
+    }, n), this.isRenderTarget = !0, this.width = e, this.height = t, this.depth = n.depth, this.scissor = new Ht(0, 0, e, t), this.scissorTest = !1, this.viewport = new Ht(0, 0, e, t), this.textures = [];
     const i = { width: e, height: t, depth: n.depth }, r = new hn(i), a = n.count;
     for (let o = 0; o < a; o++)
       this.textures[o] = r.clone(), this.textures[o].isRenderTargetTexture = !0, this.textures[o].renderTarget = this;
@@ -6320,7 +6320,7 @@ class us extends Tt {
     return this.fog !== null && (t.object.fog = this.fog.toJSON()), this.backgroundBlurriness > 0 && (t.object.backgroundBlurriness = this.backgroundBlurriness), this.backgroundIntensity !== 1 && (t.object.backgroundIntensity = this.backgroundIntensity), t.object.backgroundRotation = this.backgroundRotation.toArray(), this.environmentIntensity !== 1 && (t.object.environmentIntensity = this.environmentIntensity), t.object.environmentRotation = this.environmentRotation.toArray(), t;
   }
 }
-const ei = /* @__PURE__ */ new A(), Di = /* @__PURE__ */ new A(), ql = /* @__PURE__ */ new A(), Ni = /* @__PURE__ */ new A(), $s = /* @__PURE__ */ new A(), js = /* @__PURE__ */ new A(), ld = /* @__PURE__ */ new A(), Yl = /* @__PURE__ */ new A(), Kl = /* @__PURE__ */ new A(), Zl = /* @__PURE__ */ new A(), Jl = /* @__PURE__ */ new Vt(), $l = /* @__PURE__ */ new Vt(), jl = /* @__PURE__ */ new Vt();
+const ei = /* @__PURE__ */ new A(), Di = /* @__PURE__ */ new A(), ql = /* @__PURE__ */ new A(), Ni = /* @__PURE__ */ new A(), $s = /* @__PURE__ */ new A(), js = /* @__PURE__ */ new A(), ld = /* @__PURE__ */ new A(), Yl = /* @__PURE__ */ new A(), Kl = /* @__PURE__ */ new A(), Zl = /* @__PURE__ */ new A(), Jl = /* @__PURE__ */ new Ht(), $l = /* @__PURE__ */ new Ht(), jl = /* @__PURE__ */ new Ht();
 class Xn {
   /**
    * Constructs a new triangle.
@@ -9127,7 +9127,7 @@ function go(s, e, t, n, i, r, a, o, l, c) {
   }
   return h;
 }
-const ia = /* @__PURE__ */ new Vt(), dd = /* @__PURE__ */ new Vt(), fd = /* @__PURE__ */ new Vt(), Jm = /* @__PURE__ */ new Vt(), pd = /* @__PURE__ */ new mt(), _o = /* @__PURE__ */ new A(), ac = /* @__PURE__ */ new Si(), md = /* @__PURE__ */ new mt(), oc = /* @__PURE__ */ new wr();
+const ia = /* @__PURE__ */ new Ht(), dd = /* @__PURE__ */ new Ht(), fd = /* @__PURE__ */ new Ht(), Jm = /* @__PURE__ */ new Ht(), pd = /* @__PURE__ */ new mt(), _o = /* @__PURE__ */ new A(), ac = /* @__PURE__ */ new Si(), md = /* @__PURE__ */ new mt(), oc = /* @__PURE__ */ new wr();
 class $m extends qe {
   /**
    * Constructs a new skinned mesh.
@@ -9195,7 +9195,7 @@ class $m extends qe {
    * in the skinned mesh's geometry.
    */
   normalizeSkinWeights() {
-    const e = new Vt(), t = this.geometry.attributes.skinWeight;
+    const e = new Ht(), t = this.geometry.attributes.skinWeight;
     for (let n = 0, i = t.count; n < i; n++) {
       e.fromBufferAttribute(t, n);
       const r = 1 / e.manhattanLength();
@@ -12858,7 +12858,7 @@ class En extends Zn {
             this.uniforms[n].value = new A().fromArray(i.value);
             break;
           case "v4":
-            this.uniforms[n].value = new Vt().fromArray(i.value);
+            this.uniforms[n].value = new Ht().fromArray(i.value);
             break;
           case "m3":
             this.uniforms[n].value = new _t().fromArray(i.value);
@@ -14506,7 +14506,7 @@ class qh {
    */
   constructor(e) {
     this.camera = e, this.intensity = 1, this.bias = 0, this.biasNode = null, this.normalBias = 0, this.radius = 1, this.blurSamples = 8, this.mapSize = new le(512, 512), this.mapType = Bn, this.map = null, this.mapPass = null, this.matrix = new mt(), this.autoUpdate = !0, this.needsUpdate = !1, this._frustum = new zh(), this._frameExtents = new le(1, 1), this._viewportCount = 1, this._viewports = [
-      new Vt(0, 0, 1, 1)
+      new Ht(0, 0, 1, 1)
     ];
   }
   /**
@@ -21701,7 +21701,7 @@ function Sv(s) {
   };
 }
 function bv(s, e, t) {
-  const n = /* @__PURE__ */ new WeakMap(), i = new Vt();
+  const n = /* @__PURE__ */ new WeakMap(), i = new Ht();
   function r(a, o, l) {
     const c = a.morphTargetInfluences, h = o.morphAttributes.position || o.morphAttributes.normal || o.morphAttributes.color, u = h !== void 0 ? h.length : 0;
     let d = n.get(o);
@@ -23598,7 +23598,7 @@ void main() {
 ], df = /* @__PURE__ */ new mt(), la = /* @__PURE__ */ new A(), yc = /* @__PURE__ */ new A();
 function oy(s, e, t) {
   let n = new zh();
-  const i = new le(), r = new le(), a = new Vt(), o = new Xg(), l = new qg(), c = {}, h = t.maxTextureSize, u = { [Mi]: vn, [vn]: Mi, [$t]: $t }, d = new En({
+  const i = new le(), r = new le(), a = new Ht(), o = new Xg(), l = new qg(), c = {}, h = t.maxTextureSize, u = { [Mi]: vn, [vn]: Mi, [$t]: $t }, d = new En({
     defines: {
       VSM_SAMPLES: 8
     },
@@ -23743,9 +23743,9 @@ function oy(s, e, t) {
 function ly(s, e) {
   function t() {
     let z = !1;
-    const Re = new Vt();
+    const Re = new Ht();
     let se = null;
-    const we = new Vt(0, 0, 0, 0);
+    const we = new Ht(0, 0, 0, 0);
     return {
       setMask: function(Ue) {
         se !== Ue && !z && (s.colorMask(Ue, Ue, Ue, Ue), se = Ue);
@@ -23858,7 +23858,7 @@ function ly(s, e) {
   const ae = s.getParameter(s.VERSION);
   ae.indexOf("WebGL") !== -1 ? ($ = parseFloat(/^WebGL (\d)/.exec(ae)[1]), k = $ >= 1) : ae.indexOf("OpenGL ES") !== -1 && ($ = parseFloat(/^OpenGL ES (\d)/.exec(ae)[1]), k = $ >= 2);
   let pe = null, me = {};
-  const xe = s.getParameter(s.SCISSOR_BOX), st = s.getParameter(s.VIEWPORT), he = new Vt().fromArray(xe), ht = new Vt().fromArray(st);
+  const xe = s.getParameter(s.SCISSOR_BOX), st = s.getParameter(s.VIEWPORT), he = new Ht().fromArray(xe), ht = new Ht().fromArray(st);
   function te(z, Re, se, we) {
     const Ue = new Uint8Array(4), ue = s.createTexture();
     s.bindTexture(z, ue), s.texParameteri(z, s.TEXTURE_MIN_FILTER, s.NEAREST), s.texParameteri(z, s.TEXTURE_MAG_FILTER, s.NEAREST);
@@ -24960,9 +24960,9 @@ class py extends fs {
     const C = [], R = [], L = new le();
     let x = null;
     const S = new jt();
-    S.viewport = new Vt();
+    S.viewport = new Ht();
     const D = new jt();
-    D.viewport = new Vt();
+    D.viewport = new Ht();
     const N = [S, D], O = new f0();
     let G = null, ee = null;
     this.cameraAutoUpdate = !0, this.enabled = !1, this.isPresenting = !1, this.getController = function(te) {
@@ -25150,7 +25150,7 @@ class py extends fs {
             ), e.setRenderTarget(v));
           }
           let _e = N[nt];
-          _e === void 0 && (_e = new jt(), _e.layers.enable(nt), _e.viewport = new Vt(), N[nt] = _e), _e.matrix.fromArray(ce.transform.matrix), _e.matrix.decompose(_e.position, _e.quaternion, _e.scale), _e.projectionMatrix.fromArray(ce.projectionMatrix), _e.projectionMatrixInverse.copy(_e.projectionMatrix).invert(), _e.viewport.set(fe.x, fe.y, fe.width, fe.height), nt === 0 && (O.matrix.copy(_e.matrix), O.matrix.decompose(O.position, O.quaternion, O.scale)), Me === !0 && O.cameras.push(_e);
+          _e === void 0 && (_e = new jt(), _e.layers.enable(nt), _e.viewport = new Ht(), N[nt] = _e), _e.matrix.fromArray(ce.transform.matrix), _e.matrix.decompose(_e.position, _e.quaternion, _e.scale), _e.projectionMatrix.fromArray(ce.projectionMatrix), _e.projectionMatrixInverse.copy(_e.projectionMatrix).invert(), _e.viewport.set(fe.x, fe.y, fe.width, fe.height), nt === 0 && (O.matrix.copy(_e.matrix), O.matrix.decompose(O.position, O.quaternion, O.scale)), Me === !0 && O.cameras.push(_e);
         }
         const ze = i.enabledFeatures;
         if (ze && ze.includes("depth-sensing") && i.depthUsage == "gpu-optimized" && M) {
@@ -25933,15 +25933,15 @@ class ul {
     let N = !1, O = null, G = null, ee = null, F = null;
     this._outputColorSpace = Zt;
     let q = 0, k = 0, $ = null, ae = -1, pe = null;
-    const me = new Vt(), xe = new Vt();
+    const me = new Ht(), xe = new Ht();
     let st = null;
     const he = new ye(0);
     let ht = 0, te = t.width, J = t.height, ie = 1, Me = null, ze = null;
-    const ve = new Vt(0, 0, te, J), Pe = new Vt(0, 0, te, J);
+    const ve = new Ht(0, 0, te, J), Pe = new Ht(0, 0, te, J);
     let nt = !1;
     const ce = new zh();
     let fe = !1, _e = !1;
-    const Te = new mt(), Ie = new A(), tt = new Vt(), Ye = { background: null, fog: null, environment: null, overrideMaterial: null, isScene: !0 };
+    const Te = new mt(), Ie = new A(), tt = new Ht(), Ye = { background: null, fog: null, environment: null, overrideMaterial: null, isScene: !0 };
     let rt = !1;
     function at() {
       return $ === null ? ie : 1;
@@ -26557,7 +26557,7 @@ class ul {
     t.drawingBufferColorSpace = At._getDrawingBufferColorSpace(e), t.unpackColorSpace = At._getUnpackColorSpace();
   }
 }
-const ff = { type: "change" }, Zh = { type: "start" }, fp = { type: "end" }, No = new wr(), pf = new ls(), My = Math.cos(70 * Ht.DEG2RAD), on = new A(), Ln = 2 * Math.PI, kt = {
+const ff = { type: "change" }, Zh = { type: "start" }, fp = { type: "end" }, No = new wr(), pf = new ls(), My = Math.cos(70 * kt.DEG2RAD), on = new A(), Ln = 2 * Math.PI, Vt = {
   NONE: -1,
   ROTATE: 0,
   DOLLY: 1,
@@ -26575,7 +26575,7 @@ class pp extends E0 {
    * @param {?HTMLElement} domElement - The HTML element used for event listeners.
    */
   constructor(e, t = null) {
-    super(e, t), this.state = kt.NONE, this.target = new A(), this.cursor = new A(), this.minDistance = 0, this.maxDistance = 1 / 0, this.minZoom = 0, this.maxZoom = 1 / 0, this.minTargetRadius = 0, this.maxTargetRadius = 1 / 0, this.minPolarAngle = 0, this.maxPolarAngle = Math.PI, this.minAzimuthAngle = -1 / 0, this.maxAzimuthAngle = 1 / 0, this.enableDamping = !1, this.dampingFactor = 0.05, this.enableZoom = !0, this.zoomSpeed = 1, this.enableRotate = !0, this.rotateSpeed = 1, this.keyRotateSpeed = 1, this.enablePan = !0, this.panSpeed = 1, this.screenSpacePanning = !0, this.keyPanSpeed = 7, this.zoomToCursor = !1, this.autoRotate = !1, this.autoRotateSpeed = 2, this.keys = { LEFT: "ArrowLeft", UP: "ArrowUp", RIGHT: "ArrowRight", BOTTOM: "ArrowDown" }, this.mouseButtons = { LEFT: ur.ROTATE, MIDDLE: ur.DOLLY, RIGHT: ur.PAN }, this.touches = { ONE: hr.ROTATE, TWO: hr.DOLLY_PAN }, this.target0 = this.target.clone(), this.position0 = this.object.position.clone(), this.zoom0 = this.object.zoom, this._cursorStyle = "auto", this._domElementKeyEvents = null, this._lastPosition = new A(), this._lastQuaternion = new si(), this._lastTargetPosition = new A(), this._quat = new si().setFromUnitVectors(e.up, new A(0, 1, 0)), this._quatInverse = this._quat.clone().invert(), this._spherical = new Vd(), this._sphericalDelta = new Vd(), this._scale = 1, this._panOffset = new A(), this._rotateStart = new le(), this._rotateEnd = new le(), this._rotateDelta = new le(), this._panStart = new le(), this._panEnd = new le(), this._panDelta = new le(), this._dollyStart = new le(), this._dollyEnd = new le(), this._dollyDelta = new le(), this._dollyDirection = new A(), this._mouse = new le(), this._performCursorZoom = !1, this._pointers = [], this._pointerPositions = {}, this._controlActive = !1, this._onPointerMove = Sy.bind(this), this._onPointerDown = yy.bind(this), this._onPointerUp = by.bind(this), this._onContextMenu = Py.bind(this), this._onMouseWheel = wy.bind(this), this._onKeyDown = Ay.bind(this), this._onTouchStart = Ry.bind(this), this._onTouchMove = Cy.bind(this), this._onMouseDown = Ey.bind(this), this._onMouseMove = Ty.bind(this), this._interceptControlDown = Ly.bind(this), this._interceptControlUp = Iy.bind(this), this.domElement !== null && this.connect(this.domElement), this.update();
+    super(e, t), this.state = Vt.NONE, this.target = new A(), this.cursor = new A(), this.minDistance = 0, this.maxDistance = 1 / 0, this.minZoom = 0, this.maxZoom = 1 / 0, this.minTargetRadius = 0, this.maxTargetRadius = 1 / 0, this.minPolarAngle = 0, this.maxPolarAngle = Math.PI, this.minAzimuthAngle = -1 / 0, this.maxAzimuthAngle = 1 / 0, this.enableDamping = !1, this.dampingFactor = 0.05, this.enableZoom = !0, this.zoomSpeed = 1, this.enableRotate = !0, this.rotateSpeed = 1, this.keyRotateSpeed = 1, this.enablePan = !0, this.panSpeed = 1, this.screenSpacePanning = !0, this.keyPanSpeed = 7, this.zoomToCursor = !1, this.autoRotate = !1, this.autoRotateSpeed = 2, this.keys = { LEFT: "ArrowLeft", UP: "ArrowUp", RIGHT: "ArrowRight", BOTTOM: "ArrowDown" }, this.mouseButtons = { LEFT: ur.ROTATE, MIDDLE: ur.DOLLY, RIGHT: ur.PAN }, this.touches = { ONE: hr.ROTATE, TWO: hr.DOLLY_PAN }, this.target0 = this.target.clone(), this.position0 = this.object.position.clone(), this.zoom0 = this.object.zoom, this._cursorStyle = "auto", this._domElementKeyEvents = null, this._lastPosition = new A(), this._lastQuaternion = new si(), this._lastTargetPosition = new A(), this._quat = new si().setFromUnitVectors(e.up, new A(0, 1, 0)), this._quatInverse = this._quat.clone().invert(), this._spherical = new Vd(), this._sphericalDelta = new Vd(), this._scale = 1, this._panOffset = new A(), this._rotateStart = new le(), this._rotateEnd = new le(), this._rotateDelta = new le(), this._panStart = new le(), this._panEnd = new le(), this._panDelta = new le(), this._dollyStart = new le(), this._dollyEnd = new le(), this._dollyDelta = new le(), this._dollyDirection = new A(), this._mouse = new le(), this._performCursorZoom = !1, this._pointers = [], this._pointerPositions = {}, this._controlActive = !1, this._onPointerMove = Sy.bind(this), this._onPointerDown = yy.bind(this), this._onPointerUp = by.bind(this), this._onContextMenu = Py.bind(this), this._onMouseWheel = wy.bind(this), this._onKeyDown = Ay.bind(this), this._onTouchStart = Ry.bind(this), this._onTouchMove = Cy.bind(this), this._onMouseDown = Ey.bind(this), this._onMouseMove = Ty.bind(this), this._interceptControlDown = Ly.bind(this), this._interceptControlUp = Iy.bind(this), this.domElement !== null && this.connect(this.domElement), this.update();
   }
   /**
    * Defines the visual representation of the cursor.
@@ -26648,7 +26648,7 @@ class pp extends E0 {
    * was called, or the initial state.
    */
   reset() {
-    this.target.copy(this.target0), this.object.position.copy(this.position0), this.object.zoom = this.zoom0, this.object.updateProjectionMatrix(), this.dispatchEvent(ff), this.update(), this.state = kt.NONE;
+    this.target.copy(this.target0), this.object.position.copy(this.position0), this.object.zoom = this.zoom0, this.object.updateProjectionMatrix(), this.dispatchEvent(ff), this.update(), this.state = Vt.NONE;
   }
   /**
    * Programmatically pan the camera.
@@ -26693,7 +26693,7 @@ class pp extends E0 {
   }
   update(e = null) {
     const t = this.object.position;
-    on.copy(t).sub(this.target), on.applyQuaternion(this._quat), this._spherical.setFromVector3(on), this.autoRotate && this.state === kt.NONE && this._rotateLeft(this._getAutoRotationAngle(e)), this.enableDamping ? (this._spherical.theta += this._sphericalDelta.theta * this.dampingFactor, this._spherical.phi += this._sphericalDelta.phi * this.dampingFactor) : (this._spherical.theta += this._sphericalDelta.theta, this._spherical.phi += this._sphericalDelta.phi);
+    on.copy(t).sub(this.target), on.applyQuaternion(this._quat), this._spherical.setFromVector3(on), this.autoRotate && this.state === Vt.NONE && this._rotateLeft(this._getAutoRotationAngle(e)), this.enableDamping ? (this._spherical.theta += this._sphericalDelta.theta * this.dampingFactor, this._spherical.phi += this._sphericalDelta.phi * this.dampingFactor) : (this._spherical.theta += this._sphericalDelta.theta, this._spherical.phi += this._sphericalDelta.phi);
     let n = this.minAzimuthAngle, i = this.maxAzimuthAngle;
     isFinite(n) && isFinite(i) && (n < -Math.PI ? n += Ln : n > Math.PI && (n -= Ln), i < -Math.PI ? i += Ln : i > Math.PI && (i -= Ln), n <= i ? this._spherical.theta = Math.max(n, Math.min(i, this._spherical.theta)) : this._spherical.theta = this._spherical.theta > (n + i) / 2 ? Math.max(n, this._spherical.theta) : Math.min(i, this._spherical.theta)), this._spherical.phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this._spherical.phi)), this._spherical.makeSafe(), this.enableDamping === !0 ? this.target.addScaledVector(this._panOffset, this.dampingFactor) : this.target.add(this._panOffset), this.target.sub(this.cursor), this.target.clampLength(this.minTargetRadius, this.maxTargetRadius), this.target.add(this.cursor);
     let r = !1;
@@ -26925,7 +26925,7 @@ function Sy(s) {
 function by(s) {
   switch (this._removePointer(s), this._pointers.length) {
     case 0:
-      this.domElement.releasePointerCapture(s.pointerId), this.domElement.ownerDocument.removeEventListener("pointermove", this._onPointerMove), this.domElement.ownerDocument.removeEventListener("pointerup", this._onPointerUp), this.dispatchEvent(fp), this.state = kt.NONE, this._cursorStyle === "grab" && (this.domElement.style.cursor = "grab");
+      this.domElement.releasePointerCapture(s.pointerId), this.domElement.ownerDocument.removeEventListener("pointermove", this._onPointerMove), this.domElement.ownerDocument.removeEventListener("pointerup", this._onPointerUp), this.dispatchEvent(fp), this.state = Vt.NONE, this._cursorStyle === "grab" && (this.domElement.style.cursor = "grab");
       break;
     case 1:
       const e = this._pointers[0], t = this._pointerPositions[e];
@@ -26951,49 +26951,49 @@ function Ey(s) {
   switch (e) {
     case ur.DOLLY:
       if (this.enableZoom === !1) return;
-      this._handleMouseDownDolly(s), this.state = kt.DOLLY;
+      this._handleMouseDownDolly(s), this.state = Vt.DOLLY;
       break;
     case ur.ROTATE:
       if (s.ctrlKey || s.metaKey || s.shiftKey) {
         if (this.enablePan === !1) return;
-        this._handleMouseDownPan(s), this.state = kt.PAN;
+        this._handleMouseDownPan(s), this.state = Vt.PAN;
       } else {
         if (this.enableRotate === !1) return;
-        this._handleMouseDownRotate(s), this.state = kt.ROTATE;
+        this._handleMouseDownRotate(s), this.state = Vt.ROTATE;
       }
       break;
     case ur.PAN:
       if (s.ctrlKey || s.metaKey || s.shiftKey) {
         if (this.enableRotate === !1) return;
-        this._handleMouseDownRotate(s), this.state = kt.ROTATE;
+        this._handleMouseDownRotate(s), this.state = Vt.ROTATE;
       } else {
         if (this.enablePan === !1) return;
-        this._handleMouseDownPan(s), this.state = kt.PAN;
+        this._handleMouseDownPan(s), this.state = Vt.PAN;
       }
       break;
     default:
-      this.state = kt.NONE;
+      this.state = Vt.NONE;
   }
-  this.state !== kt.NONE && this.dispatchEvent(Zh);
+  this.state !== Vt.NONE && this.dispatchEvent(Zh);
 }
 function Ty(s) {
   switch (this.state) {
-    case kt.ROTATE:
+    case Vt.ROTATE:
       if (this.enableRotate === !1) return;
       this._handleMouseMoveRotate(s);
       break;
-    case kt.DOLLY:
+    case Vt.DOLLY:
       if (this.enableZoom === !1) return;
       this._handleMouseMoveDolly(s);
       break;
-    case kt.PAN:
+    case Vt.PAN:
       if (this.enablePan === !1) return;
       this._handleMouseMovePan(s);
       break;
   }
 }
 function wy(s) {
-  this.enabled === !1 || this.enableZoom === !1 || this.state !== kt.NONE || (s.preventDefault(), this.dispatchEvent(Zh), this._handleMouseWheel(this._customWheelEvent(s)), this.dispatchEvent(fp));
+  this.enabled === !1 || this.enableZoom === !1 || this.state !== Vt.NONE || (s.preventDefault(), this.dispatchEvent(Zh), this._handleMouseWheel(this._customWheelEvent(s)), this.dispatchEvent(fp));
 }
 function Ay(s) {
   this.enabled !== !1 && this._handleKeyDown(s);
@@ -27004,55 +27004,55 @@ function Ry(s) {
       switch (this.touches.ONE) {
         case hr.ROTATE:
           if (this.enableRotate === !1) return;
-          this._handleTouchStartRotate(s), this.state = kt.TOUCH_ROTATE;
+          this._handleTouchStartRotate(s), this.state = Vt.TOUCH_ROTATE;
           break;
         case hr.PAN:
           if (this.enablePan === !1) return;
-          this._handleTouchStartPan(s), this.state = kt.TOUCH_PAN;
+          this._handleTouchStartPan(s), this.state = Vt.TOUCH_PAN;
           break;
         default:
-          this.state = kt.NONE;
+          this.state = Vt.NONE;
       }
       break;
     case 2:
       switch (this.touches.TWO) {
         case hr.DOLLY_PAN:
           if (this.enableZoom === !1 && this.enablePan === !1) return;
-          this._handleTouchStartDollyPan(s), this.state = kt.TOUCH_DOLLY_PAN;
+          this._handleTouchStartDollyPan(s), this.state = Vt.TOUCH_DOLLY_PAN;
           break;
         case hr.DOLLY_ROTATE:
           if (this.enableZoom === !1 && this.enableRotate === !1) return;
-          this._handleTouchStartDollyRotate(s), this.state = kt.TOUCH_DOLLY_ROTATE;
+          this._handleTouchStartDollyRotate(s), this.state = Vt.TOUCH_DOLLY_ROTATE;
           break;
         default:
-          this.state = kt.NONE;
+          this.state = Vt.NONE;
       }
       break;
     default:
-      this.state = kt.NONE;
+      this.state = Vt.NONE;
   }
-  this.state !== kt.NONE && this.dispatchEvent(Zh);
+  this.state !== Vt.NONE && this.dispatchEvent(Zh);
 }
 function Cy(s) {
   switch (this._trackPointer(s), this.state) {
-    case kt.TOUCH_ROTATE:
+    case Vt.TOUCH_ROTATE:
       if (this.enableRotate === !1) return;
       this._handleTouchMoveRotate(s), this.update();
       break;
-    case kt.TOUCH_PAN:
+    case Vt.TOUCH_PAN:
       if (this.enablePan === !1) return;
       this._handleTouchMovePan(s), this.update();
       break;
-    case kt.TOUCH_DOLLY_PAN:
+    case Vt.TOUCH_DOLLY_PAN:
       if (this.enableZoom === !1 && this.enablePan === !1) return;
       this._handleTouchMoveDollyPan(s), this.update();
       break;
-    case kt.TOUCH_DOLLY_ROTATE:
+    case Vt.TOUCH_DOLLY_ROTATE:
       if (this.enableZoom === !1 && this.enableRotate === !1) return;
       this._handleTouchMoveDollyRotate(s), this.update();
       break;
     default:
-      this.state = kt.NONE;
+      this.state = Vt.NONE;
   }
 }
 function Py(s) {
@@ -28588,7 +28588,7 @@ class dS {
       console.warn("THREE.GLTFLoader: Missing camera parameters.");
       return;
     }
-    return n.type === "perspective" ? t = new jt(Ht.radToDeg(i.yfov), i.aspectRatio || 1, i.znear || 1, i.zfar || 2e6) : n.type === "orthographic" && (t = new ll(-i.xmag, i.xmag, i.ymag, -i.ymag, i.znear, i.zfar)), n.name && (t.name = this.createUniqueName(n.name)), fi(t, n), Promise.resolve(t);
+    return n.type === "perspective" ? t = new jt(kt.radToDeg(i.yfov), i.aspectRatio || 1, i.znear || 1, i.zfar || 2e6) : n.type === "orthographic" && (t = new ll(-i.xmag, i.xmag, i.ymag, -i.ymag, i.znear, i.zfar)), n.name && (t.name = this.createUniqueName(n.name)), fi(t, n), Promise.resolve(t);
   }
   /**
    * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#skins
@@ -28954,7 +28954,7 @@ function pS(s) {
     });
   });
   function xe(J) {
-    S = Ht.clamp(J, 0, L + 1), te();
+    S = kt.clamp(J, 0, L + 1), te();
   }
   t.addEventListener("wheel", (J) => {
     if (!t.classList.contains("active") || !n.classList.contains("journey-skipped") || J.ctrlKey) return;
@@ -28979,11 +28979,11 @@ function pS(s) {
     if (M.visible)
       u.position.set(0, 0, 13), u.lookAt(0, 0, 0), M.scale.setScalar(1.18 + Math.sin(Me * 0.8) * 0.012), M.position.y = 0.15 + Math.sin(Me * 0.8) * 0.035, M.rotation.y = 0.15 + Math.sin(Me * 0.4) * 0.045;
     else {
-      D = Ht.damp(D, S, 5, ie), u.position.set(0, Math.max(0, (D - 2.2) * 1.65), 13), u.lookAt(0, u.position.y, 0), q.geometry.setDrawRange(0, Math.floor(q.geometry.index.count * Math.min(1, (D + 0.8) / (L + 1)))), R.forEach((ve, Pe) => ve.geometry.setDrawRange(0, Math.floor(ve.geometry.index.count * Ht.clamp(D - Pe, 0, 1)))), C.forEach((ve, Pe) => {
-        const nt = Math.min(L - 1, Math.max(0, Math.ceil(D - 0.01) - 1)), ce = Ht.clamp(D - Pe - 0.35, 0, 1), fe = 43;
+      D = kt.damp(D, S, 5, ie), u.position.set(0, Math.max(0, (D - 2.2) * 1.65), 13), u.lookAt(0, u.position.y, 0), q.geometry.setDrawRange(0, Math.floor(q.geometry.index.count * Math.min(1, (D + 0.8) / (L + 1)))), R.forEach((ve, Pe) => ve.geometry.setDrawRange(0, Math.floor(ve.geometry.index.count * kt.clamp(D - Pe, 0, 1)))), C.forEach((ve, Pe) => {
+        const nt = Math.min(L - 1, Math.max(0, Math.ceil(D - 0.01) - 1)), ce = kt.clamp(D - Pe - 0.35, 0, 1), fe = 43;
         ve.style.top = fe + "%", ve.style.opacity = String(Pe === nt ? ce : 0), ve.style.visibility = Pe === nt && ce > 0.01 ? "visible" : "hidden";
       }), k.visible = D > L - 0.2;
-      const ze = Ht.clamp(D - L, 0, 1);
+      const ze = kt.clamp(D - L, 0, 1);
       k.scale.setScalar(0.3 + ze * 0.7);
       for (let ve = 0; ve < 180; ve++) {
         const Pe = (Me * 0.2 + ve * 0.618) % 1;
@@ -29054,8 +29054,8 @@ function mS() {
   function R(S) {
     if (g = 0, document.hidden || !e.classList.contains("active")) return;
     const D = Math.min((S - b) / 1e3 || 0.016, 0.05);
-    b = S, !E && !n.matches && (M += _ * D * 5), p = n.matches ? M : Ht.damp(p, M, 7, D), d.forEach(({ mesh: N, original: O }, G) => {
-      const ee = Ht.euclideanModulo(G * 4.4 - p + f / 2, f) - f / 2;
+    b = S, !E && !n.matches && (M += _ * D * 5), p = n.matches ? M : kt.damp(p, M, 7, D), d.forEach(({ mesh: N, original: O }, G) => {
+      const ee = kt.euclideanModulo(G * 4.4 - p + f / 2, f) - f / 2;
       N.position.x = ee, N.visible = Math.abs(ee) < 13;
       const F = N.geometry.attributes.position;
       for (let q = 0; q < F.count; q++) {
@@ -29063,7 +29063,7 @@ function mS() {
         F.setXYZ(q, k, $ + 0.17 * Math.sin(ae * 0.65), -0.085 * ae * ae + 0.25 * Math.sin(ae * 0.8));
       }
       F.needsUpdate = !0, N.geometry.computeVertexNormals(), N.geometry.computeBoundingSphere();
-    }), v = Ht.euclideanModulo(Math.round(p / 4.4), t.length), a.querySelector("span").textContent = v + 1 + " / " + t.length, i.render(l, c), (Math.abs(M - p) > 1e-3 || Math.abs(_) > 0.01) && (g = requestAnimationFrame(R));
+    }), v = kt.euclideanModulo(Math.round(p / 4.4), t.length), a.querySelector("span").textContent = v + 1 + " / " + t.length, i.render(l, c), (Math.abs(M - p) > 1e-3 || Math.abs(_) > 0.01) && (g = requestAnimationFrame(R));
   }
   function L() {
     g || (b = performance.now(), g = requestAnimationFrame(R));
@@ -29262,7 +29262,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     return Pn && !!document.querySelector("#publications.active");
   }, Pu = function(m) {
     var T, P;
-    L.forEach((U) => U.style.display = "none"), Ri && (Ri.domElement.style.display = "none"), Cu(), f.style.display = "", f.style.zIndex = "0", f.style.background = "#979eb7", f.style.setProperty("--scene-focus", "0px"), f.style.setProperty("--scene-light", "1"), f.dataset.mode = "publication-glass", Dn.rotation.y = Ht.lerp(Dn.rotation.y, 0.85 + (((T = window.PublicationStage) == null ? void 0 : T.index) || 0) * 0.85, 0.12) + 8e-4, Dn.rotation.z = Math.sin(m * 0.12) * 0.1, Dn.position.y = Math.sin(m * 0.3) * 0.12, Dn.scale.setScalar(1.4), e || (wi.position.y = Ht.lerp(wi.position.y, ((P = window.PublicationStage) == null ? void 0 : P.spineOffset) || 0, 0.14), wi.lookAt(0, wi.position.y, 0)), bu.rotation.y = m * 0.045, e && (Cl.visible = !1, qa.forEach((U) => U.visible = !1), Dn.position.x = 0, Dn.scale.setScalar(1.05), Dn.rotation.z = 0.035, Dn.rotation.y = wl.y, Hn.background.set("#12101f"), f.style.background = "#12101f"), $i && $i.update(), _ && _.render(Hn, wi);
+    L.forEach((U) => U.style.display = "none"), Ri && (Ri.domElement.style.display = "none"), Cu(), f.style.display = "", f.style.zIndex = "0", f.style.background = "#979eb7", f.style.setProperty("--scene-focus", "0px"), f.style.setProperty("--scene-light", "1"), f.dataset.mode = "publication-glass", Dn.rotation.y = kt.lerp(Dn.rotation.y, 0.85 + (((T = window.PublicationStage) == null ? void 0 : T.index) || 0) * 0.85, 0.12) + 8e-4, Dn.rotation.z = Math.sin(m * 0.12) * 0.1, Dn.position.y = Math.sin(m * 0.3) * 0.12, Dn.scale.setScalar(1.4), e || (wi.position.y = kt.lerp(wi.position.y, ((P = window.PublicationStage) == null ? void 0 : P.spineOffset) || 0, 0.14), wi.lookAt(0, wi.position.y, 0)), bu.rotation.y = m * 0.045, e && (Cl.visible = !1, qa.forEach((U) => U.visible = !1), Dn.position.x = 0, Dn.scale.setScalar(1.05), Dn.rotation.z = 0.035, Dn.rotation.y = wl.y, Hn.background.set("#12101f"), f.style.background = "#12101f"), $i && $i.update(), _ && _.render(Hn, wi);
   }, Nt = function(m, T, P) {
     const U = Vs((P - m) / (T - m), 0, 1);
     return U * U * (3 - 2 * U);
@@ -29271,7 +29271,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       m.position.x = T, m.scale.setScalar(1);
     }), Ei.scale.x = 1, _) {
       wi.aspect = innerWidth / innerHeight, wi.updateProjectionMatrix(), p.aspect = innerWidth / innerHeight, p.fov = 47, p.updateProjectionMatrix();
-      const m = Math.tan(Ht.degToRad(p.fov / 2)) * 3 * p.aspect;
+      const m = Math.tan(kt.degToRad(p.fov / 2)) * 3 * p.aspect;
       x[0].position.x = -m + 0.18, x[1].position.x = m - 0.18, _.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)), _.setSize(innerWidth, innerHeight), Ri && (Ri.setSize(innerWidth, innerHeight), ks.aspect = p.aspect, ks.updateProjectionMatrix()), f.dataset.dpr = String(_.getPixelRatio());
     }
     Nl();
@@ -29286,22 +29286,22 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     Ke.uniforms.opacity.value = 0.84 * Nt(0.26, 0.55, m) * (1 - Nt(0.97, 1, m)), Le.uniforms.opacity.value = 0.62 * Nt(0.2, 0.34, m) * (1 - Nt(0.78, 0.86, m)), at.clock.value = T, Ir.value = T, We.visible = m > 0.17 && m < 0.44, we.visible = m > 0.29 && m < 0.52, xn.visible = m > 0.38 && m < 0.49, fn.visible = m > 0.37 && m < 0.6, $n.visible = !1, Vn.visible = m > 0.78 && m < 0.9, Ei.visible = m > 0.48 && m < 0.821, X.visible = !0, yn.visible = m > 0.845, Te.visible = m > 0.115 && m < 0.27, bl.visible = !1;
     const P = Hs < 0 ? 0 : Nt(0, 3, T - Hs), U = Nt(0.065, 0.12, m), Y = Nt(0.075, 0.12, m);
     f.style.setProperty("--scene-focus", "0px"), f.style.setProperty("--scene-light", "1"), E.visible = m < 0.2, C.uniforms.opacity.value = 1 - Nt(0.14, 0.2, m);
-    const Q = Math.tan(Ht.degToRad(p.fov / 2)) * 3 * p.aspect;
+    const Q = Math.tan(kt.degToRad(p.fov / 2)) * 3 * p.aspect;
     x.forEach((ge, Ve) => {
-      ge.position.x = Ht.lerp(Ve ? -0.42 : 0.42, Ve ? Q - 0.18 : -Q + 0.18, U), ge.scale.setScalar(0.62), ge.position.y = -Math.tan(Ht.degToRad(p.fov / 2)) * 3 + 2.8 * 0.62 / 2, ge.visible = m >= 0.12;
-      const yt = L[Ve], Et = innerHeight / (2 * Math.tan(Ht.degToRad(p.fov / 2)) * 3);
+      ge.position.x = kt.lerp(Ve ? -0.42 : 0.42, Ve ? Q - 0.18 : -Q + 0.18, U), ge.scale.setScalar(0.62), ge.position.y = -Math.tan(kt.degToRad(p.fov / 2)) * 3 + 2.8 * 0.62 / 2, ge.visible = m >= 0.12;
+      const yt = L[Ve], Et = innerHeight / (2 * Math.tan(kt.degToRad(p.fov / 2)) * 3);
       yt.style.display = m < 0.12 ? "block" : "none", yt.style.width = `${2.1 * ge.scale.x * Et}px`, yt.style.height = `${2.8 * ge.scale.y * Et}px`, yt.style.left = `${innerWidth / 2 + ge.position.x * Et}px`, yt.style.top = `${innerHeight / 2 - ge.position.y * Et}px`;
     }), R.material.uniforms.opacity.value = 0.46 * (1 - U), Ou(m), M.background.multiplyScalar(Y), at.horizon.value.multiplyScalar(Y), M.fog.color.copy(M.background), Ct.visible = Y > 0 && m < 0.975, xt.visible = Y > 0 && m < 0.975, bt.visible = Y > 0, Tl.visible = Y > 0, Z.forEach((ge, Ve) => ge.position.x += (Ve % 2 ? 1 : -1) * Math.sin(T * 0.025 + Ve) * 12e-5), te.position.set(3.4, Math.sin(T * 0.55) * 0.09, 0), te.rotation.z = Math.sin(T * 0.32) * 0.045, M.fog.density = 0.025 + 0.25 * Nt(0.95, 1, m);
-    const de = m < 0.12 ? 0.065 * U : Ht.lerp(0.065, m, Nt(0.12, 0.17, m));
-    g.getPoint(de, p.position), b.getPoint(de, Lu), p.lookAt(Lu), p.rotateZ(Math.sin(m * Math.PI * 4) * 0.025), m < 0.12 ? (J.parent !== Ai && Ai.add(J), J.position.x = Ht.lerp(-6, 3.4, P)) : J.parent !== te && (te.add(J), J.position.x = 0);
+    const de = m < 0.12 ? 0.065 * U : kt.lerp(0.065, m, Nt(0.12, 0.17, m));
+    g.getPoint(de, p.position), b.getPoint(de, Lu), p.lookAt(Lu), p.rotateZ(Math.sin(m * Math.PI * 4) * 0.025), m < 0.12 ? (J.parent !== Ai && Ai.add(J), J.position.x = kt.lerp(-6, 3.4, P)) : J.parent !== te && (te.add(J), J.position.x = 0);
     const oe = 1 - Nt(0.95, 0.998, m);
     S.visible = oe > 0, O.forEach((ge) => {
       ge.opacity = ge.userData.baseOpacity * oe * Y * (ge.userData.dna ? Nt(0.115, 0.14, m) * (1 - Nt(0.24, 0.27, m)) : 1) * (ge.userData.wisteria ? Nt(0.6, 0.73, m) : 1) * (ge.userData.molecular ? Nt(0.34, 0.41, m) : 1) * (ge.userData.careerTimeline ? 1 - Nt(0.805, 0.82, m) : 1);
-    }), Du += Math.min(0.06, Math.max(0, T - Nu)) * Ht.lerp(13, 1, P) * (1 - U), Nu = T, J.scale.setScalar(1 - Nt(0.1, 0.24, m)), J.rotation.set(-0.12, -0.35, 0.12), ie.forEach((ge) => {
+    }), Du += Math.min(0.06, Math.max(0, T - Nu)) * kt.lerp(13, 1, P) * (1 - U), Nu = T, J.scale.setScalar((1 - Nt(0.1, 0.24, m)) * (m < 0.12 ? kt.lerp(2, 1, P) : 1)), J.rotation.set(-0.12, -0.35, 0.12), ie.forEach((ge) => {
       const Ve = Du - (ge.userData.hind ? 0.24 : 0);
       ge.rotation.y = ge.userData.side * (0.24 + Math.sin(Ve) * 0.75 * (1 - U)), ge.rotation.x = Math.sin(Ve - 0.25) * 0.025 * (1 - U);
     }), J.position.y = Math.sin(T * 0.9) * 0.09;
-    const Ee = 12, pt = Math.tan(Ht.degToRad(p.fov / 2)) * Ee;
+    const Ee = 12, pt = Math.tan(kt.degToRad(p.fov / 2)) * Ee;
     Te.position.set(pt * p.aspect * 0.56, -0.15, -Ee), Te.scale.setScalar(pt * 0.14), Te.rotation.set(0.08, T * 0.055, -0.12), f.dataset.dnaVisible = String(Te.visible), We.rotation.y = Math.sin(T * 0.19) * 0.2, we.rotation.y = Math.sin(T * 0.14) * 0.12, Ge.z += (ue.x * Math.PI * 1.1 - Ge.z) * 0.17, Ge.y += (ue.y * 0.45 - Ge.y) * 0.17, Ue.rotation.set(0, Ge.y, Ge.z + Math.sin(T * 0.18) * 0.06), kn.rotation.y = 0.12 + Math.sin(T * 0.11) * 0.1, Vn.position.x = dl.x - 14 * Nt(0.835, 0.87, m), Vn.children.forEach((ge) => {
       ge.rotation.y = -0.4 + Math.sin(T * 0.2) * 0.12;
     }), $n.children.forEach((ge, Ve) => {
@@ -29318,7 +29318,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       }
       yt.needsUpdate = !0, ge.geometry.computeVertexNormals();
       const qt = Ve / 6 * Math.PI * 2;
-      ge.position.z = Ht.lerp(0.2 * Math.cos(qt), 0, Nt(0.9, 0.97, m));
+      ge.position.z = kt.lerp(0.2 * Math.cos(qt), 0, Nt(0.9, 0.97, m));
     });
     const lt = o.findIndex((ge) => m >= ge[0] && m < ge[1]);
     lt !== Kr && (Ll = Kr, Il = T, Kr = lt, Uu = T), c.forEach((ge, Ve) => {
@@ -29585,7 +29585,7 @@ void main(){
   for (let m = 0; m < j.count; m++) {
     const T = j.getX(m), P = j.getY(m), U = j.getZ(m), Y = 1 + 0.035 * Math.sin(T * 19 + P * 11) * Math.cos(U * 17);
     j.setXYZ(m, T * Y, P * Y, U * Y);
-    const Q = new ye("#a8a9bd").lerp(new ye("#fff9ee"), Ht.smoothstep(P, -0.65, 0.75));
+    const Q = new ye("#a8a9bd").lerp(new ye("#fff9ee"), kt.smoothstep(P, -0.65, 0.75));
     Se.push(Q.r, Q.g, Q.b);
   }
   H.setAttribute("color", new ft(Se, 3)), H.computeVertexNormals();
@@ -29949,7 +29949,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), m.fragmentShader = `va
           if (!Ee) {
             const et = [], je = new ye(["#7b86a5", "#8b81a5", "#778fa8"][Q]), be = new ye(["#b2bfd3", "#c0b2d0", "#acbbd1"][Q]);
             for (let ge = 0; ge < oe.count; ge++) {
-              const Ve = oe.getX(ge), yt = oe.getY(ge), Et = oe.getZ(ge), qt = Math.hypot(Ve, Et), Qt = Ht.clamp(0.18 + qt * 0.18 + 0.12 * Math.sin(yt * 4 + Ve * 3 + Et * 5), 0, 0.85), Yt = je.clone().lerp(be, Qt);
+              const Ve = oe.getX(ge), yt = oe.getY(ge), Et = oe.getZ(ge), qt = Math.hypot(Ve, Et), Qt = kt.clamp(0.18 + qt * 0.18 + 0.12 * Math.sin(yt * 4 + Ve * 3 + Et * 5), 0, 0.85), Yt = je.clone().lerp(be, Qt);
               et.push(Yt.r, Yt.g, Yt.b);
             }
             de.setAttribute("color", new ft(et, 3));
@@ -30061,7 +30061,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), m.fragmentShader = `va
     const T = m % 2 ? 1 : -1, P = 8 - m * 6.4, U = new dt();
     U.position.set(T * (5.8 + m % 4 * 1.2), 3.5 + m % 5 * 1.7, P), U.rotation.set(m * 0.7, m * 0.9, m * 0.4), bt.add(U), U.add(new qe(bp, Ji));
     for (const Y of [-1, 1]) {
-      const Q = Y * Ht.degToRad(52.25), de = new A(Math.sin(Q) * 0.77, Math.cos(Q) * 0.77, 0), oe = new qe(Ep, Ji);
+      const Q = Y * kt.degToRad(52.25), de = new A(Math.sin(Q) * 0.77, Math.cos(Q) * 0.77, 0), oe = new qe(Ep, Ji);
       oe.position.copy(de), U.add(oe), xe(U, [new A(), de], 0.055, Ji, 12);
     }
   }
@@ -30106,7 +30106,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), m.fragmentShader = `va
     if (m.ctrlKey) return;
     m.preventDefault();
     const T = m.deltaY * (m.deltaMode === 1 ? 16 : m.deltaMode === 2 ? innerHeight : 1);
-    Al += Ht.clamp(T, -120, 120) * 65e-4, Xa == null || Xa.kill(), window.gsap && !t.matches ? Xa = window.gsap.to(wl, { y: Al, duration: 0.42, ease: "power2.out", overwrite: !0 }) : wl.y = Al;
+    Al += kt.clamp(T, -120, 120) * 65e-4, Xa == null || Xa.kill(), window.gsap && !t.matches ? Xa = window.gsap.to(wl, { y: Al, duration: 0.42, ease: "power2.out", overwrite: !0 }) : wl.y = Al;
   }, { passive: !1 }));
   const Dn = new dt();
   Dn.position.set(-0.75, 0.4, 0), Hn.add(Dn);
@@ -30202,7 +30202,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), m.fragmentShader = `va
       m.width = T, m.height = P;
     } };
   }
-  const Lu = new A(), Vs = Ht.clamp, Ap = new ye(r.white), Rp = new ye(r.ink), Iu = new ye();
+  const Lu = new A(), Vs = kt.clamp, Ap = new ye(r.white), Rp = new ye(r.ink), Iu = new ye();
   let xs = 0, Ka = 0, Ci = 0, vs = 0, ji = 0, Pn = new URLSearchParams(location.search).get("enter") === "about", Hs = -1, Du = 0, Nu = 0, Gs = 0, Yr = 1, Kr = -1, Uu = 0, Ll = -1, Il = 0, Za = 0, Qi = 0, es = 0, Ws = !1, Nn;
   const Dl = { y: 0 };
   window.SiteJourney = { start: Ul, skip: Jr }, new MutationObserver(Pi).observe(document.getElementById("publications"), { attributes: !0, attributeFilter: ["class"] });
