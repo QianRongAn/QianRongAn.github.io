@@ -146,16 +146,16 @@ function wingPoint(u,v,side,hind){
 
 for(const side of [-1,1])for(const hind of [false,true]){
  const pivot=new THREE.Group();pivot.userData={side,hind};wings.add(pivot);wingPivots.push(pivot);
- const verts=[],uvs=[],indices=[],colors=[],U=32,V=44,layerSize=(U+1)*(V+1),c1=new THREE.Color(palette.blue),c2=new THREE.Color(palette.dusk);
+ const verts=[],uvs=[],indices=[],colors=[],U=32,V=44,layerSize=(U+1)*(V+1),c1=new THREE.Color('#d9def0'),c2=new THREE.Color('#aebbe0');
  for(let layer=0;layer<2;layer++)for(let j=0;j<=V;j++)for(let i=0;i<=U;i++){
-  const u=i/U,v=j/V,p=wingPoint(u,v,side,hind);p.z+=(layer?-.012:.012);verts.push(p.x,p.y,p.z);uvs.push(u,v);
+  const u=i/U,v=j/V,p=wingPoint(u,v,side,hind);p.z+=(layer?-.045:.045);verts.push(p.x,p.y,p.z);uvs.push(u,v);
   const c=c1.clone().lerp(c2,.18+u*.58+Math.sin(v*8)*.08);colors.push(c.r,c.g,c.b);
   if(i<U&&j<V){const n=layer*layerSize+j*(U+1)+i;layer?indices.push(n,n+U+2,n+1,n,n+U+1,n+U+2):indices.push(n,n+1,n+U+2,n,n+U+2,n+U+1);}
  }
  const edge=[];for(let i=0;i<=U;i++)edge.push(i);for(let j=1;j<=V;j++)edge.push(j*(U+1)+U);for(let i=U-1;i>=0;i--)edge.push(V*(U+1)+i);for(let j=V-1;j>0;j--)edge.push(j*(U+1));
  for(let i=0;i<edge.length;i++){const a=edge[i],b=edge[(i+1)%edge.length];indices.push(a,a+layerSize,b+layerSize,a,b+layerSize,b);}
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(new Float32Array(verts.length),3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setIndex(indices);geometry.computeVertexNormals();
- const material=new THREE.MeshPhysicalMaterial({color:palette.white,vertexColors:true,roughness:.34,metalness:0,iridescence:.52,iridescenceIOR:1.3,iridescenceThicknessRange:[180,440],transmission:.13,thickness:.024,ior:1.35,clearcoat:.35,clearcoatRoughness:.25,bumpMap:microTexture,bumpScale:.018,side:THREE.DoubleSide,transparent:true,opacity:1});materials.push(material);pivot.add(new THREE.Mesh(geometry,material));
+ const material=new THREE.MeshPhysicalMaterial({color:'#f6f7ff',vertexColors:true,roughness:.16,metalness:1,iridescence:.72,iridescenceIOR:1.45,iridescenceThicknessRange:[180,460],transmission:.008,thickness:.09,ior:1.45,clearcoat:1,clearcoatRoughness:.06,envMapIntensity:1.65,side:THREE.DoubleSide,transparent:true,opacity:1});materials.push(material);const surface=new THREE.Mesh(geometry,material);surface.userData.wingSurface=true;pivot.add(surface);
  for(let j=1;j<11;j++){
   const v=j/11,points=Array.from({length:33},(_,k)=>{const u=k/32,p=wingPoint(u,v+Math.sin(u*Math.PI)*.022,side,hind);p.z+=.019;return p;});tube(pivot,points,.007,pearl,42);
   for(const branch of [-1,1]){const pts=Array.from({length:18},(_,k)=>{const u=.5+k/17*.48,p=wingPoint(u,v+branch*(u-.5)*.12,side,hind);p.z+=.02;return p;});tube(pivot,pts,.0035,rose,24);}
@@ -666,7 +666,7 @@ function paint(t,time){
     foreground.visible=t<.20;
     const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;
     const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);
-    orchidScreens.forEach((screen,i)=>{const x=THREE.MathUtils.lerp(i?-.42:.42,i?edge-.18:-edge+.18,opening),y=-Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3+2.8*.62/2;screen.style.display=t<.20?'block':'none';screen.style.transform=`translate3d(${innerWidth/2+x*unit}px,${innerHeight/2-y*unit}px,0) translate(-50%,-50%)`;screen.style.opacity=String(1-smooth(.14,.20,t));});
+    orchidScreens.forEach((screen,i)=>{const x=THREE.MathUtils.lerp(i?-.42:.42,i?edge-.18:-edge+.18,opening);screen.style.display=t<.20?'block':'none';screen.style.transform=`translate3d(${innerWidth/2+x*unit}px,${innerHeight-2.8*.62*unit/2+(i?11:16)/1024*(2.8*.62*unit)+2}px,0) translate(-50%,-50%)`;screen.style.opacity=String(1-smooth(.14,.20,t));});
     orchidGlow.material.uniforms.opacity.value=.46*(1-opening);
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
