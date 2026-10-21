@@ -8,6 +8,7 @@ initActivityWave();
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 if (!document.body.hasAttribute('data-structure-preview') && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
 const root = document.documentElement;
@@ -117,14 +118,14 @@ const microTexture=new THREE.CanvasTexture(microCanvas);microTexture.wrapS=micro
 // Petal veins and soil grain use separate textures at their own physical scales.
 function surfaceTexture(kind,relief=false){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=512;const ctx=canvas.getContext('2d'),image=ctx.createImageData(512,512);
- for(let y=0;y<512;y++)for(let x=0;x<512;x++){const noise=(Math.sin(x*127.1+y*311.7)*43758.5453)%1,grain=noise*noise,n=kind==='soil'?150+grain*60+Math.sin(x*.13+Math.sin(y*.08))*14:(relief?142:238)+grain*(relief?26:9);const k=(y*512+x)*4;image.data[k]=n;image.data[k+1]=kind==='soil'?n*.94:n;image.data[k+2]=kind==='soil'?n*.83:n;image.data[k+3]=255;}ctx.putImageData(image,0,0);
+ for(let y=0;y<512;y++)for(let x=0;x<512;x++){const noise=(Math.sin(x*127.1+y*311.7)*43758.5453)%1,grain=noise*noise,n=kind==='soil'?150+grain*60+Math.sin(x*.13+Math.sin(y*.08))*14:(relief?142:238)+grain*(relief?26:9);const k=(y*512+x)*4;image.data[k]=n;image.data[k+1]=n;image.data[k+2]=n;image.data[k+3]=255;}ctx.putImageData(image,0,0);
  if(kind==='petal'){
   ctx.lineWidth=relief?1.5:1;ctx.strokeStyle=relief?'#5d5d5d':'#b7b2aa';
   for(let i=-13;i<=13;i++){ctx.beginPath();ctx.moveTo(256+i*2,512);ctx.bezierCurveTo(256+i*6,360,256+i*15,170,256+i*18,0);ctx.stroke();}
   ctx.globalAlpha=.35;ctx.lineWidth=.7;
   for(let i=1;i<17;i++)for(const side of [-1,1]){const y=512-i*29;ctx.beginPath();ctx.moveTo(256,y);ctx.bezierCurveTo(256+side*45,y-10,256+side*115,y-45,256+side*200,y-82);ctx.stroke();}ctx.globalAlpha=1;
  }else{
-  for(let i=0;i<700;i++){const x=(i*137.507)%512,y=(i*83.173)%512,r=.5+(i%5)*.38;ctx.fillStyle=i%3?'#837865':'#c2b69c';ctx.beginPath();ctx.ellipse(x,y,r*1.5,r,i,0,Math.PI*2);ctx.fill();}
+  for(let i=0;i<700;i++){const x=(i*137.507)%512,y=(i*83.173)%512,r=.5+(i%5)*.38;ctx.fillStyle=i%3?'#777783':'#b8b5c2';ctx.beginPath();ctx.ellipse(x,y,r*1.5,r,i,0,Math.PI*2);ctx.fill();}
  }
  const texture=new THREE.CanvasTexture(canvas);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;if(!relief)texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
@@ -373,7 +374,7 @@ for(let i=0;i<6;i++) {
 
 // An inhabited, continuous biomorphic canyon: near surfaces occlude distant ones.
 const habitat = new THREE.Group(); world.add(habitat);
-const terrainMaterial=matte('#60584d',0), ridgeMaterial=matte(palette.blue,.025);
+const terrainMaterial=matte(palette.violet,.035), ridgeMaterial=matte(palette.blue,.025);
 terrainMaterial.bumpMap=soilTexture;terrainMaterial.bumpScale=.11;terrainMaterial.map=soilTexture;terrainMaterial.roughness=1;terrainMaterial.clearcoat=0;ridgeMaterial.bumpMap=microTexture;ridgeMaterial.bumpScale=.08;ridgeMaterial.roughness=.78;
 const groundClock={value:0};
 terrainMaterial.onBeforeCompile=shader=>{
@@ -385,12 +386,14 @@ terrainMaterial.onBeforeCompile=shader=>{
  vec2 q=surveyPosition.xz;
  float patches=sin(q.x*1.7+sin(q.y*.8))*sin(q.y*2.1-q.x*.6);
  float grain=fract(sin(dot(floor(q*95.),vec2(127.1,311.7)))*43758.5453);
- vec3 earth=mix(vec3(.40,.34,.27),vec3(.65,.60,.47),patches*.5+.5);
- diffuseColor.rgb*=earth*(.78+grain*.22);
+ float path=1.-smoothstep(.65,1.8,abs(q.x-1.1*sin(q.y*.095)-.4*sin(q.y*.27)));
+ vec3 earth=mix(vec3(.86,.84,.98),vec3(1.10,1.02,1.07),path*.48);
+ float ruts=sin(q.y*39.+sin(q.x*13.))*sin(q.x*47.);
+ diffuseColor.rgb*=earth*(.83+patches*.08+grain*.16+ruts*path*.035);
 
  `);
 };
-const terrainGeometry=new THREE.PlaneGeometry(70,140,100,190);
+const terrainGeometry=new THREE.PlaneGeometry(70,140,140,280);
 const terrainPositions=terrainGeometry.attributes.position;
 for(let i=0;i<terrainPositions.count;i++){
     const x=terrainPositions.getX(i),z=terrainPositions.getY(i);
@@ -399,12 +402,31 @@ for(let i=0;i<terrainPositions.count;i++){
 terrainGeometry.computeVertexNormals();
 const terrain=new THREE.Mesh(terrainGeometry,terrainMaterial);terrain.receiveShadow=true;terrain.layers.enable(1);terrain.rotation.x=-Math.PI/2;terrain.position.set(0,-4,-48);habitat.add(terrain);
 // Ground flowers are solid curved petals, stems and leaves, batched as instances.
-function naturalMeadowFloor(x,z){const localZ=-(z+48);return -4+Math.pow(Math.min(Math.abs(x)/12,2),1.7)*3.2+Math.sin(x*.62+localZ*.14)*.4+Math.sin(x*1.4-localZ*.23)*.15+Math.sin(localZ*.38)*.22-8/(1+Math.exp((localZ-10)*.18));}
+function naturalMeadowFloor(x,z){const localZ=-(z+48);return -4+Math.pow(Math.min(Math.abs(x)/12,2),1.7)*3.2+Math.sin(x*.62+localZ*.14)*.4+Math.sin(x*1.4-localZ*.23)*.15+Math.sin(localZ*.38)*.22+Math.sin(x*5.3+z*3.7)*.035+Math.sin(x*9.1-z*4.3)*.018-8/(1+Math.exp((localZ-10)*.18));}
 function meadowFloor(x,z){const distance=Math.hypot(x-3.4,z+66),blend=THREE.MathUtils.smoothstep(distance,2.8,4.6);return THREE.MathUtils.lerp(naturalMeadowFloor(3.4,-66),naturalMeadowFloor(x,z),blend);}
-function meadowPlantX(x,z){const dz=z+66;if(Math.hypot(x-3.4,dz)>=3)return x;return 3.4+(x<3.4?-1:1)*Math.sqrt(9-dz*dz);}
+// Irregular shared patches with open ground between them, independent of species.
+const meadowPatches=Array.from({length:64},(_,i)=>({x:(random()-.5)*25,z:12-random()*119,rx:1.3+random()*2.8,rz:1.8+random()*3.4}));
+const botanicalOccupied=new Map();
+function meadowSite(index,botanical=false,radius=.4){
+ let point;
+ for(let attempt=0;attempt<700;attempt++){
+  const patch=meadowPatches[(index*17+Math.floor(attempt/12)*23)%meadowPatches.length],angle=random()*Math.PI*2,r=Math.sqrt(random());
+  const x=patch.x+Math.cos(angle)*r*patch.rx,z=patch.z+Math.sin(angle)*r*patch.rz;
+  if(Math.abs(x)>16||z>14||z< -109||Math.hypot(x-3.4,z+66)<3.3)continue;
+  const path=1.1*Math.sin(z*.095)+.4*Math.sin(z*.27);
+  if(Math.abs(x-path)<.9&&random()<.94)continue;
+  point={x,z};if(!botanical)return point;
+  const gx=Math.floor(x/1.5),gz=Math.floor(z/1.5);let clear=true;
+  for(let a=gx-1;a<=gx+1&&clear;a++)for(let b=gz-1;b<=gz+1&&clear;b++)for(const other of botanicalOccupied.get(a+','+b)||[]){if(Math.hypot(x-other.x,z-other.z)<radius+other.radius){clear=false;break;}}
+  if(!clear)continue;
+  const key=gx+','+gz;if(!botanicalOccupied.has(key))botanicalOccupied.set(key,[]);botanicalOccupied.get(key).push({...point,radius});return point;
+ }
+ // Sparse outer patches keep crowded varieties out of the camera corridor.
+ const x=(index%2?1:-1)*(16+random()*5),z=12-random()*119;return {x,z};
+}
 
-function petalGeometry(){
- const positions=[],indices=[],uvs=[],nx=8,ny=16,stride=nx+1;
+function petalGeometry(nx=8,ny=16){
+ const positions=[],indices=[],uvs=[],stride=nx+1;
  for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
   const u=j/ny,v=i/nx*2-1,w=.20*Math.pow(Math.sin(Math.PI*u),.7)+.008;
   positions.push(v*w,.12*Math.sin(u*Math.PI)+.24*u*u+.065*v*v*Math.sin(Math.PI*u),.07+u*.75);uvs.push(i/nx,u);
@@ -414,8 +436,8 @@ function petalGeometry(){
 }
 const meadow=new THREE.Group();habitat.add(meadow);
 const flowerCount=1200,petalsPerFlower=7,flowerPetalGeometry=petalGeometry();
-const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',map:petalTexture,roughness:.78,metalness:0,transmission:0,thickness:.035,ior:1.36,clearcoat:0,sheen:.3,sheenColor:palette.mist,bumpMap:petalRelief,bumpScale:.008,side:THREE.DoubleSide});materials.push(petalMaterial);
-const foliageMaterial=matte('#65765a',0);foliageMaterial.roughness=.82;foliageMaterial.clearcoat=0;
+const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.48,metalness:0,transmission:0,thickness:.035,ior:1.36,clearcoat:.28,sheen:.7,sheenColor:palette.mist,iridescence:.18,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
+const foliageMaterial=matte(palette.blue,.015);foliageMaterial.roughness=.6;
 const petals=new THREE.InstancedMesh(flowerPetalGeometry,petalMaterial,flowerCount*petalsPerFlower);
 const leaves=new THREE.InstancedMesh(flowerPetalGeometry,foliageMaterial,flowerCount*3);
 const stems=new THREE.InstancedMesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(.025,.33,.02),new THREE.Vector3(.13,.68,.035),new THREE.Vector3(.28,1,.05)]),12,.025,5,false),foliageMaterial,flowerCount);
@@ -424,7 +446,7 @@ const stamens=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),pearl,flow
 const flowerDummy=new THREE.Object3D(),flowerRoot=new THREE.Object3D(),flowerPositions=[];
 const blossomColors=[palette.dusk,palette.mist,palette.blue];
 for(let i=0;i<flowerCount;i++){
- const side=i%2?1:-1,patch=Math.floor(i/150),z=12-patch*14-random()*12,x=meadowPlantX(side*((i%5===0?.4:2.2)+random()*7.5),z),floor=meadowFloor(x,z),height=(.55+random()*1.15)*(Math.hypot(x-3.4,z+66)<7?.30:1),scale=(.45+random()*.60)*(Math.hypot(x-3.4,z+66)<7?.27:1),bend=random()*Math.PI*2,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
+ const {x,z}=meadowSite(i),floor=meadowFloor(x,z),height=(.55+random()*1.15)*(Math.hypot(x-3.4,z+66)<7?.30:1),scale=(.45+random()*.60)*(Math.hypot(x-3.4,z+66)<7?.27:1),bend=random()*Math.PI*2,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
  flowerPositions.push({x,y:floor,z,height});
  flowerDummy.position.set(x,floor,z);flowerDummy.rotation.set(0,bend,0);flowerDummy.scale.set(1,height,1);flowerDummy.updateMatrix();stems.setMatrixAt(i,flowerDummy.matrix);
  flowerRoot.position.set(hx,floor+height,hz);flowerRoot.rotation.set((random()-.5)*.85,random()*Math.PI,(random()-.5)*.75);flowerRoot.scale.setScalar(scale);flowerRoot.updateMatrix();
@@ -456,6 +478,14 @@ for(let i=0;i<treeCount;i++){
  for(let b=0;b<branchCount;b++){const a=b*2.4+i,spread=1.2+random()*1.3;forestBranch(i*6+b+1,new THREE.Vector3(x,floor+height*(.35+b*.08),z),new THREE.Vector3(x+Math.cos(a)*spread,floor+height*(.63+b*.06),z+Math.sin(a)*spread),.48);}
  for(let j=0;j<dabsPerTree;j++){const a=random()*Math.PI*2,h=random()*2-1,r=Math.sqrt(1-h*h)*(1.1+random()*1.5);treeDummy.position.set(x+Math.cos(a)*r,floor+height*.75+h*height*.31,z+Math.sin(a)*r);treeDummy.rotation.set(random()*.9,random()*6,random()*.7);treeDummy.scale.set(.45+random()*.8,.15+random()*.32,.32+random()*.6);treeDummy.updateMatrix();canopy.setMatrixAt(i*dabsPerTree+j,treeDummy.matrix);const tint=new THREE.Color(palette.blue).lerp(new THREE.Color(j%7===0?palette.dusk:palette.mist),.10+random()*.26).multiplyScalar(.72+random()*.32);canopy.setColorAt(i*dabsPerTree+j,tint);}
 }forest.add(trunks,canopy);
+// Short flared root collars and ground-following roots anchor each trunk.
+const rootBases=new THREE.InstancedMesh(new THREE.CylinderGeometry(.11,.31,1,9),barkMaterial,treeCount);
+const treeRoots=new THREE.InstancedMesh(new THREE.CylinderGeometry(.025,.095,1,7),barkMaterial,treeCount*4);
+treePlacements.forEach((tree,i)=>{
+ const size=tree.height/6.3;
+ treeDummy.position.set(tree.x,tree.floor+.10*size,tree.z);treeDummy.rotation.set(0,i,0);treeDummy.scale.set(size,.38*size,size);treeDummy.updateMatrix();rootBases.setMatrixAt(i,treeDummy.matrix);
+ for(let j=0;j<4;j++){const a=i*2.39996+j*Math.PI/2,len=(.55+.12*Math.sin(i+j))*size,start=new THREE.Vector3(tree.x,tree.floor+.14*size,tree.z),x=tree.x+Math.cos(a)*len,z=tree.z+Math.sin(a)*len,end=new THREE.Vector3(x,meadowFloor(x,z)-.025,z);treeDummy.position.copy(start).lerp(end,.5);treeDummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),start.clone().sub(end).normalize());treeDummy.scale.set(size,start.distanceTo(end),size);treeDummy.updateMatrix();treeRoots.setMatrixAt(i*4+j,treeDummy.matrix);}
+});forest.add(rootBases,treeRoots);
 // Reuse the approved fir model across the complete forest; the original camera is unchanged.
 const detailedForest=new THREE.Group();forest.add(detailedForest);
 new GLTFLoader().load('models/watercolour-fir.glb',gltf=>{
@@ -467,20 +497,58 @@ new GLTFLoader().load('models/watercolour-fir.glb',gltf=>{
  if(!bark){const pigments=[],shade=new THREE.Color(['#8589a6','#998ca9','#8399aa'][variant]),tip=new THREE.Color(['#bdc6d6','#d2c1d7','#c0cdd5'][variant]);for(let k=0;k<positions.count;k++){const x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k),r=Math.hypot(x,z),wash=THREE.MathUtils.clamp(.25+r*.13+y/height*.12+.06*Math.sin(y*2+x*2+z*2),.15,.7),color=shade.clone().lerp(tip,wash);pigments.push(color.r,color.g,color.b);}geometry.setAttribute('color',new THREE.Float32BufferAttribute(pigments,3));}
  const material=new THREE.MeshPhysicalMaterial({color:bark?'#675565':'#ffffff',vertexColors:!bark,roughness:.92,metalness:0,clearcoat:0,sheen:.32,sheenColor:new THREE.Color('#e6dfeb'),side:THREE.DoubleSide,transparent:true});material.userData.baseOpacity=1;materials.push(material);
  const trees=treePlacements.filter((_,i)=>i%3===variant),batch=new THREE.InstancedMesh(geometry,material,trees.length),dummy=new THREE.Object3D();
- trees.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor,tree.z);dummy.rotation.set(Math.sin(i*2.1)*.035,i*2.39996+variant,.025*Math.cos(i));dummy.scale.set(scale*(1.05+Math.sin(i)*.13),scale,scale*(.96+Math.cos(i)*.13));dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#b5c0dc':'#dfc8de'),.08+(i%5)*.04));});batch.computeBoundingSphere();detailedForest.add(batch);
+ trees.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor-.06,tree.z);dummy.rotation.set(Math.sin(i*2.1)*.035,i*2.39996+variant,.025*Math.cos(i));dummy.scale.set(scale*(1.05+Math.sin(i)*.13),scale,scale*(.96+Math.cos(i)*.13));dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#b5c0dc':'#dfc8de'),.08+(i%5)*.04));});batch.computeBoundingSphere();detailedForest.add(batch);
  }});forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='soft-watercolour-fir';
 });
 
+// Curved trumpets and layered petals replace the angular placeholder blooms.
+const botanicalPetalGeometry=petalGeometry(5,10);
+function curvedBotanical(species){
+ const pieces=[],stemColor=new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.22);
+ function add(g,color,position=new THREE.Vector3(),rotation=new THREE.Euler(),scale=new THREE.Vector3(1,1,1)){
+  g=g.clone();g.applyMatrix4(new THREE.Matrix4().compose(position,new THREE.Quaternion().setFromEuler(rotation),scale));
+  if(g.index)g=g.toNonIndexed();g.deleteAttribute('uv');const colors=[];const tint=new THREE.Color(color);
+  for(let i=0;i<g.attributes.position.count;i++)colors.push(tint.r,tint.g,tint.b);g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));pieces.push(g);
+ }
+ add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(),new THREE.Vector3(.035,.4,0),new THREE.Vector3(-.035,.8,.025),new THREE.Vector3(.02,1.1,0)]),20,.012,7,false),stemColor);
+ for(let j=0;j<4;j++)add(botanicalPetalGeometry,stemColor,new THREE.Vector3(0,.15+j*.18,0),new THREE.Euler(-.45,j*2.4,.3),new THREE.Vector3(.55,.5,.42));
+ if(species==='bellflower'){
+  for(let b=0;b<4;b++){
+   const a=b*2.4,center=new THREE.Vector3(Math.cos(a)*.13,.57+b*.17,Math.sin(a)*.13),positions=[],indices=[],rows=14,segments=32;
+   for(let j=0;j<=rows;j++)for(let k=0;k<=segments;k++){
+    const u=j/rows,t=k/segments*Math.PI*2,r=.025+.085*Math.pow(u,1.5)+.018*Math.cos(t*5)*Math.pow(u,7);
+    positions.push(Math.cos(t)*r,-u*.23+.035*Math.cos(t*5)*Math.pow(u,6),Math.sin(t)*r);
+   }
+   for(let j=0;j<rows;j++)for(let k=0;k<segments;k++){const n=j*(segments+1)+k;indices.push(n,n+1,n+segments+1,n+1,n+segments+2,n+segments+1);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();add(g,b%2?'#b6b2d5':'#a6accf',center);
+   add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,center.y-.07,0),center.clone().add(new THREE.Vector3(0,.045,0)),center]),10,.007,6,false),stemColor);
+  }
+ }else{
+  const single=['daisy','evening_primrose'].includes(species),layered=species!=='chrysanthemum',layers=single?1:(species==='water_lily'?3:layered?4:5);
+  for(let layer=0;layer<layers;layer++){
+   const count=single?(species==='daisy'?12:4):layered?9-layer:18-layer*2,reach=(species==='peony'?.39:.34)-layer*.044;
+   for(let j=0;j<count;j++){
+    const a=j/count*Math.PI*2+layer*.23;
+    add(botanicalPetalGeometry,single?(species==='daisy'?'#e5e4ef':'#d4c6d9'):(layer%2?'#c6accb':'#d7c1d8'),new THREE.Vector3(.02,1.03+layer*.023,0),new THREE.Euler((layered?-.35:-.12)-layer*.16,a,Math.sin(j*4.1)*.045),new THREE.Vector3((layered?.85:.33)-layer*.025,layered?.8:.35,reach/.82));
+   }
+  }
+  add(new THREE.SphereGeometry(.045,14,9),'#c6b79e',new THREE.Vector3(.02,1.16,0),new THREE.Euler(),new THREE.Vector3(1,.45,1));
+ }
+ return mergeGeometries(pieces);
+}
 const botanicalSpecies=['bellflower','cymbidium','daisy','chrysanthemum','rose','peony','evening_primrose','camellia','phalaenopsis','lavender','water_lily','gladiolus'];
 new GLTFLoader().load('models/meadow-flowers.glb',gltf=>{
  gltf.scene.updateMatrixWorld(true);let speciesCount=0;
  gltf.scene.traverse(part=>{if(!part.isMesh)return;const species=botanicalSpecies.indexOf(part.name);if(species<0)return;speciesCount++;
- const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld);botanicalUVs(geometry);const material=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,map:petalTexture,roughness:.78,roughnessMap:petalRelief,clearcoat:0,sheen:.25,side:THREE.DoubleSide,transparent:true,bumpMap:petalRelief,bumpScale:.008});material.userData.baseOpacity=1;materials.push(material);
+ let geometry=['bellflower','chrysanthemum','rose','peony','camellia','daisy','evening_primrose','water_lily'].includes(part.name)?curvedBotanical(part.name):part.geometry.clone().applyMatrix4(part.matrixWorld);geometry.deleteAttribute('normal');geometry=mergeVertices(geometry,.0001);geometry.computeVertexNormals();botanicalUVs(geometry);const pigment=geometry.attributes.color;if(pigment){const leafTint=new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.22);for(let k=0;k<pigment.count;k++){if(pigment.getY(k)>pigment.getX(k)*1.08&&pigment.getY(k)>pigment.getZ(k)*.95)pigment.setXYZ(k,leafTint.r,leafTint.g,leafTint.b);}}const material=petalMaterial.clone();material.vertexColors=true;material.transparent=true;material.userData.baseOpacity=1;materials.push(material);
  // Normalize imported species to the original meadow flowers' overall size.
  geometry.computeBoundingBox();const size=geometry.boundingBox.getSize(new THREE.Vector3()),extent=Math.max(size.x,size.y,size.z);
  const batch=new THREE.InstancedMesh(geometry,material,150),dummy=new THREE.Object3D();
- for(let j=0;j<150;j++){const cluster=Math.floor(j/25),a=j*2.39996+species,r=.16+Math.sqrt((j%25)/25)*.85,cx=((cluster+species)%2?1:-1)*(2.8+(species%4)*1.45),cz=9-((species*8.5+cluster*21)%115),z=cz+Math.sin(a)*r,x=meadowPlantX(cx+Math.cos(a)*r,z),near=Math.hypot(x-3.4,z+66)<7,scale=2*(.95+(Math.sin(j*12+species)*.5+.5)*.30)/extent*(near?.30:1);
- dummy.position.set(x,meadowFloor(x,z)+.035,z);dummy.rotation.set(Math.sin(a*2)*.12,a,Math.cos(a)*.13);dummy.scale.setScalar(scale);dummy.updateMatrix();batch.setMatrixAt(j,dummy.matrix);}
+ for(let j=0;j<150;j++){
+ const a=random()*Math.PI*2,worldSize=.65+random()*.45,scale=worldSize/extent;
+ const radius=THREE.MathUtils.clamp(Math.max(size.x,size.z)*scale*.46,.22,.52),{x,z}=meadowSite(species*150+j,true,radius);
+ dummy.position.set(x,meadowFloor(x,z)-geometry.boundingBox.min.y*scale-.015,z);dummy.rotation.set(Math.sin(a*2)*.055,a,Math.cos(a)*.055);dummy.scale.setScalar(scale);dummy.updateMatrix();batch.setMatrixAt(j,dummy.matrix);
+ }
  batch.computeBoundingSphere();meadow.add(batch);
  });host.dataset.botanicalSpecies=String(speciesCount);
 },undefined,()=>{host.dataset.botanicalSpecies='unavailable';});
@@ -498,15 +566,15 @@ new GLTFLoader().load('models/wisteria-tree.glb',gltf=>{
 });
 
 const grassGeometry=new THREE.PlaneGeometry(.075,1,1,9);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(.12+.88*Math.sin(Math.PI*h))*(1-h*.65)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
-const grassMaterial=matte('#ffffff',0);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
+const grassMaterial=matte(palette.blue,.01);grassMaterial.side=THREE.DoubleSide;grassMaterial.roughness=1;grassMaterial.clearcoat=0;
 const grass=new THREE.InstancedMesh(grassGeometry,grassMaterial,18000);
-for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(random()-.5)*.6,z=cz+(random()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)+.055,z);treeDummy.rotation.set((random()-.5)*.18,random()*6.28,(random()-.5)*.4);treeDummy.scale.set(.7+random()*1.3,(Math.abs(x)<2?.15:.35)+random()*(Math.abs(x)<2?.25:.85),1);if(Math.hypot(x-3.4,z+66)<3)treeDummy.scale.setScalar(0);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color('#687853').lerp(new THREE.Color('#aaa17b'),.15+random()*.40));}meadow.add(grass);
+for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(random()-.5)*.6,z=cz+(random()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)+.055,z);treeDummy.rotation.set((random()-.5)*.18,random()*6.28,(random()-.5)*.4);treeDummy.scale.set(.7+random()*1.3,(Math.abs(x)<2?.15:.35)+random()*(Math.abs(x)<2?.25:.85),1);if(Math.hypot(x-3.4,z+66)<3)treeDummy.scale.setScalar(0);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.30+random()*.42));}meadow.add(grass);
 [molecule,tissue,career,crisprStudy].forEach(group=>group.traverse(part=>{if(!part.isMesh)return;for(const material of (Array.isArray(part.material)?part.material:[part.material])){material.roughness=.84;material.clearcoat=0;material.bumpMap=microTexture;material.bumpScale=.025;}}));
 // A high, open chamber transitions into a submerged molecular garden.
 for(let j=0;j<10;j++){
  const island=new THREE.Mesh(boulderGeometry,terrainMaterial);island.position.set((j%2?1:-1)*(5+random()*7),8+random()*9,7-j*6);island.scale.set(1.2+random()*2,1.5+random()*3,1+random()*2);island.rotation.z=random();habitat.add(island);
 }
-const portalPoints=Array.from({length:80},(_,i)=>{const a=i/79*Math.PI;return new THREE.Vector3(Math.cos(a)*11,Math.sin(a)*11-7,-63+Math.sin(a*2)*1.5);});tube(habitat,portalPoints,.7,terrainMaterial,120);
+
 const membraneGeometry=new THREE.PlaneGeometry(70,54,70,70);membraneGeometry.rotateX(-Math.PI/2);const mp=membraneGeometry.attributes.position;
 for(let i=0;i<mp.count;i++)mp.setY(i,Math.sin(mp.getX(i)*.22+mp.getZ(i)*.3)*.12);membraneGeometry.computeVertexNormals();
 const membraneMaterial=new THREE.MeshBasicMaterial({color:palette.mist,transparent:true,opacity:.065,depthWrite:false,side:THREE.DoubleSide});materials.push(membraneMaterial);const membrane=new THREE.Mesh(membraneGeometry,membraneMaterial);membrane.position.set(0,.2,-42);habitat.add(membrane);
