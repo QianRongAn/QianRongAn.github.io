@@ -435,17 +435,29 @@ for(let i=0;i<treeCount;i++){
 }forest.add(trunks,canopy);
 // Reuse the approved fir model across the complete forest; the original camera is unchanged.
 const detailedForest=new THREE.Group();forest.add(detailedForest);
+// Close the thin foliage cards so nearby fronds have lit edges and solid volume.
+function thickenFoliage(geometry,thickness){
+ const position=geometry.attributes.position,normal=geometry.attributes.normal,count=position.count,vertices=[],indices=[],edges=new Map();
+ for(const side of [1,-1])for(let i=0;i<count;i++)vertices.push(position.getX(i)+normal.getX(i)*thickness*side/2,position.getY(i)+normal.getY(i)*thickness*side/2,position.getZ(i)+normal.getZ(i)*thickness*side/2);
+ const source=geometry.index.array;
+ for(let i=0;i<source.length;i+=3){const a=source[i],b=source[i+1],c=source[i+2];indices.push(a,b,c,c+count,b+count,a+count);
+  for(const [u,v] of [[a,b],[b,c],[c,a]]){const key=Math.min(u,v)+':'+Math.max(u,v);if(edges.has(key))edges.delete(key);else edges.set(key,[u,v]);}
+ }
+ for(const [a,b] of edges.values())indices.push(a,a+count,b,b,a+count,b+count);
+ const solid=new THREE.BufferGeometry();solid.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));solid.setIndex(indices);solid.computeVertexNormals();geometry.dispose();return solid;
+}
 new GLTFLoader().load('models/watercolour-fir.glb',gltf=>{
  gltf.scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(gltf.scene),center=bounds.getCenter(new THREE.Vector3()),height=bounds.max.y-bounds.min.y;
  gltf.scene.traverse((part)=>{if(!part.isMesh)return;for(let variant=0;variant<3;variant++){
- const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld);geometry.translate(-center.x,-bounds.min.y,-center.z);const positions=geometry.attributes.position;
+ let geometry=part.geometry.clone().applyMatrix4(part.matrixWorld);geometry.translate(-center.x,-bounds.min.y,-center.z);let positions=geometry.attributes.position;
  for(let k=0;k<positions.count;k++){let x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k);const r=Math.hypot(x,z),a=Math.atan2(z,x),weight=r/2;const variation=1+.10*Math.sin(y*1.8+variant*2.1+a*3);positions.setXYZ(k,x*variation,y-Math.pow(r,1.3)*(.10+variant*.035)+Math.sin(a*5+y)*weight*.06,z*variation);}geometry.computeVertexNormals();
  const bark=part.material.name.toLowerCase().includes('bark');
- if(!bark){const pigments=[],shade=new THREE.Color(['#7b86a5','#8b81a5','#778fa8'][variant]),tip=new THREE.Color(['#b2bfd3','#c0b2d0','#acbbd1'][variant]);for(let k=0;k<positions.count;k++){const x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k),r=Math.hypot(x,z),wash=THREE.MathUtils.clamp(.18+r*.18+.12*Math.sin(y*4+x*3+z*5),0,.85),color=shade.clone().lerp(tip,wash);pigments.push(color.r,color.g,color.b);}geometry.setAttribute('color',new THREE.Float32BufferAttribute(pigments,3));}
- const material=new THREE.MeshStandardMaterial({color:bark?'#827080':'#ffffff',vertexColors:!bark,roughness:.94,metalness:0,side:THREE.DoubleSide,transparent:true});material.userData.baseOpacity=1;materials.push(material);
+ if(!bark){geometry=thickenFoliage(geometry,.045);positions=geometry.attributes.position;}
+ if(!bark){const pigments=[],shade=new THREE.Color(['#303c58','#514460','#334b5b'][variant]),tip=new THREE.Color(['#92a9bb','#ac94b5','#91a9b6'][variant]);for(let k=0;k<positions.count;k++){const x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k),r=Math.hypot(x,z),wash=THREE.MathUtils.clamp(r*.35+y/height*.15+.08*Math.sin(y*4+x*3+z*5),0,.9),color=shade.clone().lerp(tip,wash);pigments.push(color.r,color.g,color.b);}geometry.setAttribute('color',new THREE.Float32BufferAttribute(pigments,3));}
+ const material=new THREE.MeshPhysicalMaterial({color:bark?'#675565':'#ffffff',vertexColors:!bark,roughness:.82,metalness:0,clearcoat:0,sheen:.25,side:THREE.FrontSide,transparent:true});material.userData.baseOpacity=1;materials.push(material);
  const trees=treePlacements.filter((_,i)=>i%3===variant),batch=new THREE.InstancedMesh(geometry,material,trees.length),dummy=new THREE.Object3D();
  trees.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor,tree.z);dummy.rotation.set(Math.sin(i*2.1)*.035,i*2.39996+variant,.025*Math.cos(i));dummy.scale.set(scale*(1.05+Math.sin(i)*.13),scale,scale*(.96+Math.cos(i)*.13));dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#b5c0dc':'#dfc8de'),.08+(i%5)*.04));});batch.computeBoundingSphere();detailedForest.add(batch);
- }});forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='volumetric-fir-3-variants';
+ }});forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='solid-fir-3-variants';
 });
 
 const botanicalSpecies=['bellflower','cymbidium','daisy','chrysanthemum','pompon','rose','peony','evening_primrose','camellia','phalaenopsis','lavender','water_lily','gladiolus'];
@@ -453,8 +465,10 @@ new GLTFLoader().load('models/meadow-flowers.glb',gltf=>{
  gltf.scene.updateMatrixWorld(true);let speciesCount=0;
  gltf.scene.traverse(part=>{if(!part.isMesh)return;const species=botanicalSpecies.indexOf(part.name);if(species<0)return;speciesCount++;
  const geometry=part.geometry.clone().applyMatrix4(part.matrixWorld),material=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.82,clearcoat:0,sheen:.25,side:THREE.DoubleSide,transparent:true,bumpMap:microTexture,bumpScale:.014});material.userData.baseOpacity=1;materials.push(material);
+ // Normalize imported species to the original meadow flowers' overall size.
+ geometry.computeBoundingBox();const size=geometry.boundingBox.getSize(new THREE.Vector3()),extent=Math.max(size.x,size.y,size.z);
  const batch=new THREE.InstancedMesh(geometry,material,60),dummy=new THREE.Object3D();
- for(let j=0;j<60;j++){const cluster=Math.floor(j/10),a=j*2.39996+species,r=.16+Math.sqrt((j%10)/10)*.85,cx=((cluster+species)%2?1:-1)*(2.8+(species%4)*1.45),cz=9-((species*8.5+cluster*21)%115),x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,near=Math.hypot(x-3.4,z+66)<7,scale=(.55+(Math.sin(j*12+species)*.5+.5)*.35)*(near?.7:1);
+ for(let j=0;j<60;j++){const cluster=Math.floor(j/10),a=j*2.39996+species,r=.16+Math.sqrt((j%10)/10)*.85,cx=((cluster+species)%2?1:-1)*(2.8+(species%4)*1.45),cz=9-((species*8.5+cluster*21)%115),x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,near=Math.hypot(x-3.4,z+66)<7,scale=(.95+(Math.sin(j*12+species)*.5+.5)*.30)/extent*(near?.30:1);
  dummy.position.set(x,meadowFloor(x,z)+.035,z);dummy.rotation.set(Math.sin(a*2)*.12,a,Math.cos(a)*.13);dummy.scale.setScalar(scale);dummy.updateMatrix();batch.setMatrixAt(j,dummy.matrix);}
  batch.computeBoundingSphere();meadow.add(batch);
  });host.dataset.botanicalSpecies=String(speciesCount);
