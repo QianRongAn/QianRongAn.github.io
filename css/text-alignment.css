@@ -1,0 +1,3 @@
+/* Apply to text containers, including dynamically inserted copy. Last lines stay natural. */
+body :is(h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,dt,dd,.date-location,.tech-description,.pub-content,.journey-kicker,.about-crystal-card,.experience-growth-copy,.journey-panel,.skill-category,.skill-item,.pub-directory,.pub-directory button,.about-crystal-contacts,.pub-impact,.pub-counter,.journey-scroll,.journey-progress,.project-poster-caption,.pub-glass-face){text-align:justify!important;text-align-last:start!important;text-justify:inter-word;}
+html[lang^="zh"] body :is(p,li,blockquote,figcaption,.tech-description){text-justify:inter-character;}
