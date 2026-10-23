@@ -10,7 +10,7 @@
         var curtain = document.createElement('div');
         curtain.id = 'skillsCurtain';
         curtain.setAttribute('aria-hidden', 'true');
-        curtain.innerHTML = '<canvas aria-hidden="true"></canvas><span>Skills &amp; methods</span><small>SEQUENCES · SYSTEMS · DISCOVERY</small>';
+        curtain.innerHTML = '<canvas aria-hidden="true"></canvas><span>Skills &amp; methods</span><img class="skills-curtain-vase" src="assets/ornaments/skills-vase.webp" alt=""><small>SEQUENCES · SYSTEMS · DISCOVERY</small>';
         document.body.appendChild(curtain);
         var field = curtain.querySelector('canvas'), ink = field.getContext('2d');
         function drawField(now) {
