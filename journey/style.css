@@ -70,9 +70,9 @@ html.spine-study #container{pointer-events:none}
 
 #extracurricular .activity-wave :is(.activity-wave-stage,canvas,.activity-wave-controls,button){pointer-events:auto!important}
 
-#journeyCanvas canvas.journey-butterfly-layer{position:absolute;inset:0;pointer-events:none;filter:none;will-change:filter;transform:translateZ(0)}
 
-#journeyCanvas .journey-orchid-screen{position:absolute;z-index:2;transform:translate3d(0,0,0);will-change:transform,opacity;contain:layout paint;pointer-events:none;background:#000;mask-image:url(../../image/orchid-silhouette-atlas.png);mask-size:200% 100%;mask-repeat:no-repeat;-webkit-mask-image:url(../../image/orchid-silhouette-atlas.png);-webkit-mask-size:200% 100%;-webkit-mask-repeat:no-repeat}
+#journeyCanvas .journey-orchid-screen{position:absolute;z-index:2;transform:translate3d(0,0,0);will-change:transform,opacity;contain:layout paint;pointer-events:none;overflow:hidden}
+#journeyCanvas .journey-orchid-screen img{position:absolute;top:0;width:200%;height:100%;max-width:none;filter:brightness(0);pointer-events:none}
 
 html:not(.skip-hero) #heroScreen{position:fixed!important;inset:0!important;z-index:1000!important;background:none!important;pointer-events:none!important;animation:none!important;transition:none!important}
 html:not(.skip-hero) #heroScreen .hero-art,html:not(.skip-hero) #heroScreen canvas,html:not(.skip-hero) #heroScreen .hero-fill,html:not(.skip-hero) #heroScreen .hero-bottom,html:not(.skip-hero) #heroScreen .hero-social,html:not(.skip-hero) #heroScreen .hero-left,html:not(.skip-hero) #heroScreen .hero-enter,html:not(.skip-hero) #heroScreen .hero-scroll{display:none!important}
@@ -93,5 +93,6 @@ html:not(.skip-hero) #heroScreen .hero-bg,html:not(.skip-hero) #heroScreen::befo
 
 html.publication-view .pub-directory{color:#f0eaf7!important}html.publication-view .pub-paper-index button{color:#d5cce2!important}html.publication-view .pub-paper-index button.is-current{color:#fff!important}html.publication-view .pub-paper-index button span:first-child{color:#e4cced!important}html.publication-view .pub-counter,html.publication-view .pub-directory>small{color:#e9e1f0!important}
 
-#crystalPagesCanvas .about-diamond-butterfly{position:absolute;left:50%;top:50%;width:min(860px,72vw);height:79vh;object-fit:contain;transform:translate(-50%,-50%);will-change:transform;pointer-events:none}
+#crystalPagesCanvas .about-diamond-butterfly{position:absolute;left:50%;top:50%;width:min(430px,36vw);aspect-ratio:3/2;transform:translate(-50%,-50%);pointer-events:none}
+#crystalPagesCanvas .about-diamond-butterfly img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;transform-origin:50% 55%;will-change:transform}
 #crystalPagesCanvas .about-diamond-butterfly[hidden]{display:none}

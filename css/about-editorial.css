@@ -19,7 +19,7 @@ html.about-crystal #top-header .nav-link{color:#172731!important}
 
 html.about-crystal #about#about .about-crystal-card .about-paragraph,html.about-crystal #about#about .about-crystal-card .about-paragraph *{font-family:'Recoleta',Georgia,serif!important;font-weight:300!important;text-indent:0!important}
 html.about-crystal #about .about-crystal-label{font-family:'Recoleta',Georgia,serif!important}
-html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-family:Inter,'Microsoft YaHei',sans-serif!important}
+html.about-crystal #about#about .about-crystal-contacts,html.about-crystal #about#about .about-crystal-contacts a{font-family:'Recoleta',Georgia,serif!important}
 html.about-crystal #about .about-crystal-contacts i{font-family:'Font Awesome 5 Free'!important;font-weight:900!important}html.about-crystal #about .about-crystal-contacts .fab{font-family:'Font Awesome 5 Brands'!important}
 
 html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-weight:400!important}
