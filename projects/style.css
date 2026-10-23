@@ -32,3 +32,11 @@ body:has(.is-open) main{margin-top:24px;padding-bottom:35px}body:has(.is-open) .
 .research-note{margin-top:24px;color:#615347;max-width:60ch}
 .research-note h4{font-size:14px;line-height:1.5;font-weight:500;color:var(--ink);margin:0 0 9px}
 .research-note p{font-size:13px;line-height:1.75;margin:0 0 12px}
+
+/* Preserve the complete 3:2 interface and give its dense content more room. */
+#medlit .detail-grid{grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:3vw}
+#medlit .image-button{background:#f6f8fc;border:1px solid #d8dbe5;border-radius:10px;box-shadow:0 12px 32px -18px #3e456b55}
+#medlit .project-image,#medlit .image-button:hover .project-image{height:auto;aspect-ratio:3/2;object-fit:contain;transform:none}
+#medlit .image-zoom{width:38px;height:38px;bottom:14px;right:14px;background:#fff;color:#383953;box-shadow:0 2px 12px #35395115}
+#medlit .image-button:focus-visible{outline:2px solid #7167c9;outline-offset:5px}
+@media(max-width:1000px){#medlit .detail-grid{grid-template-columns:1fr;gap:30px}#medlit .visual-column{grid-row:1;max-width:none}#medlit .copy-column{grid-row:2}#medlit .full-copy{max-height:none;overflow:visible}}

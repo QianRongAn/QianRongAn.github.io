@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#eee}iframe{width:100vw;height:90vh;border:0}button{padding:8px;margin:4px}output{font:14px monospace}</style><button id="about">Open About</button><button id="card">Toggle About card</button><button id="lose">Lose GPU context</button><button id="restore">Restore GPU context</button><output id="status"></output><iframe src="../?v=recovery70"></iframe><script>
+const frame=document.querySelector('iframe');let extension;
+// Open this file through the site's local HTTP server. Lose/restore the context, then repeat on About.
+
+function canvas(){return frame.contentDocument.querySelector('#journeyCanvas canvas,#crystalPagesCanvas canvas');}
+document.querySelector('#about').onclick=()=>{frame.src='../?enter=about&v=recovery70';};
+document.querySelector('#card').onclick=()=>frame.contentDocument.querySelector('.about-crystal-label').click();
+document.querySelector('#lose').onclick=()=>{extension=canvas().getContext('webgl2').getExtension('WEBGL_lose_context');extension.loseContext();};
+document.querySelector('#restore').onclick=()=>extension.restoreContext();
+setInterval(()=>{const d=frame.contentDocument,h=d.querySelector('#journeyCanvas');document.querySelector('#status').textContent=h?.dataset.state+' | '+h?.dataset.progress+' | diamond parts '+d.querySelectorAll('.about-diamond-butterfly img').length;},300);
+</script>

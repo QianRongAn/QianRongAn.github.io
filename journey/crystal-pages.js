@@ -1,14 +1,13 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export function initCrystalPages(originalWings){
+export function initCrystalPages(renderer,getEnvironment){
  const about=document.getElementById('about'),experience=document.getElementById('experience');if(!about||!experience)return;
  const root=document.documentElement,host=document.createElement('div');host.id='crystalPagesCanvas';host.hidden=true;document.body.prepend(host);
- let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});}catch{return;}
- renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;host.append(renderer.domElement);
- const backdrop=document.createElement('canvas');backdrop.width=backdrop.height=512;const ctx=backdrop.getContext('2d'),gradient=ctx.createRadialGradient(256,256,0,256,256,345);gradient.addColorStop(0,'#cddcff');gradient.addColorStop(.35,'#dee6ff');gradient.addColorStop(1,'#fafbff');ctx.fillStyle=gradient;ctx.fillRect(0,0,512,512);const aboutBackground=new THREE.CanvasTexture(backdrop);aboutBackground.colorSpace=THREE.SRGBColorSpace;const scene=new THREE.Scene();scene.background=aboutBackground;const camera=new THREE.PerspectiveCamera(40,1,.1,150);camera.position.set(0,0,13);
- const pmrem=new THREE.PMREMGenerator(renderer),studio=new RoomEnvironment();scene.environment=pmrem.fromScene(studio,.04).texture;scene.environmentIntensity=1.25;studio.dispose();pmrem.dispose();
+ // About is entirely DOM-based, so its butterfly survives an unavailable GPU.
+
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#d6eef4');const camera=new THREE.PerspectiveCamera(40,1,.1,150);camera.position.set(0,0,13);
+ scene.environment=getEnvironment();scene.environmentIntensity=1.25;
  const jewelLights=[],fillLight=new THREE.HemisphereLight('#ffffff','#c4cae9',2);scene.add(fillLight);for(const [x,y,z,p] of [[-5,7,8,3],[6,2,5,2]]){const light=new THREE.DirectionalLight('#ffffff',p);light.position.set(x,y,z);scene.add(light);jewelLights.push(light);}
  const crystal=new THREE.MeshPhysicalMaterial({color:'#f0fbff',roughness:.008,metalness:0,transmission:1,thickness:.22,ior:1.52,transparent:true,opacity:.82,clearcoat:1,clearcoatRoughness:.025,iridescence:0,iridescenceThicknessRange:[230,350],attenuationColor:new THREE.Color('#add9ed'),attenuationDistance:40,side:THREE.DoubleSide});
  // A reference-derived transparent diamond cutout preserves the requested gemstone detail.
@@ -29,12 +28,12 @@ export function initCrystalPages(originalWings){
  function setStep(step){target=THREE.MathUtils.clamp(step,0,count+1);schedule();}
  experience.addEventListener('wheel',e=>{if(!experience.classList.contains('active')||!root.classList.contains('journey-skipped')||e.ctrlKey)return;e.preventDefault();const now=performance.now(),quiet=now-lastWheel;lastWheel=now;if(now<locked||quiet<180)return;locked=now+750;setStep(target+Math.sign(e.deltaY));},{passive:false});
  experience.addEventListener('keydown',e=>{if(['ArrowDown','PageDown','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();setStep(target+(['ArrowDown','PageDown'].includes(e.key)?1:-1));}});experience.tabIndex=0;
- function state(){const visible=root.classList.contains('journey-skipped'),a=visible&&about.classList.contains('active'),e=visible&&experience.classList.contains('active');host.hidden=!(a||e);root.classList.toggle('experience-crystal',e);butterfly.visible=a;butterfly.hidden=!a;branchTree.visible=e;renderer.toneMapping=a?THREE.ACESFilmicToneMapping:THREE.NoToneMapping;renderer.toneMappingExposure=.9;fillLight.intensity=a?.65:2;jewelLights.forEach((light,i)=>light.intensity=a?(i?.8:1.3):(i?2:3));scene.background=a?aboutBackground:new THREE.Color('#d6eef4');if(!host.hidden)schedule();}
- function size(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();schedule();}
+ function state(){const visible=root.classList.contains('journey-skipped'),a=visible&&about.classList.contains('active'),e=visible&&experience.classList.contains('active');host.hidden=!(a||e);root.classList.toggle('experience-crystal',e);butterfly.visible=a;butterfly.hidden=!a;branchTree.visible=e;host.dataset.page=a?'about':'experience';if(e&&renderer){host.prepend(renderer.domElement);scene.environment=getEnvironment();renderer.domElement.style.filter='';renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=.9;}fillLight.intensity=a?.65:2;jewelLights.forEach((light,i)=>light.intensity=a?(i?.8:1.3):(i?2:3));if(!host.hidden)schedule();}
+ function size(){if(renderer)renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();schedule();}
  function render(now){frame=0;if(host.hidden||document.hidden)return;const dt=Math.min((now-previous)/1000||.016,.05);previous=now;const time=now/1000;
  if(butterfly.visible){camera.position.set(0,0,13);camera.lookAt(0,0,0);const flap=matchMedia('(prefers-reduced-motion: reduce)').matches?0:18+Math.sin(time*1.6)*18;diamondWingImages.forEach(({image,side})=>image.style.transform=`perspective(850px) rotateY(${side*flap}deg)`);}
  else{progress=THREE.MathUtils.damp(progress,target,5,dt);camera.position.set(0,Math.max(0,(progress-2.2)*1.65),13);camera.lookAt(0,camera.position.y,0);trunk.geometry.setDrawRange(0,Math.floor(trunk.geometry.index.count*Math.min(1,(progress+.8)/(count+1))));branches.forEach((mesh,i)=>mesh.geometry.setDrawRange(0,Math.floor(mesh.geometry.index.count*THREE.MathUtils.clamp(progress-i,0,1))));labels.forEach((label,i)=>{const selected=Math.min(count-1,Math.max(0,Math.ceil(progress-.01)-1));const entry=THREE.MathUtils.clamp(progress-i-.35,0,1),y=43;label.style.top=y+'%';label.style.opacity=String(i===selected?entry:0);label.style.visibility=i===selected&&entry>.01?'visible':'hidden';});blooms.visible=progress>count-.2;const full=THREE.MathUtils.clamp(progress-count,0,1);blooms.scale.setScalar(.3+full*.7);for(let i=0;i<180;i++){const phase=(time*.20+i*.618)%1;dummy.position.set(Math.sin(i*12.3)*5+Math.sin(time*.5+i)*.25,.5-phase*9,Math.cos(i*8.3)*2);dummy.rotation.set(time*.7+i,i*1.7,time*.45);dummy.scale.set(.025,.055,.012);dummy.updateMatrix();falling.setMatrixAt(i,dummy.matrix);}falling.instanceMatrix.needsUpdate=true;}
- renderer.render(scene,camera);frame=requestAnimationFrame(render);
+ if(!butterfly.visible&&renderer&&!renderer.getContext().isContextLost())renderer.render(scene,camera);frame=requestAnimationFrame(render);
  }
  function schedule(){if(!frame){previous=performance.now();frame=requestAnimationFrame(render);}}
  new MutationObserver(state).observe(about,{attributes:true,attributeFilter:['class']});new MutationObserver(state).observe(experience,{attributes:true,attributeFilter:['class']});new MutationObserver(state).observe(root,{attributes:true,attributeFilter:['class']});addEventListener('resize',size);document.addEventListener('visibilitychange',schedule);size();state();

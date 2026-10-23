@@ -96,3 +96,7 @@ html.publication-view .pub-directory{color:#f0eaf7!important}html.publication-vi
 #crystalPagesCanvas .about-diamond-butterfly{position:absolute;left:50%;top:50%;width:min(430px,36vw);aspect-ratio:3/2;transform:translate(-50%,-50%);pointer-events:none}
 #crystalPagesCanvas .about-diamond-butterfly img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;transform-origin:50% 55%;will-change:transform}
 #crystalPagesCanvas .about-diamond-butterfly[hidden]{display:none}
+
+#crystalPagesCanvas[hidden]{display:none!important}
+#crystalPagesCanvas[data-page="about"]{background:radial-gradient(ellipse at center,#cddcff 0%,#dee6ff 35%,#fafbff 100%)}
+#crystalPagesCanvas[data-page="about"]>canvas{display:none}

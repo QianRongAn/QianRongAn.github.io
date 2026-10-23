@@ -4,7 +4,9 @@ initStructureStudy();
 import './style.css';
 import { initCrystalPages } from './crystal-pages.js';
 import { initActivityWave } from './activity-wave.js';
-initActivityWave();
+const activityPage=document.getElementById('extracurricular');
+const activityObserver=new MutationObserver(()=>{if(activityPage.classList.contains('active')){activityObserver.disconnect();initActivityWave();}});
+if(activityPage?.classList.contains('active'))initActivityWave();else if(activityPage)activityObserver.observe(activityPage,{attributes:true,attributeFilter:['class']});
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -63,7 +65,7 @@ localize();
 
 const host = document.createElement('div'); host.id = 'journeyCanvas'; host.setAttribute('aria-hidden', 'true'); document.body.prepend(host);
 let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (error) { host.dataset.state = 'fallback'; }
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); } catch (error) { host.dataset.state = 'fallback';console.error('Journey WebGL initialization failed',error); }
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(palette.night); scene.fog = new THREE.FogExp2(palette.night, .047);
 const camera = new THREE.PerspectiveCamera(47, 1, .1, 160);
@@ -666,6 +668,7 @@ const splinters=new THREE.Points(splinterGeometry,new THREE.PointsMaterial({vert
 const edgeLight=new THREE.DirectionalLight(palette.blue,2);edgeLight.position.set(-4,3,-5);glassScene.add(edgeLight);
 const rimLight=new THREE.DirectionalLight(palette.dusk,1.5);rimLight.position.set(4,-1,3);glassScene.add(rimLight);
 glassScene.add(new THREE.HemisphereLight(palette.white,palette.blue,2));
+function prepareEnvironments(){
 if(renderer){const studio=new RoomEnvironment(),generator=new THREE.PMREMGenerator(renderer);glassScene.environment=generator.fromScene(studio,.04).texture;scene.environment=glassScene.environment;scene.environmentIntensity=.42;studio.dispose();generator.dispose();}
 // Coloured studio ribbons are reflected by the chrome vertebrae only.
 // Glass paper panels keep their neutral lighting for legible ink.
@@ -679,6 +682,8 @@ if(renderer){
  c*=.85+.15*sin(d.y*50.+a*8.);gl_FragColor=vec4(c,1.);}` }));
  metalStudio.add(metalSky);const metalGenerator=new THREE.PMREMGenerator(renderer);glassMaterial.envMap=metalGenerator.fromScene(metalStudio,.018).texture;metalGenerator.dispose();metalSky.geometry.dispose();metalSky.material.dispose();
 }
+}
+prepareEnvironments();
 // Curved solid glass sheets and printed content share the same world coordinates.
 const glassCards=[];
 const backdrop=new THREE.Mesh(new THREE.PlaneGeometry(160,90),new THREE.ShaderMaterial({depthWrite:false,uniforms:{},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;void main(){vec3 blue=vec3(.22,.27,.43),lilac=vec3(.43,.39,.58);float glow=exp(-8.*distance(vUv,vec2(.64,.68)));gl_FragColor=vec4(mix(blue,lilac,glow*.9),1.);}'}));backdrop.position.z=-26;glassScene.add(backdrop);
@@ -724,8 +729,8 @@ function moveGlassCards(){initGlassCards();const selected=window.PublicationStag
 }
 
 function publicationMode(){return skipped&&!!document.querySelector('#publications.active');}
-function paintGlass(time){if(renderer)renderer.domElement.style.filter='';orchidScreens.forEach(plant=>plant.style.display='none');moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);if(!spineStudy){glassCamera.position.y=THREE.MathUtils.lerp(glassCamera.position.y,window.PublicationStage?.spineOffset||0,.14);glassCamera.lookAt(0,glassCamera.position.y,0);}splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
-if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);}
+function paintGlass(time){if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.domElement.style.filter='';renderer.toneMapping=THREE.NoToneMapping;}orchidScreens.forEach(plant=>plant.style.display='none');moveGlassCards();host.style.display='';host.style.zIndex='0';host.style.background='#979eb7';host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');host.dataset.mode='publication-glass';skeleton.rotation.y=THREE.MathUtils.lerp(skeleton.rotation.y,.85+(window.PublicationStage?.index||0)*.85,.12)+.0008;skeleton.rotation.z=Math.sin(time*.12)*.10;skeleton.position.y=Math.sin(time*.3)*.12;skeleton.scale.setScalar(1.4);if(!spineStudy){glassCamera.position.y=THREE.MathUtils.lerp(glassCamera.position.y,window.PublicationStage?.spineOffset||0,.14);glassCamera.lookAt(0,glassCamera.position.y,0);}splinters.rotation.y=time*.045;if(spineStudy){backdrop.visible=false;glassCards.forEach(card=>card.visible=false);skeleton.position.x=0;skeleton.scale.setScalar(1.05);skeleton.rotation.z=.035;skeleton.rotation.y=studyRotation.y;glassScene.background.set('#12101f');host.style.background='#12101f';}if(studyControls)studyControls.update();if(renderer)renderer.render(glassScene,glassCamera);}
+if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));renderer.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(renderer.domElement);}
 // The orchids are DOM sprites; only the WebGL stage receives the opening blur.
 const gazePoint=new THREE.Vector3();
 const clamp=THREE.MathUtils.clamp;
@@ -738,11 +743,12 @@ function measure(){
     sectionTop=section.getBoundingClientRect().top+scrollY;travel=Math.max(1,section.offsetHeight-innerHeight);
     const mobile=false;
     [[life,3.4,.15,.68],[molecule,-3.8,-.1,.62],[evidence,3.6,.1,.68],[publications,2.7,.3,.7]].forEach(([group,x,mx,scale])=>{group.position.x=mobile?mx:x;group.scale.setScalar(mobile?scale:1);});career.scale.x=mobile?.3:1;
-    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);orchidScreens.forEach(screen=>{screen.style.width=`${2.1*.62*unit}px`;screen.style.height=`${2.8*.62*unit}px`;screen.style.left='0';screen.style.top='0';});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
+    if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);orchidScreens.forEach(screen=>{screen.style.width=`${2.1*.62*unit}px`;screen.style.height=`${2.8*.62*unit}px`;screen.style.left='0';screen.style.top='0';});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));renderer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
 }
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
 function paint(t,time){
+    if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
     moonMaterial.uniforms.opacity.value=.84*smooth(.26,.55,t)*(1-smooth(.97,1,t));
     skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.845;dna.visible=t>.115&&t<.27;membrane.visible=false;
@@ -792,7 +798,8 @@ function paint(t,time){
     const openingText=document.getElementById('heroScreen');if(openingText&&root.classList.contains('intro-text-active')){openingText.style.opacity=String(1-opening);openingText.style.display=t<.12?'block':'none';}
     host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.flapping=String(opening<1);host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
 }
-function isVisible(){return !document.hidden&&(!skipped||publicationMode())&&!motion.matches&&!root.classList.contains('hero-locked');}
+if(renderer){renderer.domElement.addEventListener('webglcontextlost',()=>{host.dataset.state='context-lost';cancelAnimationFrame(frame);frame=0;});renderer.domElement.addEventListener('webglcontextrestored',()=>{host.dataset.state='ready';prepareEnvironments();measure();resume();});host.dataset.state='ready';}
+function isVisible(){return host.dataset.state!=='context-lost'&&!document.hidden&&(!skipped||publicationMode())&&!motion.matches&&!root.classList.contains('hero-locked');}
 function tick(now){frame=0;if(!isVisible())return;if(now-previous<1000/(current<.20?60:30)){frame=requestAnimationFrame(tick);return;}const dt=Math.min((now-previous)/1000||.016,.06);previous=now;elapsed+=dt;current+=(target-current)*(1-Math.exp(-dt*10));if(Math.abs(target-current)<.0001)current=target;if(publicationMode())paintGlass(elapsed);else paint(current,elapsed);if(publicationMode()||current<1||target<1||elapsed-oldCopyStarted<.8)frame=requestAnimationFrame(tick);}
 function resume(){if(skipped){host.style.display=publicationMode()?'':'none';host.style.zIndex=publicationMode()?'0':'-1';}if(isVisible()&&!frame){previous=performance.now();frame=requestAnimationFrame(tick);}if(!isVisible()){cancelAnimationFrame(frame);frame=0;}}
 function skip(){const openingText=document.getElementById('heroScreen');if(openingText){openingText.style.display='none';openingText.hidden=true;}scrollTween?.kill();skipped=true;root.classList.add('journey-skipped');root.classList.remove('journey-dark');intro.style.setProperty('opacity','1','important');section.hidden=true;host.style.display='none';resume();}
@@ -839,7 +846,7 @@ root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
 const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,ncc:13,crispr:17,papers:18};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')openingReady.then(showScene);else addEventListener('load',()=>openingReady.then(showScene),{once:true});}
-initCrystalPages(wings);
+initCrystalPages(renderer,()=>scene.environment);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
 }
