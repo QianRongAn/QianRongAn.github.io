@@ -2990,6 +2990,8 @@
 <style>@font-face{font-family:Producer;src:url("fonts/Producer_Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:block;}#heroScreen .hero-focus,#heroScreen .hero-focus *{font-family:Producer,Georgia,serif!important;font-weight:400!important;}</style>
 <link rel="stylesheet" href="css/hero-lettering.css?v=20261022-static52">
     <link rel="stylesheet" href="css/text-alignment.css?v=20261024-clear71">
+    <link rel="stylesheet" href="css/education-photos.css?v=20261024-photos72">
+    <script src="js/education-photos.js?v=20261024-photos72" defer></script>
 </head>
 <body>
     <div class="page-curtain" id="pageCurtain" aria-hidden="true">
@@ -3050,8 +3052,8 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="js/hero-lettering.js?v=20261022-static52" defer></script>
     <script src="js/hero-rise.js?v=20261020-rise32"></script>
-    <script src="js/zh-copy.js?v=20261018-skills" defer></script>
-    <script src="js/i18n.js?v=20261019-skills" defer></script>
+    <script src="js/zh-copy.js?v=20261024-meetings72" defer></script>
+    <script src="js/i18n.js?v=20261024-photos72" defer></script>
     <script src="js/project-posters.js?v=20261021-curtain42" defer></script>
     <link rel="stylesheet" href="css/skills-accordion.css?v=20261019-auto2">
     <script src="js/skills-accordion.js?v=20261019-auto2" defer></script>
@@ -3182,13 +3184,22 @@
                     </div>
                     <div class="education-gallery">
                         <div class="education-item">
-                            <img src="image/edu1.jpg" alt="Education 1" class="education-image" loading="lazy">
+                            <button type="button" class="education-photo-toggle" aria-pressed="false" aria-label="Show photograph">
+                                <img src="assets/education/laboratory-poster.png" alt="Laboratory group, watercolor collage" class="education-poster" loading="lazy">
+                                <img src="assets/education/laboratory-poster.png" alt="" class="education-poster education-poster--photo" loading="lazy" aria-hidden="true">
+                            </button>
+                            <span class="education-photo-hint">Click to view photograph</span>
                             <p class="education-caption">The second person from the right in the first row. All the staff in the laboratory and some undergraduate students.</p>
                         </div>
                         <div class="education-item">
-                            <img src="image/edu2.jpg" alt="Education 2" class="education-image" loading="lazy">
+                            <button type="button" class="education-photo-toggle" aria-pressed="false" aria-label="Show photograph">
+                                <img src="assets/education/defense-poster.png" alt="Thesis defense group, watercolor collage" class="education-poster" loading="lazy">
+                                <img src="assets/education/defense-poster.png" alt="" class="education-poster education-poster--photo" loading="lazy" aria-hidden="true">
+                            </button>
+                            <span class="education-photo-hint">Click to view photograph</span>
                             <p class="education-caption">The middle one. Graduation thesis defenses.</p>
                         </div>
+                        <img src="assets/education/pearl-flower.png" alt="" aria-hidden="true" class="education-pearl-flower" loading="lazy">
                     </div>
                 </section>
             </div>
@@ -3255,6 +3266,10 @@
                             <ul>
                                 <li>Make keynote presentation PowerPoint for CCHIO, assist in holding the meeting</li>
                             </ul>
+                            </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="details">
                             <h4>Tumor Gene Diagnosis of Chinese Anti-Cancer Association</h4>
                             <span class="date-location">10/2024 | Shanghai, China</span>
                             <ul>
