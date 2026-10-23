@@ -43,8 +43,6 @@ html.journey-dark #journeyCanvas::after { content: ''; position: absolute; inset
 
 html.journey-dark #journeyCanvas::after { opacity: .5; }
 
-/* Keep text separate from bright geometry without an opaque reading card. */
-.journey-panel--light-ink::before{content:'';position:absolute;z-index:-1;inset:-55px -70px;background:radial-gradient(ellipse,#12084870 0%,#12084835 45%,transparent 72%);pointer-events:none}
 .journey-panel{isolation:isolate}
 
 /* Isolated sculpture study for reviewing the actual gallery model. */
@@ -94,3 +92,6 @@ html.experience-crystal #experience .dream-kicker{display:none!important}
 html:not(.skip-hero) #heroScreen .hero-bg,html:not(.skip-hero) #heroScreen::before,html:not(.skip-hero) #heroScreen::after{display:none!important;background:none!important}
 
 html.publication-view .pub-directory{color:#f0eaf7!important}html.publication-view .pub-paper-index button{color:#d5cce2!important}html.publication-view .pub-paper-index button.is-current{color:#fff!important}html.publication-view .pub-paper-index button span:first-child{color:#e4cced!important}html.publication-view .pub-counter,html.publication-view .pub-directory>small{color:#e9e1f0!important}
+
+#crystalPagesCanvas .about-diamond-butterfly{position:absolute;left:50%;top:50%;width:min(860px,72vw);height:79vh;object-fit:contain;transform:translate(-50%,-50%);will-change:transform;pointer-events:none}
+#crystalPagesCanvas .about-diamond-butterfly[hidden]{display:none}

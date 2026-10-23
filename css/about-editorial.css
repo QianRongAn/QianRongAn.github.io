@@ -1,5 +1,5 @@
 @media(min-width:769px){
-html.about-crystal{background:#e0e7fa!important}html.about-crystal body{background:#e0e7fa!important;overflow:hidden!important;height:100vh!important}
+html.about-crystal{background:#d6e0ff!important}html.about-crystal body{background:#d6e0ff!important;overflow:hidden!important;height:100vh!important}
 html.about-crystal body::before,html.about-crystal body::after{display:none!important}
 html.about-crystal #container{position:fixed!important;inset:0;width:100%;max-width:none;padding:0!important;margin:0!important;overflow:hidden!important}
 html.about-crystal #content-wrapper{margin:0!important;min-height:0!important}
@@ -18,9 +18,10 @@ html.about-crystal #top-header .nav-link{color:#172731!important}
 }
 
 html.about-crystal #about#about .about-crystal-card .about-paragraph,html.about-crystal #about#about .about-crystal-card .about-paragraph *{font-family:'Recoleta',Georgia,serif!important;font-weight:300!important;text-indent:0!important}
-html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-family:'Recoleta',Georgia,serif!important}
+html.about-crystal #about .about-crystal-label{font-family:'Recoleta',Georgia,serif!important}
+html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-family:Inter,'Microsoft YaHei',sans-serif!important}
 html.about-crystal #about .about-crystal-contacts i{font-family:'Font Awesome 5 Free'!important;font-weight:900!important}html.about-crystal #about .about-crystal-contacts .fab{font-family:'Font Awesome 5 Brands'!important}
 
 html.about-crystal #about .about-crystal-label,html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-weight:400!important}
 
-html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-weight:700!important}
+html.about-crystal #about .about-crystal-contacts,html.about-crystal #about .about-crystal-contacts a{font-weight:400!important}
