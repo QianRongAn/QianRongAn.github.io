@@ -1,0 +1,6 @@
+/* Small transparent accents; the publication heading keeps its original coordinates. */
+.project-vase { display:block; width:clamp(68px,7vw,100px); height:130px; object-fit:contain; margin:20px 0 0 auto; pointer-events:none; }
+#skillsCurtain .skills-curtain-vase { position:absolute; right:4vw; top:50%; transform:translateY(-50%); width:clamp(64px,7vw,100px); max-height:145px; object-fit:contain; pointer-events:none; }
+.pub-directory .publication-vase { position:absolute; left:0; bottom:calc(100% + 18px); width:clamp(60px,6vw,86px); height:120px; object-fit:contain; object-position:left bottom; pointer-events:none; }
+/* Skill names need natural spacing rather than paragraph justification. */
+#skills#skills :is(h2,h3,p,span,button,.skill-category,.skills-grid),#skillsCurtain :is(span,small) { text-align:left!important; text-align-last:left!important; word-spacing:normal; }

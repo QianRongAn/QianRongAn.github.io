@@ -23,9 +23,15 @@
         document.querySelectorAll('[data-zh-slot]').forEach(function (el) {
             if (['publications', 'projects', 'skills'].indexOf(el.getAttribute('data-zh-slot')) !== -1) return;
             var original = remember(el, '_enHtml', el.innerHTML);
+            var gallery = el.getAttribute('data-zh-slot') === 'education' && el.querySelector('.education-gallery');
             var next = zh && pack.slots && pack.slots[el.getAttribute('data-zh-slot')];
             if (next) el.innerHTML = next;
             else if (el.innerHTML !== original) el.innerHTML = original;
+            if (gallery) {
+                var replacement = el.querySelector('.education-gallery');
+                if (replacement) replacement.remove();
+                el.appendChild(gallery);
+            }
         });
 
         document.querySelectorAll('[data-i18n]').forEach(function (el) {
