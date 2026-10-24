@@ -7,5 +7,5 @@ document.querySelector('#about').onclick=()=>{frame.src='../?enter=about&v=recov
 document.querySelector('#card').onclick=()=>frame.contentDocument.querySelector('.about-crystal-label').click();
 document.querySelector('#lose').onclick=()=>{extension=canvas().getContext('webgl2').getExtension('WEBGL_lose_context');extension.loseContext();};
 document.querySelector('#restore').onclick=()=>extension.restoreContext();
-setInterval(()=>{const d=frame.contentDocument,h=d.querySelector('#journeyCanvas');document.querySelector('#status').textContent=h?.dataset.state+' | '+h?.dataset.progress+' | diamond parts '+d.querySelectorAll('.about-diamond-butterfly img').length;},300);
+setInterval(()=>{const d=frame.contentDocument,h=d.querySelector('#journeyCanvas');document.querySelector('#status').textContent=h?.dataset.state+' | '+h?.dataset.progress+' | crystal stage '+Boolean(d.querySelector('#crystalPagesCanvas canvas'));},300);
 </script>
