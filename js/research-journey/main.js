@@ -30316,7 +30316,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
   const Ts = new qt(Hl, Gl, es * si), Xl = new qt(Hl, Wl, es * 3), ql = new qt(new Hi(new Zn([new w(0, 0, 0), new w(0.025, 0.33, 0.02), new w(0.13, 0.68, 0.035), new w(0.28, 1, 0.05)]), 12, 0.025, 5, !1), Wl, es), $o = new qt(new dn(1, 10, 7), k, es), jo = new qt(new dn(1, 6, 4), W, es * 9), Qt = new wt(), As = new wt(), Yl = [], Qo = [r.dusk, "#bdc5df", "#8fa6d9", "#d0c1df", "#f0edf7", "#dcb6cf"];
   let ts = 0, Hu = 0;
   for (let p = 0; p < es * 2 && ts < es; p++) {
-    let S = 0.26 + oe() * 0.025;
+    let S = (p < 30 ? 0.36 : 0.26) + oe() * 0.025;
     const A = 0.82 * S + 0.1, P = oe() * Math.PI * 2, O = Bl(p, !1, A, p < 30 ? { x: [-3.2, -6, -7.5][Math.floor(p / 10)], z: [-65.5, -65, -67][Math.floor(p / 10)], rx: 0.95, rz: 1.1 } : null, { x: Math.cos(P) * 0.28, z: -Math.sin(P) * 0.28 });
     if (!O) continue;
     p < 30 && Hu++;

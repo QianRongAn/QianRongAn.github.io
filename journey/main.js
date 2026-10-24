@@ -525,7 +525,7 @@ const flowerDummy=new THREE.Object3D(),flowerRoot=new THREE.Object3D(),flowerPos
 const blossomColors=[palette.dusk,'#bdc5df','#8fa6d9','#d0c1df','#f0edf7','#dcb6cf'];
 let plantedFlowers=0,foregroundFlowers=0;
 for(let attempt=0;attempt<flowerCount*2&&plantedFlowers<flowerCount;attempt++){
- let scale=.26+random()*.025;const radius=.82*scale+.10,bend=random()*Math.PI*2,site=meadowSite(attempt,false,radius,attempt<30?{x:[-3.2,-6,-7.5][Math.floor(attempt/10)],z:[-65.5,-65,-67][Math.floor(attempt/10)],rx:.95,rz:1.1}:null,{x:Math.cos(bend)*.28,z:-Math.sin(bend)*.28});if(!site)continue;
+ let scale=(attempt<30?.36:.26)+random()*.025;const radius=.82*scale+.10,bend=random()*Math.PI*2,site=meadowSite(attempt,false,radius,attempt<30?{x:[-3.2,-6,-7.5][Math.floor(attempt/10)],z:[-65.5,-65,-67][Math.floor(attempt/10)],rx:.95,rz:1.1}:null,{x:Math.cos(bend)*.28,z:-Math.sin(bend)*.28});if(!site)continue;
  if(attempt<30)foregroundFlowers++;const i=plantedFlowers++,{x,z}=site,floor=meadowFloor(x,z),rawHeight=.66+random()*.16,hx=x+Math.cos(bend)*.28,hz=z-Math.sin(bend)*.28;
  scale=Math.min(scale,meadowViewpoints.reduce((d,v)=>Math.min(d,v.distanceTo(new THREE.Vector3(hx,floor+rawHeight,hz))),Infinity)*.023);const height=Math.min(rawHeight,Math.max(.42,scale*2.4));
  flowerPositions.push({x,y:floor,z,height,scale,head:new THREE.Vector3(hx,floor+height,hz)});
