@@ -30303,7 +30303,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
   let ts = 0;
   for (let p = 0; p < es * 2 && ts < es; p++) {
     let S = 0.26 + oe() * 0.025;
-    const E = 0.82 * S + 0.1, I = oe() * Math.PI * 2, O = Bl(p, !1, E, null, { x: Math.cos(I) * 0.28, z: -Math.sin(I) * 0.28 });
+    const E = 0.82 * S + 0.1, I = oe() * Math.PI * 2, O = Bl(p, !1, E, p < 30 ? { x: [-1.8, -3.2, -4.4][Math.floor(p / 10)], z: [-64.2, -65.5, -63][Math.floor(p / 10)], rx: 0.95, rz: 1.1 } : null, { x: Math.cos(I) * 0.28, z: -Math.sin(I) * 0.28 });
     if (!O) continue;
     const G = ts++, { x: Y, z: X } = O, ne = qn(Y, X), xe = 0.66 + oe() * 0.16, Ee = Y + Math.cos(I) * 0.28, Ge = X - Math.sin(I) * 0.28;
     S = Math.min(S, Il.reduce((_e, Ie) => Math.min(_e, Ie.distanceTo(new T(Ee, ne + xe, Ge))), 1 / 0) * 0.023);
@@ -30317,7 +30317,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
       Qt.position.set(Math.cos(Ie) * 0.12, 0.15, Math.sin(Ie) * 0.12), Qt.scale.setScalar(0.025), Qt.updateMatrix(), jo.setMatrixAt(G * 9 + _e, new at().multiplyMatrices(As.matrix, Qt.matrix));
     }
     for (let _e = 0; _e < 3; _e++)
-      Qt.position.set(Y + _e * 0.05, ne + Ce * (0.25 + _e * 0.17), X), Qt.rotation.set(0.48, _e * 2.4 + G * 0.2, 0), Qt.scale.setScalar(Math.hypot(Y - 3.4, X + 66) < 7 ? 0.16 : 0.43), Qt.updateMatrix(), Xl.setMatrixAt(G * 3 + _e, Qt.matrix);
+      Qt.position.set(Y + _e * 0.05, ne + Ce * (0.25 + _e * 0.17), X), Qt.rotation.set(0.48, _e * 2.4 + G * 0.2, 0), Qt.scale.setScalar(Math.hypot(Y - 3.4, X + 66) < 7 ? 0.16 : 0.27), Qt.updateMatrix(), Xl.setMatrixAt(G * 3 + _e, Qt.matrix);
   }
   ql.count = $o.count = ts, Ts.count = ts * si, Xl.count = ts * 3, jo.count = ts * 9;
   const Kl = /* @__PURE__ */ new Set(), ea = new Kt(47, 16 / 9, 0.1, 160);
@@ -30450,7 +30450,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
       const X = Math.sin(S * 127.1 + 19.7) * 43758.5453;
       return X - Math.floor(X);
     }, I = (S % 2 ? 1 : -1) * (0.15 + E() * 11), O = 14 - S * 0.61803398875 % 1 * 119, G = I + (oe() - 0.5) * 0.6, Y = O + (oe() - 0.5) * 0.6;
-    Yt.position.set(G, qn(G, Y) + 0.055, Y), Yt.rotation.set((oe() - 0.5) * 0.18, oe() * 6.28, (oe() - 0.5) * 0.4), Yt.scale.set(0.7 + oe() * 1.3, (Math.abs(G) < 2 ? 0.15 : 0.35) + oe() * (Math.abs(G) < 2 ? 0.25 : 0.85), 1), Math.hypot(G - 3.4, Y + 66) < 3 && Yt.scale.setScalar(0), Yt.updateMatrix(), sa.setMatrixAt(p, Yt.matrix), sa.setColorAt(p, new ye(r.blue).lerp(new ye(r.mist), 0.3 + oe() * 0.42));
+    Yt.position.set(G, qn(G, Y) + 0.055, Y), Yt.rotation.set((oe() - 0.5) * 0.18, oe() * 6.28, (oe() - 0.5) * 0.4), Yt.scale.set(0.7 + oe() * 1.3, (Math.abs(G) < 2 ? 0.12 : 0.2) + oe() * (Math.abs(G) < 2 ? 0.18 : 0.35), 1), Math.hypot(G - 3.4, Y + 66) < 3 && Yt.scale.setScalar(0), Yt.updateMatrix(), sa.setMatrixAt(p, Yt.matrix), sa.setColorAt(p, new ye(r.blue).lerp(new ye(r.mist), 0.3 + oe() * 0.42));
   }
   Kr.add(sa), [Wt, je, Le].forEach((p) => p.traverse((S) => {
     if (S.isMesh)
