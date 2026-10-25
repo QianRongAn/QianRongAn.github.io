@@ -3,7 +3,7 @@
 #skillsCurtain .skills-curtain-vase { position:absolute; right:4vw; top:50%; transform:translateY(-50%); width:clamp(95px,10.5vw,150px); max-height:200px; object-fit:contain; pointer-events:none; }
 .pub-directory .pub-directory-label { position:relative; display:inline-block; }
 .pub-directory .publication-vase { position:absolute; left:50%; bottom:calc(100% + 22px); transform:translateX(-50%); width:124px; height:160px; object-fit:contain; pointer-events:none; }
-.pub-directory { top:54%; }
+.pub-stage .pub-directory { top:54%; }
 /* Skill names need natural spacing rather than paragraph justification. */
 #skills#skills :is(h2,h3,p,span,button,.skill-category,.skills-grid),#skillsCurtain :is(span,small) { text-align:left!important; text-align-last:left!important; word-spacing:normal; }
 
