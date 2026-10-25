@@ -1,28 +1,36 @@
-/* Experience redesign: scoped to #experience; palette/fonts reuse the site's own variables. */
-#experience section.xp{position:relative}
-#experience .xp-rail{position:absolute;left:19px;top:104px;bottom:28px;width:1px;transform-origin:top;
+/* Experience redesign: scoped to #experience; palette/fonts reuse the site's own variables.
+   NOTE: dream-glass.css uses doubled-id selectors (#experience#experience ...), so the
+   competing rules here are written with doubled ids too, otherwise they lose the cascade. */
+#experience#experience section.xp{position:relative}
+#experience#experience .xp-rail{position:absolute;left:19px;top:104px;bottom:28px;width:1px;transform-origin:top;
   background:linear-gradient(var(--line-color),rgba(208,186,152,0))}
-#experience section.xp .content-item.xp-card,
-#experience section.xp .content-item.xp-card:hover{position:relative;margin:0 0 28px 56px!important;
+#experience#experience section.xp .content-item.xp-card,
+#experience#experience section.xp .content-item.xp-card:hover{position:relative;margin:0 0 28px 56px!important;
   padding:28px 34px 22px!important;border:1px solid var(--glass-border)!important;border-radius:18px;
   background:var(--glass-bg-content)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 10px 30px rgba(35,20,12,.08)!important;transform:none!important}
-#experience .xp-card::before{content:"";position:absolute;left:-43px;top:36px;width:11px;height:11px;
-  border-radius:50%;background:#fff;border:1.5px solid var(--deep-red)}
-#experience .xp-card.is-now::before{background:var(--deep-red);box-shadow:0 0 0 0 rgba(145,4,12,.35);animation:xp-pulse 2.4s infinite}
+#experience#experience .xp-card::before{content:"";position:absolute;left:-43px;top:36px;width:11px;height:11px;
+  border-radius:50%;background:#fff;border:1.5px solid var(--deep-red);z-index:2}
+/* the pre-existing counter badge sits on top of .xp-no - drop it inside decorated cards */
+#experience#experience .xp-card::after{display:none!important}
+#experience#experience .xp-card.is-now::before{background:var(--deep-red);box-shadow:0 0 0 0 rgba(145,4,12,.35);animation:xp-pulse 2.4s infinite}
 @keyframes xp-pulse{70%{box-shadow:0 0 0 9px rgba(145,4,12,0)}100%{box-shadow:0 0 0 0 rgba(145,4,12,0)}}
-#experience .xp-no{position:absolute;right:26px;top:12px;font:56px/1 'Aboreto','Georgia',serif;color:transparent;
+#experience#experience .xp-no{position:absolute;right:26px;top:12px;font:56px/1 'Aboreto','Georgia',serif;color:transparent;
   -webkit-text-stroke:1px var(--light-tan);pointer-events:none}
-#experience .xp-date{display:inline-block;font:500 12px/1 var(--sans-font);letter-spacing:.08em;color:var(--text-secondary);
+#experience#experience .xp-date{display:inline-block;font:500 12px/1 var(--sans-font);letter-spacing:.08em;color:var(--text-secondary);
   padding:6px 13px;border:1px solid var(--line-color);border-radius:999px;background:rgba(208,186,152,.18)}
-#experience .xp-card .details h3{margin:12px 0 4px!important;padding-right:70px}
-#experience .xp-card .date-location.xp-org{display:block;margin:0 0 14px;font:400 14px/1.5 var(--sans-font);color:var(--text-secondary)}
-#experience .xp-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-#experience .xp-tags span{font:500 12px/1 var(--sans-font);padding:5px 10px;border-radius:999px;color:var(--deep-red);
+#experience#experience .xp-card .details h3{margin:12px 0 4px!important;padding-right:70px}
+#experience#experience .xp-card .date-location.xp-org{display:block;margin:0 0 14px!important;font:400 14px/1.5 var(--sans-font)!important;
+  color:var(--text-secondary)!important;letter-spacing:0!important;line-height:1.5!important}
+#experience#experience .xp-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+#experience#experience .xp-tags span{font:500 12px/1 var(--sans-font);padding:5px 10px;border-radius:999px;color:var(--deep-red);
   background:rgba(145,4,12,.07);border:1px solid rgba(145,4,12,.18)}
-#experience .xp-card .details ul{padding-left:18px}
-#experience .xp-card .details ul li{text-align:left}
-#experience .xp-fold:not(.is-open) .xp-extra{display:none}
-#experience .xp-more{margin-top:4px;padding:4px 0;border:0;background:none;cursor:pointer;
+/* tags / toggle can land inside the dark .glass-well panel - keep them legible there */
+#experience#experience .glass-well .xp-tags span{color:#f6e3ec;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.1)}
+#experience#experience .xp-card .details ul{padding-left:18px}
+#experience#experience .xp-card .details ul li{text-align:left}
+#experience#experience .xp-fold:not(.is-open) .xp-extra{display:none}
+#experience#experience .xp-more{margin-top:4px;padding:4px 0;border:0;background:none;cursor:pointer;
   font:500 13px/1 var(--sans-font);letter-spacing:.04em;color:var(--deep-red)}
-#experience .xp-more:hover{text-decoration:underline;text-underline-offset:4px}
+#experience#experience .glass-well .xp-more{color:#f2dae7}
+#experience#experience .xp-more:hover{text-decoration:underline;text-underline-offset:4px}
