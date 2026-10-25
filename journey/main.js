@@ -223,14 +223,13 @@ const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<clou
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
-const lunarTexture=new THREE.TextureLoader().load('image/white-planet-surface.png');lunarTexture.colorSpace=THREE.SRGBColorSpace;
-// Separate moons: the distant planet meets the horizon; the smaller moon stays whole.
 const moonVertex=`varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vUv=uv;vWorld=(modelMatrix*vec4(position,1.)).xyz;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-vWorld);gl_Position=projectionMatrix*p;}`;
-const moonFragment=`uniform sampler2D surface;uniform float opacity;uniform float horizon;uniform float shadowFade;uniform float lightDepth;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float light=dot(n,normalize(vec3(.95,.12,lightDepth)));float sun=max(light,0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);float phase=mix(1.,smoothstep(-.08,.40,light),shadowFade);float above=smoothstep(horizon-.5,horizon+.5,vWorld.y);vec3 color=mix(stone,vec3(1.),.42)*(.63+.37*sqrt(sun))+vec3(.045)*rim;gl_FragColor=vec4(color,opacity*phase*above);
+// A prelit colony disk keeps the cinematic scene legible during the camera flight.
+const colonyTexture=new THREE.TextureLoader().load('assets/ornaments/moon-art-colony.webp',()=>{host.dataset.moon='art-colony';});colonyTexture.colorSpace=THREE.SRGBColorSpace;
+const moonMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:colonyTexture},opacity:{value:0}},vertexShader:moonVertex,fragmentShader:`uniform sampler2D surface;uniform float opacity;varying vec2 vUv;void main(){vec4 artwork=texture2D(surface,vUv);gl_FragColor=vec4(artwork.rgb,artwork.a*opacity);
 #include <colorspace_fragment>
-}`;
-function lunarMaterial(horizon,shadowFade){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:lunarTexture},opacity:{value:0},horizon:{value:horizon},shadowFade:{value:shadowFade},lightDepth:{value:shadowFade?.04:.8}},vertexShader:moonVertex,fragmentShader:moonFragment});}
-const moonMaterial=lunarMaterial(-6,1),moon=new THREE.Mesh(new THREE.SphereGeometry(31,96,64),moonMaterial);moon.position.set(-2,-5,-188);skyObjects.add(moon);
+}`});
+const moon=new THREE.Mesh(new THREE.PlaneGeometry(62,62),moonMaterial);moon.position.set(-2,20,-188);skyObjects.add(moon);
 let firstMoonSeed=807;const firstMoonRandom=()=>{firstMoonSeed=(firstMoonSeed*1664525+1013904223)>>>0;return firstMoonSeed/4294967296;};
 const smallMoonGeometry=new THREE.SphereGeometry(3.1,64,40);
 const firstMoonCanvas=document.createElement('canvas');firstMoonCanvas.width=1024;firstMoonCanvas.height=512;const firstMoonContext=firstMoonCanvas.getContext('2d');
@@ -795,7 +794,7 @@ function paint(t,time){
     cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
     const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
-    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);moon.quaternion.copy(camera.quaternion);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;smallMoonMaterial.uniforms.opacity.value=fade*emergence;
