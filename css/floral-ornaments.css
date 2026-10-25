@@ -4,3 +4,14 @@
 .pub-directory .publication-vase { position:absolute; left:0; bottom:calc(100% + 18px); width:clamp(60px,6vw,86px); height:120px; object-fit:contain; object-position:left bottom; pointer-events:none; }
 /* Skill names need natural spacing rather than paragraph justification. */
 #skills#skills :is(h2,h3,p,span,button,.skill-category,.skills-grid),#skillsCurtain :is(span,small) { text-align:left!important; text-align-last:left!important; word-spacing:normal; }
+
+/* Page-specific small additions. */
+.project-vase-center { display:block; width:clamp(72px,7vw,100px); height:130px; object-fit:contain; margin:20px auto 0; pointer-events:none; }
+.statement-vase { position:absolute; top:26px; right:28px; width:clamp(76px,8vw,108px); height:108px; object-fit:contain; pointer-events:none; }
+.content-section:has(.statement-vase) h1 { padding-right:125px; }
+#footer .skills-footer-vase { display:none; }
+html.skills-view #footer :is(.footer-image,.footer-icons,.footer-links) { display:none!important; }
+html.skills-view #footer { height:auto!important; min-height:0!important; padding:24px 0 42px!important; background:transparent!important; }
+html.skills-view #footer .skills-footer-vase { display:block; width:76px; height:100px; object-fit:contain; margin:0 auto; }
+html.skills-view body::after { display:none!important; }
+@media(max-width:700px) { .statement-vase { top:14px; right:15px; width:68px; height:78px; } .content-section:has(.statement-vase) h1 { padding-right:78px; } }
