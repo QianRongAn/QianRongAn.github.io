@@ -2,6 +2,10 @@
    NOTE: dream-glass.css uses doubled-id selectors (#experience#experience ...), so the
    competing rules here are written with doubled ids too, otherwise they lose the cascade. */
 #experience#experience section.xp{position:relative}
+/* crystal mode is disabled for this page - drop the floating growth copy it injected */
+#experience .experience-growth-labels{display:none!important}
+/* and hide the 3D canvas host whenever it is switched to the experience page */
+#crystalPagesCanvas[data-page="experience"]{display:none!important}
 #experience#experience .xp-rail{position:absolute;left:19px;top:104px;bottom:28px;width:1px;transform-origin:top;
   background:linear-gradient(var(--line-color),rgba(208,186,152,0))}
 #experience#experience section.xp .content-item.xp-card,

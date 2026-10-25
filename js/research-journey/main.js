@@ -29139,7 +29139,7 @@ function tb(s, e, t) {
   }), i.tabIndex = 0;
   function vt() {
     const Q = r.classList.contains("journey-skipped"), Me = Q && n.classList.contains("active"), Re = Q && i.classList.contains("active");
-    o.hidden = !(Me || Re), r.classList.toggle("experience-crystal", Re), g.visible = Me, _.visible = Re, o.dataset.page = Me ? "about" : "experience", (Me || Re) && s && (o.prepend(s.domElement), u.environment = e(), s.domElement.style.filter = "", s.toneMapping = zn, s.toneMappingExposure = 1), m.intensity = 2, f.forEach((Te, Xe) => Te.intensity = Xe ? 2 : 3), u.background = Me ? h : new ye("#d6eef4"), o.hidden || Ee();
+    o.hidden = !Me, r.classList.toggle("experience-crystal", !1), g.visible = Me, _.visible = !1, o.dataset.page = Me ? "about" : "experience", (Me || Re) && s && (o.prepend(s.domElement), u.environment = e(), s.domElement.style.filter = "", s.toneMapping = zn, s.toneMappingExposure = 1), m.intensity = 2, f.forEach((Te, Xe) => Te.intensity = Xe ? 2 : 3), u.background = Me ? h : new ye("#d6eef4"), o.hidden || Ee();
   }
   function dt() {
     s && s.setSize(innerWidth, innerHeight), d.aspect = innerWidth / innerHeight, d.updateProjectionMatrix(), Ee();
