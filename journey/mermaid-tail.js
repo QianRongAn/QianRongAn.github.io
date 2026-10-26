@@ -1,36 +1,42 @@
 import * as THREE from 'three';
 
 // An original sea-bass-inspired sculpture, not a specimen scan or anatomical reconstruction.
-// The long tapered body and shallow fork fit the full spine rather than a detached small fin.
+// Open caudal bones and segmented fin rays preserve the mermaid proportions without skin or webbing.
 export function createMermaidTail(material) {
  const tail=new THREE.Group();
  tail.name='Sea_bass_inspired_mermaid_tail';
  tail.userData.reference='https://sketchfab.com/3d-models/blackfin-seabass-lateolabrax-latus-1d90d18f5d2044d8ae1eeaf8819a8c85';
- const join=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),material);join.scale.set(.82,.38,.59);tail.add(join);
  const center=t=>new THREE.Vector3(.18*Math.sin(t*Math.PI),-4.4*t,.12*Math.sin(t*Math.PI*1.4));
- const bodyPositions=[],bodyIndices=[],rings=52,sides=24;
- for(let i=0;i<=rings;i++){
-  const t=i/rings,c=center(t),r=.82*Math.pow(1-t,1.2)+.16*t;
-  for(let j=0;j<=sides;j++){const a=j/sides*Math.PI*2;bodyPositions.push(c.x+Math.cos(a)*r,c.y,c.z+Math.sin(a)*r*.72);}
+ const boneMaterial=material;
+ function bone(a,b,radius,kind){
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius*.72,radius,a.distanceTo(b),8),boneMaterial);
+  mesh.position.copy(a).lerp(b,.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());mesh.userData.kind=kind;tail.add(mesh);
  }
- for(let i=0;i<rings;i++)for(let j=0;j<sides;j++){const a=i*(sides+1)+j,b=a+sides+1;bodyIndices.push(a,b,a+1,b,b+1,a+1);}
- const body=new THREE.BufferGeometry();body.setAttribute('position',new THREE.Float32BufferAttribute(bodyPositions,3));body.setIndex(bodyIndices);body.computeVertexNormals();tail.add(new THREE.Mesh(body,material));
- const rays=[];
+ const profile=[new THREE.Vector2(.17,-.09),new THREE.Vector2(.15,-.065),new THREE.Vector2(.105,0),new THREE.Vector2(.15,.065),new THREE.Vector2(.17,.09)];
+ const centrumGeometry=new THREE.LatheGeometry(profile,16);
+ for(let i=0;i<23;i++){
+  const t=i/22,c=center(t),scale=1-t*.45;
+  const centrum=new THREE.Mesh(centrumGeometry,boneMaterial);centrum.position.copy(c);centrum.scale.setScalar(scale);centrum.userData.kind='caudal-vertebra';tail.add(centrum);
+  if(i<22)bone(c,center((i+1)/22),.045*scale,'intervertebral-joint');
+  const spread=.82*Math.pow(1-t,1.2)+.16*t;
+  for(const side of [-1,1]){
+   const arch=c.clone().add(new THREE.Vector3(side*.18*scale,-.07,.10*scale));
+   const tip=c.clone().add(new THREE.Vector3(side*spread,-.30*scale,.045));
+   bone(c,arch,.045*scale,'caudal-arch');bone(arch,tip,.028*scale,'caudal-spine');
+  }
+ }
+ // A narrow proximal bone overlaps the sacrum instead of a solid rounded socket.
+ bone(new THREE.Vector3(0,.34,0),center(0),.16,'sacrum-join');
+ for(let i=-2;i<=2;i++)bone(center(1),new THREE.Vector3(i*.14,-4.87,.03),.045,'hypural-support');
  for(let i=0;i<19;i++){
-  const t=i/18*2-1,u=Math.abs(t),start=center(1),tip=new THREE.Vector3(t*2.1,-6.75+.55*(1-u)-.5*Math.sin(Math.PI*u)+.45*u**10,.12*Math.sin(t*Math.PI));
+  const t=i/18*2-1,u=Math.abs(t),start=center(1).add(new THREE.Vector3(t*.12,-.05,0)),tip=new THREE.Vector3(t*2.1,-6.75+.55*(1-u)-.5*Math.sin(Math.PI*u)+.45*u**10,.12*Math.sin(t*Math.PI));
   const curve=new THREE.CatmullRomCurve3([start,new THREE.Vector3(t*.46,-5.05,.10+u*.04),new THREE.Vector3(t*1.28,tip.y+.55,.10*Math.sin(t*2)),tip]);
-  rays.push(curve);
-  tail.add(new THREE.Mesh(new THREE.TubeGeometry(curve,26,.022,7,false),material));
+  for(let j=0;j<15;j++)bone(curve.getPoint(j/15),curve.getPoint((j+.94)/15),.030-j*.0012,'segmented-fin-ray');
+  for(const side of [-1,1]){
+   const branch=new THREE.CatmullRomCurve3([curve.getPoint(.68),curve.getPoint(.84).add(new THREE.Vector3(side*.045,0,.012)),tip.clone().add(new THREE.Vector3(side*.075,0,0))]);
+   const mesh=new THREE.Mesh(new THREE.TubeGeometry(branch,10,.009,6,false),boneMaterial);mesh.userData.kind='fin-ray-branch';tail.add(mesh);
+  }
  }
- // The thin web follows the rays; its edges retain the shallow fork of a bass tail.
- const finPositions=[],finIndices=[],steps=26;
- for(let i=0;i<rays.length;i++)for(let j=0;j<=steps;j++){
-  const p=rays[i].getPoint(j/steps);p.z+=.045*Math.sin(i*Math.PI)*Math.sin(j/steps*Math.PI);finPositions.push(...p);
- }
- for(let i=0;i<rays.length-1;i++)for(let j=0;j<steps;j++){const a=i*(steps+1)+j,b=a+steps+1;finIndices.push(a,b,a+1,b,b+1,a+1);}
- const fin=new THREE.BufferGeometry();fin.setAttribute('position',new THREE.Float32BufferAttribute(finPositions,3));fin.setIndex(finIndices);fin.computeVertexNormals();
- const membrane=material.clone();membrane.side=THREE.DoubleSide;membrane.roughness=.26;
- tail.add(new THREE.Mesh(fin,membrane));
- tail.userData.design='Original metallic mermaid-tail study, inspired by Lateolabrax latus';
+ tail.userData.design='Original open fish-bone mermaid-tail study, inspired by Lateolabrax latus';
  return tail;
 }

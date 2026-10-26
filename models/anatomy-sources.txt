@@ -6,7 +6,9 @@ https://lifesciencedb.jp/bp3d/
 https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
 Full conversion notes: bodyparts3d-license.txt
 
-Current mermaid tail: original procedural metallic sculpture.
+Current mermaid tail: original procedural open fish-bone metallic sculpture.
+Exposed caudal vertebrae, bony supports and segmented branching fin rays;
+no solid tail shell, skin or fin membrane.
 Form reference: blackfin seabass (Lateolabrax latus), ffish.asia / floraZia.com.
 https://sketchfab.com/3d-models/blackfin-seabass-lateolabrax-latus-1d90d18f5d2044d8ae1eeaf8819a8c85
 No mesh was copied from this reference. The tail is an artistic design,

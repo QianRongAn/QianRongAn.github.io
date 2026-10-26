@@ -12,8 +12,12 @@ const spine=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffse
 const spineHeight=new THREE.Box3().setFromObject(spine.scene).getSize(new THREE.Vector3()).y;
 assert(size.y/spineHeight>.6&&size.y/spineHeight<1,'Tail should have a mermaid proportion, not a small appended fin');
 assert(size.x>3.9&&size.x<4.4);
-assert(bounds.max.y>.3&&bounds.max.y<.45,'Rounded join must overlap the sacrum without a floating gap');
-tail.traverse(part=>{if(part.isMesh){assert.equal(part.material.metalness,1);assert([...part.geometry.attributes.position.array].every(Number.isFinite));}});
+assert(bounds.max.y>.3&&bounds.max.y<.45,'Proximal bone must overlap the sacrum without a floating gap');
+const kinds={};
+tail.traverse(part=>{if(part.isMesh){assert.equal(part.material,material,'All bones share the spine metal');assert([...part.geometry.attributes.position.array].every(Number.isFinite));assert(part.userData.kind,'No skin, tail shell or fin membrane may be added');kinds[part.userData.kind]=(kinds[part.userData.kind]||0)+1;}});
+assert.equal(kinds['caudal-vertebra'],23);
+assert.equal(kinds['segmented-fin-ray'],19*15);
+assert.equal(kinds['fin-ray-branch'],38);
 
 const gallery=readFileSync(new URL('../js/pub-gallery.js',import.meta.url),'utf8');
 const start=gallery.indexOf(' function select('),end=gallery.indexOf(' controls.querySelectorAll',start);
