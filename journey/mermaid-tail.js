@@ -12,6 +12,19 @@ export function createMermaidTail(material) {
   const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius*.72,radius,a.distanceTo(b),8),boneMaterial);
   mesh.position.copy(a).lerp(b,.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());mesh.userData.kind=kind;tail.add(mesh);
  }
+ function curvedSpine(start,oldTip,radius){
+  const delta=oldTip.clone().sub(start),baseline=delta.length(),tip=start.clone().addScaledVector(delta,2);
+  const control=start.clone().lerp(tip,.52).add(new THREE.Vector3(0,baseline*.38,baseline*.08));
+  const curve=new THREE.QuadraticBezierCurve3(start.clone(),control,tip),factor=baseline*2/curve.getLength();
+  curve.v1.sub(start).multiplyScalar(factor).add(start);curve.v2.sub(start).multiplyScalar(factor).add(start);curve.updateArcLengths();
+  const segments=18,sides=8,geometry=new THREE.TubeGeometry(curve,segments,radius,sides,false),positions=geometry.attributes.position;
+  for(let ring=0;ring<=segments;ring++){
+   const t=ring/segments,center=curve.getPointAt(t),taper=Math.pow(1-t,.8);
+   for(let j=0;j<=sides;j++){const i=ring*(sides+1)+j,p=new THREE.Vector3().fromBufferAttribute(positions,i).sub(center).multiplyScalar(taper).add(center);positions.setXYZ(i,p.x,p.y,p.z);}
+  }
+  geometry.computeVertexNormals();
+  const mesh=new THREE.Mesh(geometry,boneMaterial);mesh.userData={kind:'caudal-spine',baselineLength:baseline,length:curve.getLength()};tail.add(mesh);
+ }
  const profile=[new THREE.Vector2(.17,-.09),new THREE.Vector2(.15,-.065),new THREE.Vector2(.105,0),new THREE.Vector2(.15,.065),new THREE.Vector2(.17,.09)];
  const centrumGeometry=new THREE.LatheGeometry(profile,16);
  for(let i=0;i<23;i++){
@@ -22,7 +35,7 @@ export function createMermaidTail(material) {
   for(const side of [-1,1]){
    const arch=c.clone().add(new THREE.Vector3(side*.18*scale,-.07,.10*scale));
    const tip=c.clone().add(new THREE.Vector3(side*spread,-.30*scale,.045));
-   bone(c,arch,.045*scale,'caudal-arch');bone(arch,tip,.028*scale,'caudal-spine');
+   bone(c,arch,.045*scale,'caudal-arch');curvedSpine(arch,tip,.028*scale);
   }
  }
  // A narrow proximal bone overlaps the sacrum instead of a solid rounded socket.

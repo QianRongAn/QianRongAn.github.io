@@ -13,7 +13,7 @@ function revealCard(show,initial=false){
  card.getAnimations().forEach(a=>a.cancel());
  cardHidden=!show;card.inert=!show;card.setAttribute('aria-hidden',String(!show));
  card.style.pointerEvents=show?'':'none';
- card.animate([from,{opacity:show?1:0,translate:show?'0 0':'0 18px'}],{duration:motion.matches?0:(initial?900:550),delay:initial?4000:0,fill:'both',easing:'cubic-bezier(.2,.75,.2,1)'});
+ card.animate([from,{opacity:show?1:0,translate:show?'0 0':'0 18px'}],{duration:motion.matches?0:(initial?900:550),delay:initial?2500:0,fill:'both',easing:'cubic-bezier(.2,.75,.2,1)'});
 }
 function state(){const active=about.classList.contains('active')&&root.classList.contains('journey-skipped');if(active&&!wasActive)revealCard(true,true);wasActive=active;root.classList.toggle('about-crystal',active);}
 document.addEventListener('click',function(e){

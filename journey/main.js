@@ -745,10 +745,11 @@ function sheetGeometry(w,h,depth,frontOnly=false){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(indices);g.computeVertexNormals();return g;
 }
 function wrapText(ctx,text,x,y,maxWidth,line){let words=text.split(/\s+/),row='';for(const word of words){let next=row?row+' '+word:word;if(ctx.measureText(next).width>maxWidth&&row){drawPaperLine(ctx,row,x,y,maxWidth,true);y+=line;row=word;}else row=next;}if(row)ctx.fillText(row,x,y);return y+line;}
-async function printedPaper(card){
+function printedPaper(card){
  const canvas=document.createElement('canvas');const scale=Math.min(2,(renderer?.capabilities.maxTextureSize||4096)/1800);canvas.width=Math.floor(1600*scale);canvas.height=Math.floor(1800*scale);const c=canvas.getContext('2d');c.scale(scale,scale);
- await document.fonts.ready;
- const images=await Promise.all([...card.querySelectorAll('.pub-image')].map(el=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=el.src;})));
+ const images=[];
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;texture.generateMipmaps=false;texture.minFilter=THREE.LinearFilter;
+ function draw(){c.clearRect(0,0,1600,1800);
  c.fillStyle='#514a67';c.font='24px Arial';c.fillText('RESEARCH / 0'+card.dataset.pubId,70,76);
  const fit=(img,x,y,w,h)=>{if(!img)return;let r=Math.min(w/img.width,h/img.height);c.drawImage(img,x+(w-img.width*r)/2,y,img.width*r,img.height*r);};
  fit(images[0],70,155,345,520);
@@ -757,7 +758,13 @@ async function printedPaper(card){
  c.font='italic 34px Georgia';c.fillStyle='#51405e';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),470,y+22,1040,46);
  const impact=(card.querySelector('.pub-impact')?.textContent||'').trim();if(impact){c.font='bold 32px Georgia';c.fillStyle='#353047';c.fillText(impact,470,y+23);y+=55;}
  const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font=([3,5].includes(Number(card.dataset.pubId))?'31':'34')+'px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.ceil(rows.length/2);rows.forEach((line,i)=>drawPaperLine(c,line,i<half?70:835,y+70+(i%half)*43,695,i!==half-1&&i!==rows.length-1));card.dataset.printBottom=String(y+70+half*43);}
- const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer?.capabilities.getMaxAnisotropy()||1;texture.generateMipmaps=false;texture.minFilter=THREE.LinearFilter;return texture;
+ texture.needsUpdate=true;
+ }
+ // Text is available immediately. Fonts and the single displayed image enrich it later.
+ draw();
+ const primary=card.querySelector('.pub-image');if(primary){const image=new Image();image.onload=()=>{images[0]=image;draw();};image.src=primary.src;}
+ document.fonts.load('56px Recoleta').then(draw).catch(()=>{});
+ return texture;
 }
 function initGlassCards(){
  if(glassCards.length)return;
@@ -766,7 +773,7 @@ function initGlassCards(){
  const sheet=new THREE.Mesh(sheetGeometry(7.1,7.99,.075),mat);group.add(sheet);
  // A second thin inset edge catches the light at grazing angles.
  const rim=new THREE.LineSegments(new THREE.EdgesGeometry(sheet.geometry,27),new THREE.LineBasicMaterial({color:'#f7eefb',transparent:true,opacity:.35}));group.add(rim);
- const ink=new THREE.Mesh(sheetGeometry(6.96,7.83,0,true),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,alphaTest:.01,toneMapped:false}));ink.position.z=.075;group.add(ink);printedPaper(card).then(texture=>{ink.material.map=texture;ink.material.needsUpdate=true;});glassCards.push(group);});
+ const ink=new THREE.Mesh(sheetGeometry(6.96,7.83,0,true),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,alphaTest:.01,toneMapped:false}));ink.position.z=.075;group.add(ink);ink.material.map=printedPaper(card);ink.material.needsUpdate=true;glassCards.push(group);});
  root.classList.add('publication-webgl');
 }
 let paperPhase=0,paperSelection=-1;const paperMotion={phase:0};let paperTween;

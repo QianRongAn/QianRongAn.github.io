@@ -13,3 +13,6 @@
 - The tail must be fish bones: exposed caudal vertebrae, bony supports and segmented branching fin rays. Do not add a solid body shell, skin or fin membrane.
 - Reveal the enlarged tail only after the final paper, across at least five separate downward scroll gestures. Reverse those stages when scrolling up, then return to the last paper. Never show the full fish-bone tail on the first scroll.
 - Publish completed authorized edits to the existing website; a local-only result is insufficient unless the user requests it.
+- Tail-side spines are curved, tapered to sharp points and twice the earlier straight-spine length.
+- Print literature titles, authors and abstracts immediately; never block text on fonts or photographs.
+- About Me's initial card reveal delay is 2.5 seconds.

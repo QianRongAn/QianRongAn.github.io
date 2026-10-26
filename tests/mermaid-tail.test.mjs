@@ -18,6 +18,16 @@ tail.traverse(part=>{if(part.isMesh){assert.equal(part.material,material,'All bo
 assert.equal(kinds['caudal-vertebra'],23);
 assert.equal(kinds['segmented-fin-ray'],19*15);
 assert.equal(kinds['fin-ray-branch'],38);
+const spines=[];tail.traverse(p=>{if(p.userData.kind==='caudal-spine')spines.push(p);});
+assert.equal(spines.length,46);
+for(const bone of spines){
+ assert(Math.abs(bone.userData.length/bone.userData.baselineLength-2)<.005,'Fish spines must be twice their former length');
+ const p=bone.geometry.attributes.position,ring=9,first=new THREE.Vector3().fromBufferAttribute(p,0),last=new THREE.Vector3().fromBufferAttribute(p,p.count-1);
+ for(let i=p.count-ring;i<p.count;i++)assert(last.distanceTo(new THREE.Vector3().fromBufferAttribute(p,i))<1e-5,'The bone must taper to a sharp tip');
+ const mid=new THREE.Vector3();for(let i=9*ring;i<10*ring;i++)mid.add(new THREE.Vector3().fromBufferAttribute(p,i));mid.divideScalar(ring);
+ const deviation=new THREE.Line3(first,last).closestPointToPoint(mid,true,new THREE.Vector3()).distanceTo(mid);
+ assert(deviation>bone.userData.baselineLength*.025,'Fish spines must visibly curve');
+}
 
 const gallery=readFileSync(new URL('../js/pub-gallery.js',import.meta.url),'utf8');
 const start=gallery.indexOf(' function select('),end=gallery.indexOf(' controls.querySelectorAll',start);
