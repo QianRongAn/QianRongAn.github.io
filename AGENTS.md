@@ -11,5 +11,5 @@
 - Preserve the spine's approved reading placement and uniform scale; keep it inside the literature arrangement rather than shifting it to the left edge.
 - Treat the spine and sea-bass-inspired tail as one mermaid sculpture with a continuous join and compatible proportions. The current tail is original artwork, not a specimen scan.
 - The tail must be fish bones: exposed caudal vertebrae, bony supports and segmented branching fin rays. Do not add a solid body shell, skin or fin membrane.
-- Reveal the tail only after the final paper and an additional downward scroll. Scrolling back up must return to the last paper.
+- Reveal the enlarged tail only after the final paper, across at least five separate downward scroll gestures. Reverse those stages when scrolling up, then return to the last paper. Never show the full fish-bone tail on the first scroll.
 - Publish completed authorized edits to the existing website; a local-only result is insufficient unless the user requests it.

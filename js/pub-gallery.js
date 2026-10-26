@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(innerWidth<=768&&innerHeight<=1024))return;
-let index=0,spineOffset=0,tailRevealed=false,locked=0,lastWheel=0,downX=0;const reduce=matchMedia('(prefers-reduced-motion:reduce)');
+let index=0,spineOffset=0,tailRevealed=false,tailStep=0,locked=0,lastWheel=0,downX=0;const tailSteps=5,reduce=matchMedia('(prefers-reduced-motion:reduce)');
 function setup(){
  const page=document.getElementById('publications'),grid=page?.querySelector('.publications-grid'),stage=page?.querySelector('.pub-stage');if(!grid||grid.dataset.glassHelix)return;grid.dataset.glassHelix='ready';
  const cards=[...grid.querySelectorAll('.publication-card')];
@@ -18,14 +18,13 @@ function setup(){
    const distance=Math.abs(d),x=d===0?0:Math.sign(d)*(width*.68+Math.max(0,distance-1)*width*.10),y=d===0?0:-d*(height*.54),z=d===0?170:-distance*230,angle=d===0?-7:-Math.sign(d)*(48+distance*8);
    card.style.transform='translate(-50%,-50%) translate3d('+x+'px,'+y+'px,'+z+'px) rotateY('+angle+'deg) rotateX('+(d===0?2:-4)+'deg)';card.style.opacity=d===0?'1':String(Math.max(.16,.75-distance*.13));card.style.zIndex=String(10-distance);card.classList.toggle('is-current',d===0);card.inert=d!==0;card.setAttribute('aria-hidden',d===0?'false':'true');
   });
-  [...directory.children].forEach((button,i)=>{button.classList.toggle('is-current',i===index);button.setAttribute('aria-current',i===index?'true':'false');});controls.querySelector('.pub-counter').textContent='0'+(index+1)+' / 0'+cards.length;window.PublicationStage={index,count:cards.length,spineOffset,tailRevealed};
-  controls.querySelector('[aria-label="Next paper"], [aria-label="Show mermaid tail"]').setAttribute('aria-label',index===cards.length-1?'Show mermaid tail':'Next paper');
+  [...directory.children].forEach((button,i)=>{button.classList.toggle('is-current',i===index);button.setAttribute('aria-current',i===index?'true':'false');});controls.querySelector('.pub-counter').textContent=tailStep?'Tail '+tailStep+' / '+tailSteps:'0'+(index+1)+' / 0'+cards.length;window.PublicationStage={index,count:cards.length,spineOffset,tailRevealed,tailStep,tailProgress:tailStep/tailSteps};
+  controls.querySelectorAll('.pub-controls button')[1].setAttribute('aria-label',index===cards.length-1?'Continue fish-bone reveal':'Next paper');
   document.documentElement.classList.toggle('publication-tail-view',page.classList.contains('active')&&tailRevealed);
  }
- function select(next){tailRevealed=false;spineOffset=0;index=Math.max(0,Math.min(cards.length-1,next));draw();}
+ function select(next){tailRevealed=false;tailStep=0;spineOffset=0;index=Math.max(0,Math.min(cards.length-1,next));draw();}
  function step(direction){
-  if(tailRevealed){if(direction<0)select(cards.length-1);return;}
-  if(index===cards.length-1&&direction>0){tailRevealed=true;spineOffset=-11.4;draw();return;}
+  if(tailStep>0||index===cards.length-1&&direction>0){tailStep=Math.max(0,Math.min(tailSteps,tailStep+direction));tailRevealed=tailStep>0;spineOffset=tailStep?-12.2*tailStep/tailSteps:0;draw();return;}
   if(index===0&&direction<0){spineOffset=Math.min(3.8,spineOffset+1.9);draw();return;}
   if(spineOffset>0&&direction>0){spineOffset=Math.max(0,spineOffset-1.9);draw();return;}
   select(index+direction);

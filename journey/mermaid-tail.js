@@ -38,5 +38,6 @@ export function createMermaidTail(material) {
   }
  }
  tail.userData.design='Original open fish-bone mermaid-tail study, inspired by Lateolabrax latus';
+ tail.scale.set(1.5,1.3,1.5);
  return tail;
 }
