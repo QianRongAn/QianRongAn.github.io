@@ -26,6 +26,20 @@
                     while (details.firstChild) well.appendChild(details.firstChild);
                     details.append(header, well);
                 });
+                if (id === 'extracurricular') {
+                    var meetings = section.querySelectorAll(':scope > .content-item');
+                    if (meetings.length >= 2 && !meetings[0].classList.contains('activity-meetings-card')) {
+                        var first = meetings[0], second = meetings[1];
+                        var firstHead = first.querySelector('.glass-card-head'), firstWell = first.querySelector('.glass-well');
+                        while (firstWell.firstChild) firstHead.appendChild(firstWell.firstChild);
+                        second.querySelectorAll('.glass-card-head h3, .glass-card-head h4, .glass-card-head .date-location').forEach(function (node) { firstWell.appendChild(node); });
+                        var secondWell = second.querySelector('.glass-well');
+                        while (secondWell.firstChild) firstWell.appendChild(secondWell.firstChild);
+                        first.classList.add('activity-meetings-card');
+                        first.querySelector('.details').style.removeProperty('margin-bottom');
+                        second.remove();
+                    }
+                }
             });
             var active = document.querySelector('.cube-page.active');
             document.documentElement.classList.toggle('dream-view', !!active && Object.prototype.hasOwnProperty.call(names, active.id));
