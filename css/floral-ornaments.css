@@ -22,5 +22,8 @@ html.skills-view body::after { display:none!important; }
 #education#education .glass-well :is(p,li,strong,span) { color:#f4edf6!important; }
 #extracurricular .activity-meetings-card .glass-card-head ul { margin-bottom:0; }
 #extracurricular .activity-meetings-card .glass-well h4 { margin-top:0; }
+html.publication-tail-view .publications-grid { visibility:hidden; }
+html.publication-view,html.publication-view body { overflow:hidden!important; }
+#publications .pub-stage { overflow:clip!important; }
 
 #about .about-crystal-label { font-size:clamp(48px,5.6vw,80px); }

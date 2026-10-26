@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(innerWidth<=768&&innerHeight<=1024))return;
-let index=0,spineOffset=0,locked=0,lastWheel=0,downX=0;const reduce=matchMedia('(prefers-reduced-motion:reduce)');
+let index=0,spineOffset=0,tailRevealed=false,locked=0,lastWheel=0,downX=0;const reduce=matchMedia('(prefers-reduced-motion:reduce)');
 function setup(){
  const page=document.getElementById('publications'),grid=page?.querySelector('.publications-grid'),stage=page?.querySelector('.pub-stage');if(!grid||grid.dataset.glassHelix)return;grid.dataset.glassHelix='ready';
  const cards=[...grid.querySelectorAll('.publication-card')];
@@ -18,14 +18,23 @@ function setup(){
    const distance=Math.abs(d),x=d===0?0:Math.sign(d)*(width*.68+Math.max(0,distance-1)*width*.10),y=d===0?0:-d*(height*.54),z=d===0?170:-distance*230,angle=d===0?-7:-Math.sign(d)*(48+distance*8);
    card.style.transform='translate(-50%,-50%) translate3d('+x+'px,'+y+'px,'+z+'px) rotateY('+angle+'deg) rotateX('+(d===0?2:-4)+'deg)';card.style.opacity=d===0?'1':String(Math.max(.16,.75-distance*.13));card.style.zIndex=String(10-distance);card.classList.toggle('is-current',d===0);card.inert=d!==0;card.setAttribute('aria-hidden',d===0?'false':'true');
   });
-  [...directory.children].forEach((button,i)=>{button.classList.toggle('is-current',i===index);button.setAttribute('aria-current',i===index?'true':'false');});controls.querySelector('.pub-counter').textContent='0'+(index+1)+' / 0'+cards.length;window.PublicationStage={index,count:cards.length,spineOffset};
+  [...directory.children].forEach((button,i)=>{button.classList.toggle('is-current',i===index);button.setAttribute('aria-current',i===index?'true':'false');});controls.querySelector('.pub-counter').textContent='0'+(index+1)+' / 0'+cards.length;window.PublicationStage={index,count:cards.length,spineOffset,tailRevealed};
+  controls.querySelector('[aria-label="Next paper"], [aria-label="Show mermaid tail"]').setAttribute('aria-label',index===cards.length-1?'Show mermaid tail':'Next paper');
+  document.documentElement.classList.toggle('publication-tail-view',page.classList.contains('active')&&tailRevealed);
  }
- function select(next){spineOffset=0;index=Math.max(0,Math.min(cards.length-1,next));draw();}
- controls.querySelectorAll('.pub-controls button')[0].addEventListener('click',()=>select(index-1));controls.querySelectorAll('.pub-controls button')[1].addEventListener('click',()=>select(index+1));
- stage.addEventListener('wheel',event=>{if(event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;const sign=Math.sign(event.deltaY);if(!sign)return;if(index===cards.length-1&&sign>0)return;event.preventDefault();const now=performance.now(),quiet=now-lastWheel;lastWheel=now;if(now<locked||quiet<180)return;locked=now+650;if(index===0&&sign<0){spineOffset=Math.min(3.8,spineOffset+1.9);draw();return;}if(spineOffset>0&&sign>0){spineOffset=Math.max(0,spineOffset-1.9);draw();return;}select(index+sign);},{passive:false});
+ function select(next){tailRevealed=false;spineOffset=0;index=Math.max(0,Math.min(cards.length-1,next));draw();}
+ function step(direction){
+  if(tailRevealed){if(direction<0)select(cards.length-1);return;}
+  if(index===cards.length-1&&direction>0){tailRevealed=true;spineOffset=-11.4;draw();return;}
+  if(index===0&&direction<0){spineOffset=Math.min(3.8,spineOffset+1.9);draw();return;}
+  if(spineOffset>0&&direction>0){spineOffset=Math.max(0,spineOffset-1.9);draw();return;}
+  select(index+direction);
+ }
+ controls.querySelectorAll('.pub-controls button')[0].addEventListener('click',()=>step(-1));controls.querySelectorAll('.pub-controls button')[1].addEventListener('click',()=>step(1));
+ stage.addEventListener('wheel',event=>{if(event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;const sign=Math.sign(event.deltaY);if(!sign)return;event.preventDefault();const now=performance.now(),quiet=now-lastWheel;lastWheel=now;if(now<locked||quiet<180)return;locked=now+650;step(sign);},{passive:false});
  stage.addEventListener('pointerdown',event=>{if(event.target.closest('button,a'))return;downX=event.clientX;});stage.addEventListener('pointerup',event=>{if(downX&&Math.abs(event.clientX-downX)>45)select(index+(event.clientX<downX?1:-1));downX=0;});
- stage.tabIndex=0;stage.setAttribute('aria-label','Publication gallery. Scroll or use arrow keys to change paper.');stage.addEventListener('keydown',event=>{if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(event.key)){event.preventDefault();select(index+(['ArrowRight','ArrowDown'].includes(event.key)?1:-1));}});
- function state(){document.documentElement.classList.toggle('publication-view',page.classList.contains('active'));}new MutationObserver(state).observe(page,{attributes:true,attributeFilter:['class']});state();draw();addEventListener('resize',draw,{passive:true});
+ stage.tabIndex=0;stage.setAttribute('aria-label','Publication gallery. Scroll or use arrow keys to change paper.');stage.addEventListener('keydown',event=>{if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(event.key)){event.preventDefault();step(['ArrowRight','ArrowDown'].includes(event.key)?1:-1);}});
+ function state(){const active=page.classList.contains('active');document.documentElement.classList.toggle('publication-view',active);document.documentElement.classList.toggle('publication-tail-view',active&&tailRevealed);}new MutationObserver(state).observe(page,{attributes:true,attributeFilter:['class']});state();draw();addEventListener('resize',draw,{passive:true});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();

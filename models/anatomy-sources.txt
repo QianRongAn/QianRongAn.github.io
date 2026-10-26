@@ -6,12 +6,18 @@ https://lifesciencedb.jp/bp3d/
 https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
 Full conversion notes: bodyparts3d-license.txt
 
-Fish caudal region: Balistes capriscus, specimen P 443.
+Current mermaid tail: original procedural metallic sculpture.
+Form reference: blackfin seabass (Lateolabrax latus), ffish.asia / floraZia.com.
+https://sketchfab.com/3d-models/blackfin-seabass-lateolabrax-latus-1d90d18f5d2044d8ae1eeaf8819a8c85
+No mesh was copied from this reference. The tail is an artistic design,
+not a scan or a scientific anatomical reconstruction.
+
+Previous fish caudal region (retained asset, no longer displayed): Balistes capriscus, specimen P 443.
 Patrizia17 / Natural History Museum of the University of Pisa, 15 July 2024.
 License: CC BY-SA 4.0.
 https://commons.wikimedia.org/wiki/File:Balistes_capriscus_3d_scan_Natural_History_Museum_University_of_Pisa_P_443.stl
 https://creativecommons.org/licenses/by-sa/4.0/
 Full extraction and conversion notes: fish-tail-license.txt
 
-Both source anatomies retain their own proportions. The combined human/fish
+The source human spine retains its own proportions. The combined human/fish
 metal sculpture is an artistic assemblage, not a natural anatomical specimen.
