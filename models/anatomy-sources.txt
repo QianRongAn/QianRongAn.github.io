@@ -1,0 +1,17 @@
+ANATOMICAL ASSET SOURCES
+
+Human spine: BodyParts3D / DBCLS, Anatomography mesh version 4.3.
+License: CC BY-SA 2.1 Japan.
+https://lifesciencedb.jp/bp3d/
+https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
+Full conversion notes: bodyparts3d-license.txt
+
+Fish caudal region: Balistes capriscus, specimen P 443.
+Patrizia17 / Natural History Museum of the University of Pisa, 15 July 2024.
+License: CC BY-SA 4.0.
+https://commons.wikimedia.org/wiki/File:Balistes_capriscus_3d_scan_Natural_History_Museum_University_of_Pisa_P_443.stl
+https://creativecommons.org/licenses/by-sa/4.0/
+Full extraction and conversion notes: fish-tail-license.txt
+
+Both source anatomies retain their own proportions. The combined human/fish
+metal sculpture is an artistic assemblage, not a natural anatomical specimen.

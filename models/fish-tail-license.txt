@@ -1,0 +1,25 @@
+Grey triggerfish (Balistes capriscus), caudal region from museum specimen P 443.
+Original scan: Patrizia17, Natural History Museum of the University of Pisa.
+Published 15 July 2024, Wikimedia Commons.
+Source:
+https://commons.wikimedia.org/wiki/File:Balistes_capriscus_3d_scan_Natural_History_Museum_University_of_Pisa_P_443.stl
+Original STL:
+https://upload.wikimedia.org/wikipedia/commons/d/d6/Balistes_capriscus_3d_scan_Natural_History_Museum_University_of_Pisa_P_443.stl
+Original SHA-1: 6f78d2d7bd7ffcfc53e97e8b6c8a4b6f119b0eba
+
+License: Creative Commons Attribution-ShareAlike 4.0 International.
+https://creativecommons.org/licenses/by-sa/4.0/
+The extracted derivative models/balistes-caudal-fin.glb remains CC BY-SA 4.0.
+The license applies to this asset, not the unrelated website code.
+
+Changes: extracted the caudal region, removed the proximal museum support wire,
+applied a rigid axis conversion and uniform scaling, converted to GLB, and
+reduced 355,187 extracted triangles to 39,985 triangles using meshoptimizer.
+Relative simplification error: 0.0004883 (about 0.049% of model extent).
+The scanned fork, proportions and asymmetry are retained; no invented fin rays
+or non-uniform deformation was added. The display material is iridescent metal.
+This is a prepared museum skeleton surface scan, not a CT segmentation.
+
+The website combines this fish caudal region with a separate human spine as
+an artistic assemblage. It does not depict an organism occurring in nature.
+Reproduction: tools/extract_fish_tail.py and tools/build_fish_tail.mjs.
