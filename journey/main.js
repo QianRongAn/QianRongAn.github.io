@@ -525,7 +525,7 @@ function smallFlowerDimensions(x,z,bend,rawScale,rawHeight){
  let scale=rawScale*(near?.27:1),height=rawHeight*(near?.30:1);
  scale=Math.min(scale,meadowViewpoints.reduce((d,v)=>Math.min(d,v.distanceTo(new THREE.Vector3(hx,floor+height,hz))),Infinity)*.06);
  // Keep the original stalk/blossom proportions when the approved near-camera cap applies.
- const stemScale=scale/(rawScale*(near?.27:1));height*=stemScale;
+ const stemScale=scale/(rawScale*(near?.27:1));height=Math.min(height*stemScale,scale*1.15);
  const bendScale=(near?.30:1)*stemScale;
  return{floor,near,hx:x+Math.cos(bend)*.28*bendScale,hz:z-Math.sin(bend)*.05*bendScale,scale,height,bendScale};
 }

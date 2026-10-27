@@ -29526,7 +29526,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     let ie = I * (K ? 0.27 : 1), Re = O * (K ? 0.3 : 1);
     ie = Math.min(ie, jo.reduce((Ee, Te) => Math.min(Ee, Te.distanceTo(new w(Y, W + Re, Q))), 1 / 0) * 0.06);
     const Ye = ie / (I * (K ? 0.27 : 1));
-    Re *= Ye;
+    Re = Math.min(Re * Ye, ie * 1.15);
     const Ke = (K ? 0.3 : 1) * Ye;
     return { floor: W, near: K, hx: p + Math.cos(C) * 0.28 * Ke, hz: E - Math.sin(C) * 0.05 * Ke, scale: ie, height: Re, bendScale: Ke };
   }, rd = function(p) {
