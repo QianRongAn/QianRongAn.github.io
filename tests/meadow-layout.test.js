@@ -26,6 +26,10 @@ for (const [i, plant] of plants.entries()) {
  assert.ok(Math.hypot((plant.x - 4)/2.4, (plant.z + 20)/2.1) <= 1.000001, 'Plant escaped its clump');
  for (const other of plants.slice(i + 1)) assert.ok(Math.hypot(plant.x - other.x, plant.z - other.z) >= .86-1e-9);
 }
+for(let i=1;i<plants.length;i++){
+ const gap=Math.min(...plants.slice(0,i).map(p=>Math.hypot(p.x-plants[i].x,p.z-plants[i].z)-.8));
+ assert.ok(gap>=.06-1e-9&&gap<=.26+1e-9,'A varietal plant must grow beside its own clump, with clear blossoms');
+}
 const all=[...filler.map(p=>({...p,radius:.32})),...plants.map(p=>({...p,radius:.4}))];
 for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++)assert.ok(Math.hypot(all[i].x-all[j].x,all[i].z-all[j].z)>=all[i].radius+all[j].radius+.06-1e-9,'Flower crowns overlap');
 assert.equal(new Set(filler.map(p=>Math.floor((p.x+12)/2))).size,12,'Scatter must fill the meadow rather than six lanes');
@@ -51,6 +55,8 @@ for(let i=2;i<5;i++){
  assert.equal(geometry.attributes.position.getX(i),before[i*3]);assert.equal(geometry.attributes.position.getZ(i),before[i*3+2]);
  assert.ok(Math.abs(geometry.attributes.position.getY(i)-(before[i*3+1]-.42))<1e-6,'Flower head distorted instead of translated');
 }
+const footprint=stalkSandbox.botanicalFootprint(geometry);
+for(let i=2;i<5;i++)assert.ok(footprint>=Math.hypot(geometry.attributes.position.getX(i),geometry.attributes.position.getZ(i))+Math.abs(geometry.attributes.position.getY(i))*.15,'Clump spacing must cover every blossom vertex and the upright plant lean');
 const grassSandbox={meadowFloor:()=>0,clumpCenters:[clump],grassFlowerHeads:new Map([['0,0',[{head:{x:.5,y:.4,z:.5},scale:.5}]]])};
 runInNewContext(source.slice(source.indexOf('function grassHeightAroundFlowers('),source.indexOf('// Restore the earlier tuft heights')),grassSandbox);
 assert.equal(grassSandbox.grassHeightAroundFlowers(10,-90,1.1),1.1,'Open-ground grass lost its earlier height variation');

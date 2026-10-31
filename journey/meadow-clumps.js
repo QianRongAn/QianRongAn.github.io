@@ -19,8 +19,8 @@ export function planBotanicalClumps({species,views,floor,viewClear,treeClear,ran
   const targets=[[.57,-.40],[-.08,-.66],[-.62,-.53]];
   targets.forEach(([sx,sy],slot)=>{
    if(centers.some(c=>{const p=projection(c,view);return p&&Math.hypot(p.x-sx,p.y-sy)<.38;}))return;
-   const kind=(shot*3+slot)%species.length,broad=['cymbidium','phalaenopsis','gladiolus'].includes(species[kind]);
-   const rx=broad?2.65:2.15,rz=rx*(.85+random()*.3);
+   const kind=bySpecies.reduce((best,clumps,i)=>clumps.length<bySpecies[best].length?i:best,0),broad=['cymbidium','phalaenopsis','gladiolus'].includes(species[kind]);
+   const rx=broad?3.9:3.4,rz=rx*(.85+random()*.3);
    let best=null,score=Infinity;
    for(const candidate of candidates){
     const {x,z}=candidate;
@@ -30,7 +30,7 @@ export function planBotanicalClumps({species,views,floor,viewClear,treeClear,ran
     if(value<score){score=value;best=candidate;}
    }
    if(!best)return;
-   const clump={...best,rx,rz,count:broad?7:9,species:species[kind]};
+   const clump={...best,rx,rz,count:(broad?12:17)+Math.floor(random()*5),species:species[kind]};
    centers.push(clump);bySpecies[kind].push(clump);
   });
  });

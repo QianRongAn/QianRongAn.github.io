@@ -480,8 +480,15 @@ const botanicalOccupied=new Map();
 let largestFlowerRadius=0;
 function meadowSite(index,botanical=false,footprint=.3,flowerPatch=null,offset={x:0,z:0}){
  const patch=flowerPatch;
- for(let attempt=0;attempt<100;attempt++){
-  const angle=plantingRandom()*Math.PI*2,r=Math.sqrt(plantingRandom()),x=patch?patch.x+Math.cos(angle)*r*patch.rx:(plantingRandom()-.5)*24,z=patch?patch.z+Math.sin(angle)*r*patch.rz:12-plantingRandom()*119;
+ for(let attempt=0;attempt<(botanical?500:100);attempt++){
+  const angle=plantingRandom()*Math.PI*2,r=Math.sqrt(plantingRandom());let x=patch?patch.x+Math.cos(angle)*r*patch.rx:(plantingRandom()-.5)*24,z=patch?patch.z+Math.sin(angle)*r*patch.rz:12-plantingRandom()*119;
+  if(botanical&&patch){
+   // Grow a connected, irregular patch instead of scattering isolated plants inside it.
+   const members=patch.members||[];
+   if(members.length){const neighbor=members[Math.floor(plantingRandom()*members.length)],radius=typeof footprint==='function'?footprint(neighbor.x,neighbor.z):footprint,distance=neighbor.radius+radius+.08+plantingRandom()*.18;x=neighbor.x+Math.cos(angle)*distance;z=neighbor.z+Math.sin(angle)*distance;}
+   else{x=patch.x+Math.cos(angle)*r*patch.rx*.15;z=patch.z+Math.sin(angle)*r*patch.rz*.15;}
+   if(Math.hypot((x-patch.x)/patch.rx,(z-patch.z)/patch.rz)>1)continue;
+  }
   const radius=typeof footprint==='function'?footprint(x,z):footprint;
   if(Math.abs(x)>14||z>14||z< -109||Math.hypot(x-3.4,z+66)<2.75+radius*.25||!meadowViewClear(x,z)||!meadowTreeClear(x,z,radius))continue;
   const path=1.1*Math.sin(z*.095)+.4*Math.sin(z*.27);
@@ -490,7 +497,7 @@ function meadowSite(index,botanical=false,footprint=.3,flowerPatch=null,offset={
   const headX=x+offset.x,headZ=z+offset.z,gx=Math.floor(headX/2),gz=Math.floor(headZ/2),reach=Math.ceil((radius+largestFlowerRadius)/2);let clear=true;
   for(let a=gx-reach;a<=gx+reach&&clear;a++)for(let b=gz-reach;b<=gz+reach&&clear;b++)for(const other of botanicalOccupied.get(a+','+b)||[]){if(Math.hypot(headX-other.x,headZ-other.z)<radius+other.radius+.06){clear=false;break;}}
   if(!clear)continue;
-  const key=gx+','+gz;if(!botanicalOccupied.has(key))botanicalOccupied.set(key,[]);botanicalOccupied.get(key).push({x:headX,z:headZ,radius});largestFlowerRadius=Math.max(largestFlowerRadius,radius);return{x,z};
+  const key=gx+','+gz;if(!botanicalOccupied.has(key))botanicalOccupied.set(key,[]);botanicalOccupied.get(key).push({x:headX,z:headZ,radius});largestFlowerRadius=Math.max(largestFlowerRadius,radius);if(botanical&&patch)(patch.members??=[]).push({x,z,radius});return{x,z};
  }
  return null;
 }
@@ -605,6 +612,14 @@ function shortenFlowerStalks(geometry){
  if(colors)for(let k=0;k<vertices.count;k++){const stem=Math.abs(colors.getX(k)-stemTint.r)+Math.abs(colors.getY(k)-stemTint.g)+Math.abs(colors.getZ(k)-stemTint.b)<.04;if(!stem)crownBase=Math.min(crownBase,vertices.getY(k));}
  if(Number.isFinite(crownBase)){const base=geometry.boundingBox.min.y,shorten=Math.max(0,crownBase-base)*.42;for(let k=0;k<vertices.count;k++){const y=vertices.getY(k);vertices.setY(k,y-Math.min(Math.max(0,y-base)*.42,shorten));}vertices.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingBox();}
 }
+function botanicalFootprint(geometry){
+ const vertices=geometry.attributes.position,colors=geometry.attributes.color,stemTint=new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.22);let radius=0;
+ for(let k=0;k<vertices.count;k++){
+  if(colors&&Math.abs(colors.getX(k)-stemTint.r)+Math.abs(colors.getY(k)-stemTint.g)+Math.abs(colors.getZ(k)-stemTint.b)<.04)continue;
+  radius=Math.max(radius,Math.hypot(vertices.getX(k),vertices.getZ(k))+Math.abs(vertices.getY(k))*.15);
+ }
+ return radius||geometry.boundingBox.getSize(new THREE.Vector3()).length()*.5;
+}
 new GLTFLoader(sceneryManager).load('models/meadow-flowers.glb?v=no-lavender65',gltf=>{
  gltf.scene.updateMatrixWorld(true);let speciesCount=0;const botanicalCounts={};
  gltf.scene.traverse(part=>{if(!part.isMesh)return;const species=botanicalSpecies.indexOf(part.name);if(species<0)return;speciesCount++;
@@ -612,10 +627,11 @@ new GLTFLoader(sceneryManager).load('models/meadow-flowers.glb?v=no-lavender65',
  // Botanical varieties stay larger than filler blooms, with a separate near-camera size cap.
  geometry.computeBoundingBox();const size=geometry.boundingBox.getSize(new THREE.Vector3()),extent=Math.max(size.x,size.y,size.z);
  shortenFlowerStalks(geometry);
+ const blossomFootprint=botanicalFootprint(geometry);
  const clumps=botanicalClumps[species],plantingClumps=clumps.flatMap(clump=>Array(clump.count).fill(clump)),batch=new THREE.InstancedMesh(geometry,material,plantingClumps.length),dummy=new THREE.Object3D();let placed=0;
  for(let j=0;j<plantingClumps.length;j++){
  const worldSize=2.0+random()*.35;let scale=worldSize/extent;
- const crownRadius=(x,z)=>{const cappedScale=Math.min(scale,meadowViewpoints.reduce((d,v)=>Math.min(d,v.distanceTo(new THREE.Vector3(x,meadowFloor(x,z)+.8,z))),Infinity)*.16/extent);return(Math.hypot(size.x,size.z)*.5+size.y*.1)*cappedScale;};
+ const crownRadius=(x,z)=>{const cappedScale=Math.min(scale,meadowViewpoints.reduce((d,v)=>Math.min(d,v.distanceTo(new THREE.Vector3(x,meadowFloor(x,z)+.8,z))),Infinity)*.16/extent);return blossomFootprint*cappedScale;};
  const point=meadowSite(species*200+j,true,crownRadius,plantingClumps[j]);if(!point)continue;
  const {x,z}=point;random();
  scale=Math.min(scale,meadowViewpoints.reduce((d,v)=>Math.min(d,v.distanceTo(new THREE.Vector3(x,meadowFloor(x,z)+.8,z))),Infinity)*.16/extent);
@@ -623,7 +639,7 @@ new GLTFLoader(sceneryManager).load('models/meadow-flowers.glb?v=no-lavender65',
  }
  batch.count=placed;botanicalCounts[part.name]=placed;
  batch.computeBoundingSphere();meadow.add(batch);
- });host.dataset.botanicalCounts=JSON.stringify(botanicalCounts);host.dataset.botanicalSpecies=String(speciesCount);const occupied=[...botanicalOccupied.values()].flat();let clearance=Infinity;for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){const p=occupied[a],q=occupied[b];clearance=Math.min(clearance,Math.hypot(p.x-q.x,p.z-q.z)-p.radius-q.radius);}host.dataset.flowerClearance=clearance.toFixed(4);
+ });host.dataset.botanicalCounts=JSON.stringify(botanicalCounts);host.dataset.botanicalClumps=JSON.stringify(clumpCenters.map(c=>({species:c.species,count:c.members?.length||0})));host.dataset.botanicalSpecies=String(speciesCount);const occupied=[...botanicalOccupied.values()].flat();let clearance=Infinity;for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){const p=occupied[a],q=occupied[b];clearance=Math.min(clearance,Math.hypot(p.x-q.x,p.z-q.z)-p.radius-q.radius);}host.dataset.flowerClearance=clearance.toFixed(4);
 },undefined,()=>{host.dataset.botanicalSpecies='unavailable';});
 
 const grassGeometry=new THREE.PlaneGeometry(.075,1,1,9);grassGeometry.translate(0,.5,0);const gp=grassGeometry.attributes.position;for(let i=0;i<gp.count;i++){const h=gp.getY(i);gp.setX(i,gp.getX(i)*(.12+.88*Math.sin(Math.PI*h))*(1-h*.65)+h*h*.12);gp.setZ(i,h*h*.18);}grassGeometry.computeVertexNormals();
