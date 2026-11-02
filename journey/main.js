@@ -73,7 +73,7 @@ const host = document.createElement('div'); host.id = 'journeyCanvas'; host.setA
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); } catch (error) { host.dataset.state = 'fallback';console.error('Journey WebGL initialization failed',error); }
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(palette.night); scene.fog = new THREE.FogExp2(palette.night, .047);
+scene.background = new THREE.Color(palette.night); scene.fog = new THREE.FogExp2(palette.night, 0);
 const camera = new THREE.PerspectiveCamera(47, 1, .1, 360);
 const cameraCurve = new THREE.CatmullRomCurve3([
  new THREE.Vector3(0,1.4,14),new THREE.Vector3(1.8,4,2),new THREE.Vector3(-1.8,10,-12),
@@ -207,7 +207,7 @@ void main(){
  vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);
  float h=smoothstep(-.2,.75,d.y);vec3 color=mix(horizon,zenith,h);
  float clouds=noise(uv*vec2(13.,7.)+vec2(clock*.002,0.))*.65+noise(uv*vec2(29.,19.)-vec2(clock*.001,0.))*.25;
- color+=mix(horizon,zenith,.5)*(clouds-.35)*.22;
+ color+=vec3(0.);
  float ribbon=.62+.10*sin(uv.x*14.+clock*.015)+.035*sin(uv.x*35.-clock*.01);
  float aurora=exp(-pow((uv.y-ribbon)*37.,2.))*(.35+.65*noise(vec2(uv.x*60.,uv.y*3.)));
  color+=vec3(.14,.17,.30)*aurora*.28;
@@ -221,9 +221,9 @@ const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(145,48,32),new THREE.Sh
 // Distant painted cloud banks: broad flat bases and unequal rising lobes.
 const skyObjects=new THREE.Group();world.add(skyObjects);
 const cloudRamp=new THREE.DataTexture(new Uint8Array([105,155,205,245]),4,1,THREE.RedFormat);cloudRamp.minFilter=cloudRamp.magFilter=THREE.NearestFilter;cloudRamp.needsUpdate=true;
-const cloudMaterial=new THREE.MeshToonMaterial({color:palette.white,vertexColors:true,gradientMap:cloudRamp,transparent:true,depthWrite:false,opacity:.86});cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
+const cloudMaterial=new THREE.MeshBasicMaterial({color:'#ffffff',vertexColors:true,fog:false,transparent:true,depthWrite:false,opacity:1});cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
 const cloudGeometry=new THREE.SphereGeometry(1,24,16),cloudBanks=[];
-const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#a8a9bd').lerp(new THREE.Color('#fff9ee'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
+const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#e5e8ee').lerp(new THREE.Color('#ffffff'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
@@ -819,7 +819,7 @@ function paint(t,time){
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
-    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.017+.25*smooth(.95,1,t);
+    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.25*smooth(.95,1,t);
     const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
