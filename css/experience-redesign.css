@@ -1,9 +1,78 @@
-html.experience-solar body:before{background:#eee7d9!important;filter:none!important}html.experience-solar body:after{display:none!important}
-#experience#experience section.solar-experience{background:#eee7d9!important;color:#563e3b!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:60px 5vw!important;overflow:visible!important}
-#experience#experience .solar-experience>.section-title,#experience .experience-growth-labels{display:none!important}
-.solar-hero{position:relative;padding:30px 0 100px;isolation:isolate;overflow:hidden}.solar-eyebrow{font:12px 'Open Sans',Arial,sans-serif;letter-spacing:.15em}.solar-hero h2{position:relative;z-index:1;font:300 clamp(65px,9vw,140px)/.94 Recoleta,Georgia,serif!important;letter-spacing:-.065em!important;margin:50px 0 30px!important;text-align:left!important;color:#563e3b!important}.solar-hero h2 em{font-weight:300}.solar-hero p{position:relative;z-index:1;font:16px/1.6 'Open Sans',Arial,sans-serif!important;text-align:left!important;max-width:340px}.solar-sun{position:absolute;width:clamp(180px,30vw,390px);aspect-ratio:1;border-radius:50%;right:0;top:15%;background:radial-gradient(circle at 35% 30%,#ffdb92,#dfad6b 65%,#c29879);transform:translate(var(--sun-x,0),var(--sun-y,0));transition:transform 1s cubic-bezier(.19,1,.22,1);display:grid;place-items:center;color:#eee7d9;z-index:0}.solar-sun span{font:200px Georgia;animation:solar-turn 60s linear infinite}
-.solar-chapters{display:flex;flex-wrap:wrap;gap:14px 28px;padding:22px 0;border-top:1px solid #563e3b44;border-bottom:1px solid #563e3b44;margin-bottom:45px}.solar-chapters a{font:12px/1.5 'Open Sans',Arial,sans-serif;color:#563e3b;text-decoration:none;position:relative;padding-bottom:5px}.solar-chapters a:after{content:'';position:absolute;left:0;bottom:0;height:1px;width:100%;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.19,1,.22,1)}.solar-chapters a:hover:after,.solar-chapters a.is-current:after{transform:scaleX(1)}
-#experience#experience .content-item.solar-role{position:relative!important;background:transparent!important;border:0!important;border-bottom:1px solid #563e3b44!important;box-shadow:none!important;backdrop-filter:none!important;border-radius:0!important;margin:0!important;padding:55px 0 65px 90px!important;scroll-margin-top:110px;opacity:1!important;transform:none!important}#experience .solar-role:before,#experience .solar-role:after{display:none!important}.solar-number{position:absolute;left:0;top:60px;font:42px/1 Recoleta,Georgia,serif;color:#ad7d59}#experience#experience .solar-role .details h3{font:300 clamp(32px,4vw,54px)/1.1 Recoleta,Georgia,serif!important;color:#563e3b!important;text-align:left!important;letter-spacing:-.025em}#experience#experience .solar-role :is(.glass-card-head,.glass-well,.details){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;color:#563e3b!important}#experience#experience .solar-role .date-location{font:400 13px/1.8 'Open Sans',Arial,sans-serif!important;color:#79665f!important}#experience#experience .solar-role li{font:400 15px/1.85 'Open Sans',Arial,sans-serif!important;color:#563e3b!important;text-align:left!important;margin:14px 0!important}.solar-details summary{cursor:pointer;list-style:none;padding:18px 0;font:14px 'Open Sans',Arial,sans-serif;border-bottom:1px solid #563e3b33}.solar-details summary:after{content:'↗';float:right;transition:transform .4s}.solar-details[open] summary:after{transform:rotate(90deg)}.solar-details[open] ul{animation:solar-reveal .7s ease both}
-@keyframes solar-turn{to{transform:rotate(360deg)}}@keyframes solar-reveal{from{opacity:0;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0)}}@media(max-width:700px){.solar-sun{opacity:.45;right:-35px}.solar-hero{padding-bottom:60px}#experience#experience .content-item.solar-role{padding-left:45px!important}.solar-number{font-size:26px}}@media(prefers-reduced-motion:reduce){.solar-sun span,.solar-details[open] ul{animation:none}.solar-sun{transition:none}}
-
-#experience .solar-details summary{display:none!important}#experience .solar-details ul{display:block!important}#experience .solar-role .details{transition:opacity .65s,transform .65s}#experience .solar-role:not(.solar-visible) .details{opacity:.2;transform:translateY(18px)}#experience .solar-role.solar-visible .details{opacity:1;transform:none}#experience .solar-role li{transition:transform .4s}#experience .solar-role li:hover{transform:translateX(5px)}
+/* Research field notes: an editorial composition, original SVG specimens. */
+html.experience-atlas{background:#f2eee6!important;scroll-padding-top:132px}
+html.experience-atlas body{background:#f2eee6!important;overflow-y:visible!important}
+html.experience-atlas body:before{background:#f2eee6!important;filter:none!important;opacity:1!important}
+html.experience-atlas body:after{display:none!important}
+html.experience-atlas #container{max-width:none!important;width:100%!important;margin:0!important;padding:92px 0 0!important;box-sizing:border-box}
+html.experience-atlas #content-wrapper{overflow:visible!important}
+html.experience-atlas #intro{display:none!important}
+html.experience-atlas #experience.active{padding:0!important}
+#experience#experience section.xp-section{max-width:none!important;width:100%!important}
+#experience#experience .xp-section>.dream-kicker{display:none!important}
+#experience#experience .xp-atlas h3:after,#experience#experience .xp-atlas h3:before{display:none!important}
+#experience#experience .xp-section{--xp-ink:#382a43;--xp-line:#382a4330;--xp-paper:#f2eee6;background:var(--xp-paper)!important;color:var(--xp-ink)!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:visible!important}
+#experience#experience .xp-atlas,#experience#experience .xp-atlas *{box-sizing:border-box;font-family:'Open Sans',Arial,sans-serif!important}
+#experience#experience .xp-atlas{pointer-events:auto!important;line-height:1.5;text-align:left;--read-progress:0}
+#experience#experience .xp-atlas :is(p,h2,h3,ul,li){margin:0;max-width:none;text-align:left!important;text-shadow:none!important}
+#experience#experience .xp-cover{position:relative;isolation:isolate;min-height:min(820px,calc(100svh - 92px));background:#30213c;color:#f2eee6;padding:32px 5.5vw 38px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+#experience#experience .xp-cover-top,#experience#experience .xp-cover-bottom{position:relative;z-index:2;display:flex;justify-content:space-between;gap:24px}
+#experience#experience .xp-cover-top{font-size:10px;letter-spacing:.16em;border-bottom:1px solid #eee6db40;padding-bottom:20px}
+#experience#experience .xp-cover h2{position:relative;z-index:2;font:300 clamp(68px,10.5vw,174px)/.94 Recoleta,Georgia,serif!important;letter-spacing:-.055em!important;color:#f2eee6!important;padding:58px 0 80px!important;pointer-events:none}
+#experience#experience .xp-cover h2 span,#experience#experience .xp-cover h2 em{font:inherit!important;display:block;letter-spacing:inherit}
+#experience#experience .xp-cover h2 em{padding-left:10vw;font-style:italic!important;color:#c3afd6!important}
+#experience#experience .xp-cover-bottom{align-items:end}
+#experience#experience .xp-cover-bottom p{max-width:280px!important;font-size:14px!important;line-height:1.65!important;color:#eee6db!important}
+#experience#experience .xp-scroll{font-size:9px;letter-spacing:.13em;white-space:nowrap}
+#experience#experience .xp-cover-number{position:absolute;right:5vw;top:54px;font:300 100px/.9 Recoleta,Georgia,serif!important;color:#c3afd640}
+#experience#experience .xp-cover-art{position:absolute;width:49vw;max-width:720px;right:-4vw;top:10%;color:#b19acb;opacity:.6;transform:translate(calc(var(--pointer-x,0)*22px),calc(var(--pointer-y,0)*22px)) rotate(-18deg);transition:transform 1s cubic-bezier(.2,.7,.2,1);z-index:0}
+#experience#experience .xp-atlas svg{width:100%;display:block;overflow:visible}
+.xp-orbit{stroke:currentColor;stroke-width:.7;opacity:.38;transform-origin:240px 240px}
+.xp-fine{stroke:currentColor;stroke-width:.7;opacity:.6}
+.xp-bead{fill:currentColor;opacity:.7}
+.xp-membrane{stroke:currentColor;stroke-width:1;fill:currentColor;fill-opacity:.055}
+.xp-organelle{fill:#bc8ea9;fill-opacity:.5;stroke:#bc8ea9;stroke-width:.8}
+.xp-probe{fill:#a5af8d;stroke:#a5af8d;stroke-width:.8}
+.xp-spot{stroke-width:.8}.xp-spot-0{fill:#ad8ba7;fill-opacity:.65;stroke:#ad8ba7}.xp-spot-1{fill:#77649d;fill-opacity:.5;stroke:#77649d}.xp-spot-2{fill:#8f9e85;fill-opacity:.6;stroke:#8f9e85}
+.xp-rung{stroke:currentColor;stroke-width:.9;opacity:.35}
+#experience#experience .xp-index{position:sticky;top:80px;z-index:15;display:flex;align-items:center;justify-content:space-between;gap:25px;padding:22px 5.5vw;background:#f2eee6f5;border-bottom:1px solid var(--xp-line);font-size:10px;letter-spacing:.1em;color:var(--xp-ink)}
+#experience#experience .xp-index-items{display:flex;gap:clamp(18px,3.4vw,56px)}
+#experience#experience .xp-index-item{position:relative;color:#8a7d8b;transition:color .35s;outline-offset:5px;cursor:default}
+#experience#experience .xp-index-item:after{content:'';position:absolute;left:0;right:0;bottom:-7px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .45s}
+#experience#experience .xp-index-item:is(.is-current,:hover,:focus){color:#382a43}
+#experience#experience .xp-index-item:is(.is-current,:hover,:focus):after{transform:scaleX(1)}
+#experience#experience .xp-index-progress{position:absolute;bottom:-1px;left:0;width:100%;height:2px;background:#8d739f;transform:scaleX(var(--read-progress));transform-origin:left}
+#experience#experience .xp-chapter{display:grid;grid-template-columns:minmax(0, .9fr) minmax(0,1fr);gap:7vw;padding:85px 5.5vw 100px;scroll-margin-top:155px;border-bottom:1px solid var(--xp-line);position:relative;background:var(--xp-paper)}
+#experience#experience .xp-chapter:nth-child(2){--xp-paper:#e9e3ed}
+#experience#experience .xp-chapter:nth-child(3){--xp-paper:#e5e9df}
+#experience#experience .xp-specimen{position:sticky;top:178px;align-self:start;min-width:0;color:#78628c;--chapter-progress:inherit;--pointer-x:0;--pointer-y:0}
+#experience#experience .xp-specimen-top,#experience#experience .xp-specimen-bottom{display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.1em;border-top:1px solid var(--xp-line);padding-top:16px}
+#experience#experience .xp-specimen-top span:last-child{font-size:12px}
+#experience#experience .xp-concept{font:300 clamp(30px,3.9vw,62px)/1.06 Recoleta,Georgia,serif!important;letter-spacing:-.045em;color:var(--xp-ink)!important;padding:25px 0 0!important;max-width:360px!important}
+#experience#experience .xp-specimen-art{width:min(100%,440px);margin:5px auto;transform:translate(calc(var(--pointer-x,0)*12px),calc(var(--pointer-y,0)*12px));transition:transform .8s ease}
+#experience#experience .xp-organism{transform-origin:240px 240px;transform:rotate(calc((var(--chapter-progress,0) - .5)*20deg)) scale(calc(.93 + var(--chapter-progress,0)*.12));transition:transform .15s linear}
+#experience#experience .xp-orbit{transform:rotate(calc(var(--chapter-progress,0)*75deg));transition:transform .2s linear}
+#experience#experience .xp-specimen-bottom{padding-bottom:12px}
+#experience#experience .xp-specimen-bottom span:last-child{font-size:25px;line-height:1}
+#experience#experience .xp-art-note{font-size:9px;color:#887a8d;letter-spacing:.02em;display:block}
+#experience#experience .xp-record{padding-top:0;min-width:0}
+#experience#experience .xp-record-kicker{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:#836c8d;display:block;margin-bottom:27px}
+#experience#experience .xp-record-head h3{font:300 clamp(28px,3.1vw,49px)/1.12 Recoleta,Georgia,serif!important;letter-spacing:-.035em!important;color:var(--xp-ink)!important;margin:0 0 25px!important}
+#experience#experience .xp-record-head .date-location{display:block;font:400 12px/1.85 'Open Sans',Arial,sans-serif!important;color:#756a7a!important;margin:0!important}
+#experience#experience .xp-tags{display:flex;gap:8px 18px;flex-wrap:wrap;padding:25px 0 35px}
+#experience#experience .xp-tags span{font:400 10px/1.6 'Open Sans',Arial,sans-serif!important;color:#786582;letter-spacing:.04em;border-bottom:1px solid #78658250;padding-bottom:3px}
+#experience#experience .xp-work{list-style:none!important;padding:0!important;counter-reset:work}
+#experience#experience .xp-work li{position:relative;border-top:1px solid var(--xp-line);padding:24px 0 30px 34px!important;margin:0!important;font:400 14px/1.95 'Open Sans',Arial,sans-serif!important;color:#574d5c!important;transition:color .45s,transform .7s;opacity:1!important;transform:none!important}
+#experience#experience .xp-work li:before{content:attr(data-note)!important;position:absolute;left:0;top:28px!important;display:block!important;background:none!important;width:auto!important;height:auto!important;font:400 9px/1.6 'Open Sans',Arial,sans-serif!important;color:#a298a6;transition:color .45s}
+#experience#experience .xp-work li:after{display:none!important}
+#experience#experience .xp-work li.xp-in-view{color:#382a43!important}
+#experience#experience .xp-work li:hover{color:#76518e!important}
+#experience#experience .xp-work li:hover:before{color:#76518e}
+#experience#experience .xp-work strong{font-weight:600!important;color:inherit!important;background:none!important}
+#experience#experience .xp-preview .xp-specimen-art{transform:translateY(-8px)}
+#experience#experience .xp-colophon{padding:70px 5.5vw 90px;background:#30213c;color:#c3afd6;display:flex;flex-direction:column;gap:30px}
+#experience#experience .xp-colophon span{font-size:9px;letter-spacing:.13em}
+#experience#experience .xp-colophon p{font:300 clamp(32px,5vw,78px)/1.13 Recoleta,Georgia,serif!important;letter-spacing:-.04em;color:#f2eee6!important;max-width:800px!important}
+@media(min-width:1600px){#experience#experience .xp-chapter{padding-left:max(5.5vw,calc((100vw - 1440px)/2));padding-right:max(5.5vw,calc((100vw - 1440px)/2))}}
+@media(max-width:800px){#experience#experience .xp-cover{min-height:640px}#experience#experience .xp-cover h2{font-size:clamp(65px,12vw,100px)!important}#experience#experience .xp-cover-art{width:80vw;right:-22vw;top:20%}#experience#experience .xp-cover-number{font-size:70px;top:65px}#experience#experience .xp-index{top:72px;gap:15px;padding:19px 5vw}#experience#experience .xp-index>span:first-child{display:none}#experience#experience .xp-index-items{gap:20px}#experience#experience .xp-index-item{font-size:9px}#experience#experience .xp-chapter{gap:5vw;padding-top:55px}#experience#experience .xp-specimen{top:155px}#experience#experience .xp-record-head h3{font-size:28px!important}#experience#experience .xp-work li{font-size:13px!important;padding-left:25px!important}}
+@media(max-width:600px){#experience#experience .xp-cover{min-height:580px;padding-top:25px}#experience#experience .xp-cover-top{font-size:8px}#experience#experience .xp-cover h2{padding:70px 0!important}#experience#experience .xp-cover h2 em{padding-left:0}#experience#experience .xp-cover-bottom{align-items:start;flex-direction:column;gap:28px}#experience#experience .xp-cover-art{width:100vw;top:14%;right:-35vw;opacity:.38}#experience#experience .xp-cover-number{font-size:55px}#experience#experience .xp-index-count{display:none}#experience#experience .xp-index-items{width:100%;justify-content:space-between;gap:8px}#experience#experience .xp-index-item{font-size:8px;letter-spacing:0}#experience#experience .xp-chapter{display:block;padding:45px 6vw 55px}#experience#experience .xp-specimen{position:relative;top:auto;margin-bottom:45px}#experience#experience .xp-specimen-art{max-width:280px;margin:0 auto}#experience#experience .xp-concept{font-size:38px!important}#experience#experience .xp-specimen-top{padding-top:12px}#experience#experience .xp-work li{font-size:14px!important}#experience#experience .xp-record-head h3{font-size:34px!important}}
+@media(prefers-reduced-motion:reduce){#experience#experience .xp-atlas *{transition:none!important;animation:none!important}#experience#experience .xp-organism,#experience#experience .xp-orbit{transform:none!important}}

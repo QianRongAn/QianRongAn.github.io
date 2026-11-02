@@ -1,14 +1,117 @@
-(function(){function reduceMotion(){return matchMedia("(prefers-reduced-motion:reduce)").matches;}
-const page=document.getElementById('experience');if(!page)return;
-function build(){const section=page.querySelector('section');if(!section||section.dataset.solar)return;const cards=[...section.querySelectorAll('.content-item')];if(!cards.length)return;section.dataset.solar='true';section.classList.add('solar-experience');const zh=document.documentElement.lang.startsWith('zh');
-const hero=document.createElement('header');hero.className='solar-hero';hero.innerHTML='<span class="solar-eyebrow">FIELD NOTES / 2024 — PRESENT</span><h2>'+(zh?'研究，<em>付诸实践。</em>':'Research,<br><em>in practice.</em>')+'</h2><p>'+(zh?'从临床问题到计算发现。':'From clinical questions to computational discovery.')+'</p><div class="solar-sun" aria-hidden="true"><span>✳</span></div>';section.prepend(hero);
-const nav=document.createElement('nav');nav.className='solar-chapters';nav.setAttribute('aria-label','Experience chapters');section.insertBefore(nav,hero.nextSibling);
-cards.sort((a,b)=>{const year=x=>Math.max(...(x.querySelector('.date-location')?.textContent.match(/20\d\d/g)||['0']).map(Number));return year(b)-year(a)});
-cards.forEach((card,i)=>{section.append(card);card.classList.add('solar-role');card.id='solar-role-'+i;const title=card.querySelector('h3');const meta=card.querySelector('.date-location');const number=document.createElement('span');number.className='solar-number';number.textContent='0'+(i+1);card.prepend(number);const link=document.createElement('a');link.href='#'+card.id;link.textContent='0'+(i+1)+' / '+(meta?.textContent.split('|')[1]?.trim()||title?.textContent||'Research');link.addEventListener('click',e=>{e.preventDefault();card.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'start'})});link.addEventListener("pointerenter",()=>card.scrollIntoView({behavior:reduceMotion()?"instant":"smooth",block:"start"}));nav.append(link);
-const ul=card.querySelector('ul');if(ul&&ul.children.length>3){const details=document.createElement('details');details.className='solar-details';const summary=document.createElement('summary');summary.textContent=zh?'研究与职责详情':'Explore the work';details.open=true;summary.hidden=true;details.append(summary,ul);card.append(details)}
-});
-const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('solar-visible');nav.querySelectorAll('a').forEach(a=>a.classList.toggle('is-current',a.hash==='#'+e.target.id))}}),{threshold:.12});cards.forEach(c=>observer.observe(c));
-hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();hero.style.setProperty('--sun-x',((e.clientX-r.left)/r.width-.5)*18+'px');hero.style.setProperty('--sun-y',((e.clientY-r.top)/r.height-.5)*18+'px')});
-}
-new MutationObserver(build).observe(page,{childList:true,subtree:true});new MutationObserver(()=>document.documentElement.classList.toggle('experience-solar',page.classList.contains('active'))).observe(page,{attributes:true,attributeFilter:['class']});build();
+(function () {
+  'use strict';
+  const page = document.getElementById('experience');
+  if (!page) return;
+  const root = document.documentElement;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  let dispose = () => {};
+  let boundAtlas = null;
+  const circle = (x,y,r,extra='') => `<circle cx="${x}" cy="${y}" r="${r}" ${extra}/>`;
+  function specimen(kind) {
+    let art = '';
+    if (kind === 0) {
+      for (let i=0;i<72;i++) {
+        const a=i*Math.PI*2/72, r=137+8*Math.sin(i*1.7);
+        art+=circle(240+Math.cos(a)*r,240+Math.sin(a)*r,4.3,'class="xp-bead"');
+      }
+      art+='<path class="xp-membrane" d="M240 100C320 100 394 154 383 244S320 385 239 379 98 326 101 239 154 95 240 100Z"/>';
+      for(let i=0;i<13;i++){const a=i*2.4,r=28+Math.sqrt(i)*22;art+=circle(240+Math.cos(a)*r,240+Math.sin(a)*r,9+i%3*3,'class="xp-organelle"');}
+      art+='<path class="xp-probe" d="M407 52L300 205L317 157Z"/><path class="xp-fine" d="M339 146L425 146M151 343H58"/>';
+    } else if (kind === 1) {
+      for(let y=0;y<13;y++)for(let x=0;x<13;x++){
+        const px=81+x*26+(y%2)*13,py=82+y*26;
+        if(Math.hypot(px-240,py-240)>169)continue;
+        const z=(x*7+y*11)%9;
+        art+=circle(px,py,7+z*.65,`class="xp-spot xp-spot-${z%3}"`);
+      }
+      art+='<ellipse class="xp-fine" cx="240" cy="240" rx="174" ry="174"/><path class="xp-fine" d="M240 39V441M39 240H441"/>';
+    } else {
+      for(let i=0;i<32;i++){
+        const y=71+i*11, a=i*.31, x=240+Math.sin(a)*93, b=240-Math.sin(a)*93;
+        art+=`<path class="xp-rung" d="M${x} ${y}H${b}"/>`+circle(x,y,5.6,'class="xp-bead"')+circle(b,y,5.6,'class="xp-organelle"');
+      }
+      art+='<path class="xp-fine" d="M87 113H160M320 367H414"/>';
+    }
+    return `<svg viewBox="0 0 480 480" fill="none" aria-hidden="true"><g class="xp-orbit"><ellipse cx="240" cy="240" rx="214" ry="214"/><ellipse cx="240" cy="240" rx="226" ry="226" stroke-dasharray="1 12"/></g><g class="xp-organism">${art}</g><path class="xp-fine" d="M28 60V28H60M420 28H452V60M452 420V452H420M60 452H28V420"/></svg>`;
+  }
+  function build() {
+    const section=page.querySelector('section');
+    if(!section)return;
+    const existing=section.querySelector('.xp-atlas');
+    if(existing===boundAtlas && existing)return;
+    // The site's language switch can restore a saved HTML snapshot. Rebind its nodes.
+    if(existing){
+      const restored=[...existing.querySelectorAll('.xp-record')].map(record=>{
+        const card=document.createElement('div');card.className='content-item';
+        const details=document.createElement('div');details.className='details';
+        ['h3','.date-location','ul'].forEach(selector=>{const node=record.querySelector(selector);if(node)details.append(node);});
+        card.append(details);return card;
+      });
+      section.replaceChildren(...restored);
+    }
+    const cards=[...section.querySelectorAll('.content-item')];
+    if(cards.length!==3)return;
+    dispose();
+    const zh=root.lang.startsWith('zh');
+    const words=zh?{
+      title:'研究',italic:'实践',eyebrow:'研究经历 / NAN WANG',intro:'从临床问题出发，穿越细胞与数据，走向新的发现。',scroll:'向下滚动，探索研究经历',index:'研究档案',roles:['免疫工程','多组学整合','临床研究'],places:['瓯江实验室','北京亦兴博瑞','国家癌症中心'],themes:[['纳米递送','CAR-T','CRISPR'],['单细胞','空间组学','肿瘤异质性'],['肺癌','抗原预测','病理学']],note:'概念科学图形 · 非实验数据',end:'让问题引领下一次发现。'
+    }:{title:'Research',italic:'in practice.',eyebrow:'EXPERIENCE / NAN WANG',intro:'From clinical questions to cells, data, and new discoveries.',scroll:'SCROLL TO EXPLORE THE WORK',index:'FIELD NOTES',roles:['Engineering immunity','Decoding complexity','Closer to the clinic'],places:['Oujiang Laboratory','Yixing Borui','National Cancer Center'],themes:[['Nanoinjection','CAR-T','CRISPR'],['Single-cell','Spatial omics','Heterogeneity'],['Lung cancer','Antigen prediction','Pathology']],note:'Conceptual illustration · not experimental data',end:'Following the next question.'};
+    cards.sort((a,b)=>{
+      const date=c=>{const m=c.querySelector('.date-location')?.textContent.match(/(\d{2})\/(20\d{2})/);return m?Number(m[2])*12+Number(m[1]):0;};
+      return date(b)-date(a);
+    });
+    const atlas=document.createElement('div');atlas.className='xp-atlas';boundAtlas=atlas;
+    atlas.innerHTML=`<header class="xp-cover"><div class="xp-cover-top"><span>${words.eyebrow}</span><span>2024 — PRESENT</span></div><h2><span>${words.title}</span><em>${words.italic}</em></h2><div class="xp-cover-art">${specimen(0)}</div><div class="xp-cover-bottom"><p>${words.intro}</p><span class="xp-scroll">↓ &nbsp; ${words.scroll}</span></div><span class="xp-cover-number" aria-hidden="true">03</span></header><div class="xp-index"><span>${words.index}</span><div class="xp-index-items"></div><span class="xp-index-count">01 / 03</span><i class="xp-index-progress" aria-hidden="true"></i></div><div class="xp-chapters"></div><footer class="xp-colophon"><span>2024 — PRESENT / NAN WANG</span><p>${words.end}</p><span>COMPUTATIONAL BIOLOGY · BIOMEDICAL AI</span></footer>`;
+    const chapters=atlas.querySelector('.xp-chapters');
+    cards.forEach((card,i)=>{
+      const title=card.querySelector('h3'),meta=card.querySelector('.date-location'),ul=card.querySelector('ul');
+      const article=document.createElement('article');article.className='xp-chapter';article.id='xp-chapter-'+i;
+      article.dataset.chapter=i;
+      const year=meta?.textContent.match(/20\d{2}/)?.[0]||'';
+      article.innerHTML=`<aside class="xp-specimen"><div class="xp-specimen-top"><span>0${i+1} / ${words.index}</span><span>${year}</span></div><h3 class="xp-concept">${words.roles[i]}</h3><div class="xp-specimen-art">${specimen(i)}</div><div class="xp-specimen-bottom"><span>${words.themes[i][0]}</span><span>↗</span></div><small class="xp-art-note">${words.note}</small></aside><div class="xp-record"><div class="xp-record-head"><span class="xp-record-kicker">0${i+1} — ${words.places[i]}</span></div><div class="xp-tags">${words.themes[i].map(t=>'<span>'+t+'</span>').join('')}</div></div>`;
+      const head=article.querySelector('.xp-record-head');if(title)head.append(title);if(meta)head.append(meta);
+      if(ul){ul.className='xp-work';article.querySelector('.xp-record').append(ul);[...ul.children].forEach((li,k)=>{li.dataset.note=String(k+1).padStart(2,'0');});}
+      chapters.append(article);
+      const item=document.createElement('span');item.className='xp-index-item';item.tabIndex=0;item.textContent=`0${i+1} / ${words.places[i]}`;
+      // Hover previews the associated scientific specimen without moving the page.
+      item.addEventListener('pointerenter',()=>{article.classList.add('xp-preview');});
+      item.addEventListener('pointerleave',()=>article.classList.remove('xp-preview'));
+      item.addEventListener('focus',()=>article.scrollIntoView({block:'start',behavior:motion.matches?'instant':'smooth'}));
+      atlas.querySelector('.xp-index-items').append(item);
+    });
+    // Reuse all original role headings, dates and list nodes, including translated copy.
+    section.replaceChildren(atlas);section.classList.add('xp-section');
+    const updateActive=()=>root.classList.toggle('experience-atlas',page.classList.contains('active'));
+    updateActive();
+    let frame=0;
+    const articles=[...chapters.children],items=[...atlas.querySelectorAll('.xp-index-item')];
+    function paint(){
+      frame=0;if(!page.classList.contains('active'))return;
+      const vh=innerHeight;let active=0;
+      articles.forEach((a,i)=>{
+        const rect=a.getBoundingClientRect(),p=Math.max(0,Math.min(1,(vh*.7-rect.top)/(rect.height+vh*.25)));
+        if(rect.top<vh*.5)active=i;
+        if(rect.bottom>0&&rect.top<vh){a.style.setProperty('--chapter-progress',motion.matches?'.5':p.toFixed(3));}
+      });
+      items.forEach((e,i)=>e.classList.toggle('is-current',i===active));
+      atlas.querySelector('.xp-index-count').textContent='0'+(active+1)+' / 03';
+      const r=chapters.getBoundingClientRect();atlas.style.setProperty('--read-progress',Math.max(0,Math.min(1,(vh*.4-r.top)/r.height)).toFixed(3));
+    }
+    function schedule(){if(!frame)frame=requestAnimationFrame(paint);}
+    window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule,{passive:true});
+    const activeObserver=new MutationObserver(()=>{updateActive();schedule();});activeObserver.observe(page,{attributes:true,attributeFilter:['class']});
+    const reveal=new IntersectionObserver(entries=>entries.forEach(e=>e.target.classList.toggle('xp-in-view',e.isIntersecting)),{rootMargin:'0px 0px -5% 0px',threshold:0});
+    atlas.querySelectorAll('.xp-work li').forEach(el=>reveal.observe(el));
+    const pointer=e=>{
+      if(motion.matches||e.pointerType==='touch')return;
+      const area=e.currentTarget,r=area.getBoundingClientRect();
+      area.style.setProperty('--pointer-x',((e.clientX-r.left)/r.width-.5).toFixed(3));
+      area.style.setProperty('--pointer-y',((e.clientY-r.top)/r.height-.5).toFixed(3));
+    };
+    atlas.querySelectorAll('.xp-cover,.xp-specimen').forEach(el=>{el.addEventListener('pointermove',pointer);el.addEventListener('pointerleave',()=>{el.style.setProperty('--pointer-x','0');el.style.setProperty('--pointer-y','0');});});
+    dispose=()=>{window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);activeObserver.disconnect();reveal.disconnect();cancelAnimationFrame(frame);};
+    schedule();
+  }
+  new MutationObserver(build).observe(page,{childList:true,subtree:true});
+  build();
 })();
