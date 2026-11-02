@@ -29865,7 +29865,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
     }), T.material.uniforms.opacity.value = 0.46 * (1 - I), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
-    }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0.017 + 0.25 * zt(0.95, 1, p);
+    }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0.25 * zt(0.95, 1, p);
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
     if (C.getPoint(q, A.position), L.getPoint(q, wd), A.lookAt(wd), A.rotateZ(Math.sin(p * Math.PI * 4) * 0.025), p < 0.12) {
       const ae = x;
@@ -30006,7 +30006,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
     y.dataset.state = "fallback", console.error("Journey WebGL initialization failed", p);
   }
   const x = new Gs();
-  x.background = new _e(h.night), x.fog = new pu(h.night, 0.047);
+  x.background = new _e(h.night), x.fog = new pu(h.night, 0);
   const A = new Zt(47, 1, 0.1, 360), C = new Ln([
     new w(0, 1.4, 14),
     new w(1.8, 4, 2),
@@ -30155,7 +30155,7 @@ void main(){
  vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);
  float h=smoothstep(-.2,.75,d.y);vec3 color=mix(horizon,zenith,h);
  float clouds=noise(uv*vec2(13.,7.)+vec2(clock*.002,0.))*.65+noise(uv*vec2(29.,19.)-vec2(clock*.001,0.))*.25;
- color+=mix(horizon,zenith,.5)*(clouds-.35)*.22;
+ color+=vec3(0.);
  float ribbon=.62+.10*sin(uv.x*14.+clock*.015)+.035*sin(uv.x*35.-clock*.01);
  float aurora=exp(-pow((uv.y-ribbon)*37.,2.))*(.35+.65*noise(vec2(uv.x*60.,uv.y*3.)));
  color+=vec3(.14,.17,.30)*aurora*.28;
@@ -30170,13 +30170,13 @@ void main(){
   Z.add(Ne);
   const Le = new wl(new Uint8Array([105, 155, 205, 245]), 4, 1, El);
   Le.minFilter = Le.magFilter = an, Le.needsUpdate = !0;
-  const rt = new W0({ color: h.white, vertexColors: !0, gradientMap: Le, transparent: !0, depthWrite: !1, opacity: 0.86 });
+  const rt = new Ei({ color: "#ffffff", vertexColors: !0, fog: !1, transparent: !0, depthWrite: !1, opacity: 1 });
   rt.userData.cloud = !0, W.push(rt);
   const ct = new gn(1, 24, 16), Mt = [], G = ct.attributes.position, Ie = [];
   for (let p = 0; p < G.count; p++) {
     const E = G.getX(p), P = G.getY(p), I = G.getZ(p), O = 1 + 0.035 * Math.sin(E * 19 + P * 11) * Math.cos(I * 17);
     G.setXYZ(p, E * O, P * O, I * O);
-    const B = new _e("#a8a9bd").lerp(new _e("#fff9ee"), It.smoothstep(P, -0.65, 0.75));
+    const B = new _e("#e5e8ee").lerp(new _e("#ffffff"), It.smoothstep(P, -0.65, 0.75));
     Ie.push(B.r, B.g, B.b);
   }
   ct.setAttribute("color", new ut(Ie, 3)), ct.computeVertexNormals();
