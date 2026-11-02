@@ -10,12 +10,12 @@
  var failedAt=0,preparation=null;
  function prepare(){if(preparation)return preparation;preparation=(window.preludeVideoDownload||fetch('media/particle-butterfly-final-4k.mp4?v=4k35',{cache:'force-cache',priority:'high'}).then(function(response){if(!response.ok)throw new Error('Video preload failed');return response.blob();})).then(function(blob){return new Promise(function(resolve,reject){video.addEventListener('loadeddata',resolve,{once:true});video.addEventListener('error',reject,{once:true});video.src=URL.createObjectURL(blob);video.load();});}).catch(function(error){preparation=null;throw error;});return preparation;}
  var active=false,burstAt=0,frame=0,continuation=null,didContinue=false,timer;
- function continueOnce(){if(didContinue)return;didContinue=true;continuation?.();}
+ function continueOnce(){if(didContinue)return;didContinue=true;return Promise.resolve(continuation?.());}
  function cleanup(){cancelAnimationFrame(frame);clearTimeout(timer);video.pause();overlay.hidden=true;overlay.classList.remove('is-bursting');active=false;document.documentElement.classList.remove('particle-prelude-active');removeEventListener('wheel',guard,true);removeEventListener('keydown',keys,true);}
- function skip(){continueOnce();cleanup();}
+ function skip(){if(didContinue)return;video.pause();overlay.classList.add('is-loading');continueOnce().finally(cleanup);}
  function guard(event){if(active){event.preventDefault();event.stopImmediatePropagation();}}
  function keys(event){if(event.key==='Escape'){event.preventDefault();skip();}else if(['PageDown','PageUp','ArrowDown','ArrowUp',' '].includes(event.key))guard(event);}
- function burst(){if(burstAt||!active)return;burstAt=performance.now();continueOnce();}
+ function burst(){if(burstAt||!active||didContinue)return;video.pause();overlay.classList.add('is-loading');var quality=video.getVideoPlaybackQuality?.();if(quality){overlay.dataset.droppedFrames=String(quality.droppedVideoFrames);overlay.dataset.totalFrames=String(quality.totalVideoFrames);}continueOnce().finally(function(){if(!active)return;overlay.classList.remove('is-loading');burstAt=performance.now();});}
  function render(now){
   if(!active)return;
   track.style.transform='scaleX('+Math.min(1,(video.currentTime||0)/(video.duration||5.06))+')';

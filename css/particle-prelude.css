@@ -13,3 +13,6 @@
 .particle-prelude.is-bursting video{opacity:0}
 
 .particle-prelude.is-loading{background:#000}.particle-prelude.is-loading video{visibility:visible}.particle-prelude.is-loading .particle-prelude-label,.particle-prelude.is-loading .particle-prelude-caption{visibility:visible}.particle-prelude.is-loading .particle-prelude-track span{transform:scaleX(.15)!important;animation:prelude-loading 1.2s ease-in-out infinite alternate}@keyframes prelude-loading{to{transform:scaleX(.85)}}
+
+/* Keep playback on the native video compositor instead of screen blending. */
+.particle-prelude video{mix-blend-mode:normal;mask-image:none;-webkit-mask-image:none;opacity:var(--prelude-fade);background:#120848;transform:translate(-50%,-50%) translateZ(0)}
