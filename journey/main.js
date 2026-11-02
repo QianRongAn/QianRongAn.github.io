@@ -343,7 +343,8 @@ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.cos(a)*1.62,z=Math.sin(a)*1.62
 const corniceProfile=[[1.76,2.91],[1.89,2.96],[1.89,3.06],[2.00,3.10],[2.04,3.16],[2.04,3.22],[1.96,3.26],[1.99,3.33],[2.11,3.38],[2.11,3.46],[2.02,3.52]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(corniceProfile,72),stone));
 pavilionCylinder(1.79,.08,2.95,stoneShade);
 const dome=new THREE.Mesh(new THREE.SphereGeometry(2.02,64,28,0,Math.PI*2,0,Math.PI/2),stone);dome.scale.y=.71;dome.position.y=3.48;pavilion.add(dome);
-for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.043,gold,40);}
+const pavilionRib=matte('#dcd8e0',.015);pavilionRib.roughness=.8;pavilionRib.clearcoat=0;
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.043,pavilionRib,40);}
 const dentils=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.12,.10),stoneShade,48),pavilionDummy=new THREE.Object3D();for(let i=0;i<48;i++){const a=i/48*Math.PI*2;pavilionDummy.position.set(Math.cos(a)*1.92,3.09,Math.sin(a)*1.92);pavilionDummy.rotation.y=-a;pavilionDummy.updateMatrix();dentils.setMatrixAt(i,pavilionDummy.matrix);}pavilion.add(dentils);
 
 // Recessed frieze panels, dentil band, abaci and a front stair match the reference rotunda.

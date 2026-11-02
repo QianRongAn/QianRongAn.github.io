@@ -30251,13 +30251,13 @@ void main(){
   const Rt = [[1.76, 2.91], [1.89, 2.96], [1.89, 3.06], [2, 3.1], [2.04, 3.16], [2.04, 3.22], [1.96, 3.26], [1.99, 3.33], [2.11, 3.38], [2.11, 3.46], [2.02, 3.52]].map(([p, E]) => new he(p, E));
   Ye.add(new Qe(new ys(Rt, 72), ot)), Yt(1.79, 0.08, 2.95, Pt);
   const Mn = new Qe(new gn(2.02, 64, 28, 0, Math.PI * 2, 0, Math.PI / 2), ot);
-  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);
+  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);const pavilionRib=V("#dcd8e0",.015);pavilionRib.roughness=.8;pavilionRib.clearcoat=0;
   for (let p = 0; p < 12; p++) {
     const E = p / 12 * Math.PI * 2, P = Array.from({ length: 28 }, (I, O) => {
       const B = O / 27 * Math.PI / 2, K = 2.04 * Math.sin(B);
       return new w(Math.cos(E) * K, 3.48 + 1.45 * Math.cos(B), Math.sin(E) * K);
     });
-    ie(Ye, P, 0.043, ye, 40);
+    ie(Ye, P, 0.043, pavilionRib, 40);
   }
   const Dn = new $t(new Hn(0.09, 0.12, 0.1), Pt, 48), Nn = new At();
   for (let p = 0; p < 48; p++) {
