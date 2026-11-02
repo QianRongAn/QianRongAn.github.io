@@ -25,7 +25,7 @@ const section = document.getElementById('researchJourney');
 const container = document.getElementById('container');
 const intro = document.getElementById('intro');
 const palette = { night: '#120848', violet: '#4a3a7a', dusk: '#b892b8', mist: '#a8a9bd', wall: '#979eb7', gold: '#D0BA98', blue: '#516DB0', red: '#91040C', white: '#ffffff', ink: '#242320' };
-const stops = [[0, palette.night], [.35, '#252064'], [.6, '#344fa0'], [.85, '#709fd0'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
+const stops = [[0, palette.night], [.35, '#34354f'], [.6, '#626783'], [.85, '#a2abc2'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
 const captions = [
     [0, .13, 'left', '01 / RESEARCH', 'Nan Wang', 'Computational Biology · Biomedical AI', '计算生物学 · 生物医学 AI'],
     [.13, .25, 'left', 'LIFE, IN PATTERNS', 'From sequence<br>to <em>insight.</em>', 'Immune repertoires · molecular structure · interpretable models', '免疫组库 · 分子结构 · 可解释模型'],
@@ -62,7 +62,7 @@ const progressBar = section.querySelector('.journey-progress-fill');
 const progressNumber = section.querySelector('.journey-progress-number');
 function localize() {
     const zh = root.lang.startsWith('zh');
-    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';p.style.removeProperty('color');p.style.textShadow='none'; });
+    panels.forEach((panel, i) => { const p = panel.querySelector('p');let text=captions[i][zh ? 6 : 5];if(i>=17&&i<=22){if(!zh){const title=document.querySelectorAll('#publications .pub-title')[i-17]?.textContent.trim();const journal=['J Hematol Oncol, 2024','Advanced Science, 2024','J Transl Med, 2022','Immunol Cell Biol, 2024','Front Cell Dev Biol, 2025','Clin Transl Med (under review)'][i-17];text=title+'\n'+journal;}else{const cut=text.lastIndexOf(' · ');if(cut>=0)text=text.slice(0,cut).replaceAll(' · ', ' — ')+'\n'+text.slice(cut+3);}} (p.querySelector('a') || p).textContent=text;p.style.whiteSpace='pre-line';p.style.setProperty('font-family','Open Sans, Arial, sans-serif','important');p.style.setProperty('font-weight','400','important');p.style.removeProperty('color');p.style.textShadow='none'; });
     section.querySelector('.journey-scroll').textContent = zh ? '向下滚动，探索研究之旅' : 'SCROLL TO EXPLORE';
 }
 localize();
@@ -197,20 +197,13 @@ dna.traverse(part=>{if(part.material){part.material=part.material.clone();part.m
 
 // A curved sky dome gives the chambers a horizon and a directional colour field.
 const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0}};
-const skyFragment=`varying vec3 direction;
-uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
+const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
-void main(){
- vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);
- float h=smoothstep(-.2,.75,d.y);vec3 color=mix(horizon,zenith,h);
- float clouds=noise(uv*vec2(13.,7.)+vec2(clock*.002,0.))*.65+noise(uv*vec2(29.,19.)-vec2(clock*.001,0.))*.25;
- color+=vec3(0.);
- float ribbon=.62+.10*sin(uv.x*14.+clock*.015)+.035*sin(uv.x*35.-clock*.01);
- float aurora=exp(-pow((uv.y-ribbon)*37.,2.))*(.35+.65*noise(vec2(uv.x*60.,uv.y*3.)));
- color+=vec3(.14,.17,.30)*aurora*.28;
- vec2 grid=uv*vec2(350.,180.);vec2 id=floor(grid),f=fract(grid)-.5;float star=step(.985,hash(id))*exp(-dot(f,f)*170.)*(.65+.35*sin(clock*.15+hash(id)*24.));
- color+=vec3(.55,.59,.72)*star*smoothstep(.46,.7,uv.y);
+void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
+ float path=.64+.11*sin(uv.x*6.28318+1.1);float band=exp(-pow((uv.y-path)/.075,2.));float n=noise(uv*vec2(55.,35.))*.6+noise(uv*vec2(120.,75.))*.28+noise(uv*vec2(240.,150.))*.12;float lane=smoothstep(.25,.75,noise(uv*vec2(80.,30.)+6.));float galaxy=band*(.16+.65*n)*(.42+.58*lane);
+ color+=mix(vec3(.12,.10,.15),vec3(.23,.20,.26),n)*galaxy*.62;
+ vec2 grid=uv*vec2(680.,340.),id=floor(grid),f=fract(grid)-.5;float stars=step(.952,hash(id))*exp(-dot(f,f)*155.);vec2 g2=uv*vec2(1200.,600.),id2=floor(g2),f2=fract(g2)-.5;float fine=step(.978-band*.045,hash(id2+25.))*exp(-dot(f2,f2)*210.);float twinkle=.87+.13*sin(clock*.35+hash(id)*26.);color+=(vec3(.78,.80,.90)*stars*.55+vec3(.61,.64,.75)*fine*.38)*twinkle*smoothstep(.43,.65,uv.y);
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -218,14 +211,16 @@ void main(){
 const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(145,48,32),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:skyUniforms,vertexShader:'varying vec3 direction;void main(){direction=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:skyFragment}));atmosphere.position.z=-50;scene.add(atmosphere);
 // Distant painted cloud banks: broad flat bases and unequal rising lobes.
 const skyObjects=new THREE.Group();world.add(skyObjects);
+const birdFlock=[];const birdMaterial=new THREE.MeshBasicMaterial({color:'#d5d2de',transparent:true,opacity:.86});
+for(let i=0;i<16;i++){const bird=new THREE.Group(),body=new THREE.Mesh(new THREE.SphereGeometry(1,8,5),birdMaterial);body.scale.set(.075,.055,.19);bird.add(body);const wings=[];for(const side of [-1,1]){const pivot=new THREE.Group(),wing=new THREE.Mesh(new THREE.SphereGeometry(1,8,4),birdMaterial);wing.position.x=side*.20;wing.scale.set(.27,.018,.095);pivot.add(wing);bird.add(pivot);wings.push({pivot,side});}bird.position.set(Math.sin(i*2.4)*22,9+(i%5)*1.8,-37-i*5.4);skyObjects.add(bird);birdFlock.push({bird,wings,phase:i*1.7,baseY:bird.position.y,baseZ:bird.position.z});}
 const cloudRamp=new THREE.DataTexture(new Uint8Array([105,155,205,245]),4,1,THREE.RedFormat);cloudRamp.minFilter=cloudRamp.magFilter=THREE.NearestFilter;cloudRamp.needsUpdate=true;
 function softenCloud(material){material.onBeforeCompile=shader=>{
  shader.vertexShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.vertexShader;
  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ncloudPoint=position;cloudNormal=normalize(mat3(modelMatrix)*normal);cloudView=cameraPosition-(modelMatrix*vec4(position,1.)).xyz;'.replace('\n',String.fromCharCode(10)));
  shader.fragmentShader='float cloudHash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}float cloudNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(cloudHash(i),cloudHash(i+vec3(1,0,0)),f.x),mix(cloudHash(i+vec3(0,1,0)),cloudHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(cloudHash(i+vec3(0,0,1)),cloudHash(i+vec3(1,0,1)),f.x),mix(cloudHash(i+vec3(0,1,1)),cloudHash(i+vec3(1,1,1)),f.x),f.y),f.z);}varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.fragmentShader;
- shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.50+.34*cloudNoise(cloudPoint*3.8)+.16*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,2.2)*smoothstep(.1,.9,wisps);diffuseColor.rgb=vec3(.94,.96,1.);'.replace('\n',String.fromCharCode(10)));
+ shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.82+.12*cloudNoise(cloudPoint*3.8)+.06*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,.85)*smoothstep(.1,.9,wisps);diffuseColor.rgb=mix(vec3(.74,.77,.82),vec3(1.),smoothstep(-.8,.65,cloudPoint.y));'.replace('\n',String.fromCharCode(10)));
 };material.customProgramCacheKey=()=> 'white-cloud-soft-volume-v2';}
-const cloudMaterial=new THREE.MeshBasicMaterial({color:'#ffffff',vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.68});softenCloud(cloudMaterial);cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
+const cloudMaterial=new THREE.MeshBasicMaterial({color:'#ffffff',vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.92});softenCloud(cloudMaterial);cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
 const cloudGeometry=new THREE.SphereGeometry(1,24,16),cloudBanks=[];
 const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#e5e8ee').lerp(new THREE.Color('#ffffff'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
@@ -778,7 +773,7 @@ function printedPaper(card){
  c.font='34px Arial';c.fillStyle='#423c53';y=wrapText(c,card.querySelector('.pub-authors').textContent.trim(),470,y+28,1040,47);
  c.font='italic 34px Georgia';c.fillStyle='#51405e';y=wrapText(c,card.querySelector('.pub-journal').textContent.trim(),470,y+22,1040,46);
  const impact=(card.querySelector('.pub-impact')?.textContent||'').trim();if(impact){c.font='bold 32px Georgia';c.fillStyle='#353047';c.fillText(impact,470,y+23);y+=55;}
- const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font=([3,5].includes(Number(card.dataset.pubId))?'31':'34')+'px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.ceil(rows.length/2);rows.forEach((line,i)=>drawPaperLine(c,line,i<half?70:835,y+70+(i%half)*43,695,i!==half-1&&i!==rows.length-1));card.dataset.printBottom=String(y+70+half*43);}
+ const summary=card.querySelector('.pub-summary');if(summary){y=Math.max(y+45,760);c.strokeStyle='rgba(70,57,88,.25)';c.beginPath();c.moveTo(70,y-25);c.lineTo(1530,y-25);c.stroke();c.font='25px Arial';c.fillStyle='#675575';c.fillText('ABSTRACT',70,y+14);c.font=([3,5].includes(Number(card.dataset.pubId))?'31':'34')+'px Georgia';c.fillStyle='#302b40';const words=summary.innerText.trim().split(/\s+/),rows=[];let row='';for(const word of words){const next=row?row+' '+word:word;if(c.measureText(next).width>695&&row){rows.push(row);row=word;}else row=next;}if(row)rows.push(row);const half=Math.max(1,Math.floor((1715-(y+70))/43)+1);rows.forEach((line,i)=>drawPaperLine(c,line,i<half?70:835,y+70+(i%half)*43,695,i!==half-1&&i!==rows.length-1));card.dataset.printBottom=String(y+70+half*43);}
  texture.needsUpdate=true;
  }
  // Text is available immediately. Fonts and the single displayed image enrich it later.
@@ -821,7 +816,7 @@ function measure(){
     if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);orchidScreens.forEach(screen=>{screen.style.width=`${2.1*.62*unit}px`;screen.style.height=`${2.8*.62*unit}px`;screen.style.left='0';screen.style.top='0';});renderer.setPixelRatio(Math.min(devicePixelRatio||1,publicationMode()?2:1));renderer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
 }
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
-function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.55);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color('#739ed5'),.10);}
+function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.72);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color('#b6a9bd'),.24);}
 function paint(t,time){
     if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
     moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.97,1,t));
@@ -840,6 +835,7 @@ function paint(t,time){
     orchidGlow.material.uniforms.opacity.value=butterflyOn?.46*smooth(0,.45,time-flightStarted)*(1-opening):0;
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
+    birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*3.4+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.25*smooth(.95,1,t);
     const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
@@ -873,7 +869,7 @@ function paint(t,time){
     if(!skipped)intro.style.setProperty('opacity',String(smooth(.975,1,t)),'important');
     section.querySelector('.journey-scroll').style.opacity=String(1-smooth(.01,.06,t));
     host.dataset.progress=t.toFixed(3);host.dataset.background='#'+scene.background.getHexString();host.style.backgroundColor=host.dataset.background;host.dataset.camera='CatmullRomCurve3';
-    if(renderer){renderer.domElement.style.filter='';if(t<.12)wings.traverse(part=>{if(part.material)part.material.opacity=(part.material.userData.baseOpacity??1)*fade;});renderer.render(scene,camera);}
+    if(renderer){renderer.domElement.style.filter=t<.12?`blur(${68*(1-flight)}px)`:'';if(t<.12)wings.traverse(part=>{if(part.material)part.material.opacity=(part.material.userData.baseOpacity??1)*fade;});renderer.render(scene,camera);}
     const openingText=document.getElementById('heroScreen');if(openingText&&root.classList.contains('intro-text-active')){openingText.style.opacity=String(1-opening);openingText.style.display=t<.12?'block':'none';}
     host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.flapping=String(opening<1);host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
 }

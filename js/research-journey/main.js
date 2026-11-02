@@ -29373,7 +29373,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
           O = K + `
 ` + q;
         }
-      (I.querySelector("a") || I).textContent = O, I.style.whiteSpace = "pre-line", I.style.removeProperty("color"), I.style.textShadow = "none";
+      (I.querySelector("a") || I).textContent = O, I.style.whiteSpace = "pre-line",I.style.setProperty("font-family","Open Sans, Arial, sans-serif","important"),I.style.setProperty("font-weight","400","important"), I.style.removeProperty("color"), I.style.textShadow = "none";
     }), l.querySelector(".journey-scroll").textContent = p ? "向下滚动，探索研究之旅" : "SCROLL TO EXPLORE";
   }, V = function(p, E = 0) {
     const P = new tn({ color: p, roughness: 0.64, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.32, sheen: 0.25, sheenColor: new _e(h.dusk), emissive: p, emissiveIntensity: E * 0.35, transparent: !0 });
@@ -29682,7 +29682,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
           I.measureText(Je).width > 695 && ae ? (Re.push(ae), ae = He) : ae = Je;
         }
         ae && Re.push(ae);
-        const de = Math.ceil(Re.length / 2);
+        const de = Math.max(1,Math.floor((1715-(te+70))/43)+1);
         Re.forEach((He, Je) => lp(I, He, Je < de ? 70 : 835, te + 70 + Je % de * 43, 695, Je !== de - 1 && Je !== Re.length - 1)), p.dataset.printBottom = String(te + 70 + de * 43);
       }
       B.needsUpdate = !0;
@@ -29756,7 +29756,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
   }, Pd = function(p) {
     let E = 0;
     for (; E < d.length - 2 && p > d[E + 1].t; ) E++;
-    x.background.lerpColors(d[E].color, d[E + 1].color, Qs((p - d[E].t) / (d[E + 1].t - d[E].t), 0, 1)), x.fog.color.copy(x.background), le.zenith.value.copy(x.background).multiplyScalar(0.55), le.horizon.value.copy(x.background).lerp(new _e("#739ed5"), 0.1);
+    x.background.lerpColors(d[E].color, d[E + 1].color, Qs((p - d[E].t) / (d[E + 1].t - d[E].t), 0, 1)), x.fog.color.copy(x.background), le.zenith.value.copy(x.background).multiplyScalar(0.72), le.horizon.value.copy(x.background).lerp(new _e("#b6a9bd"), 0.24);
   }, Ns = function(p, E) {
     var Re;
     M && (M.domElement.parentNode !== y && y.append(M.domElement), M.toneMapping = Wn), ke.uniforms.opacity.value = 0.98 * zt(0.26, 0.55, p) * (1 - zt(0.97, 1, p)), Ue.visible = ke.uniforms.opacity.value > 1e-3, le.clock.value = E, zu.value = E, Wu.value = 0.7 * zt(0.35, 0.6, p), Xu.value = 1 - 0.82 * zt(0.35, 0.65, p), Xe.visible = p > 0.17 && p < 0.44, fn.visible = p > 0.29 && p < 0.52, Ii.visible = p > 0.38 && p < 0.49, Cn.visible = p > 0.37 && p < 0.6, R.visible = !1, Q.visible = !1, De.visible = p > 0.48 && p < 0.821, Ye.visible = !0, pi.visible = p > 0.845, Y.visible = p > 0.115 && p < 0.27, ec.visible = !1;
@@ -29766,7 +29766,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
       ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
-    }), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*zt(0,.45,E-er)*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, Mt.forEach((ae, de) => {
+    }), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*zt(0,.45,E-er)*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
     }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0.25 * zt(0.95, 1, p);
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
@@ -29811,7 +29811,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const qe = zt(0.74, 0.82, p);
     Td.lerpColors(Am, Rm, qe), l.style.setProperty("--journey-ink", "#" + Td.getHexString());
     const Ze = !Sn && p < 0.85;
-    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = "", p < 0.12 && Me.traverse((ae) => {
+    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = p < .12 ? `blur(${68*(1-P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
       ae.material && (ae.material.opacity = (ae.material.userData.baseOpacity ?? 1) * ee);
     }), M.render(x, A));
     const we = document.getElementById("heroScreen");
@@ -29869,7 +29869,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     o = p;
   }), l = document.getElementById("researchJourney");
   document.getElementById("container");
-  const c = document.getElementById("intro"), h = { night: "#120848", violet: "#4a3a7a", dusk: "#b892b8", mist: "#a8a9bd", wall: "#979eb7", gold: "#D0BA98", blue: "#516DB0", red: "#91040C", white: "#ffffff", ink: "#242320" }, d = [[0, h.night], [0.35, "#252064"], [0.6, "#344fa0"], [0.85, "#709fd0"], [1, h.wall]].map(([p, E]) => ({ t: p, color: new _e(E) })), u = [
+  const c = document.getElementById("intro"), h = { night: "#120848", violet: "#4a3a7a", dusk: "#b892b8", mist: "#a8a9bd", wall: "#979eb7", gold: "#D0BA98", blue: "#516DB0", red: "#91040C", white: "#ffffff", ink: "#242320" }, d = [[0, h.night], [0.35, "#34354f"], [0.6, "#626783"], [0.85, "#a2abc2"], [1, h.wall]].map(([p, E]) => ({ t: p, color: new _e(E) })), u = [
     [0, 0.13, "left", "01 / RESEARCH", "Nan Wang", "Computational Biology · Biomedical AI", "计算生物学 · 生物医学 AI"],
     [0.13, 0.25, "left", "LIFE, IN PATTERNS", "From sequence<br>to <em>insight.</em>", "Immune repertoires · molecular structure · interpretable models", "免疫组库 · 分子结构 · 可解释模型"],
     [0.25, 0.3, "right", "02 / META-ACDC", "Recognition,<br><em>reconsidered.</em>", "TCR off-target prediction · EGNN · side-chain AUROC 0.933", "TCR 脱靶风险预测 · 等变图神经网络 · AUROC 0.933"],
@@ -30050,20 +30050,13 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
   }), Y.traverse((p) => {
     p.material && (p.material = p.material.clone(), p.material.userData.dna = !0, W.push(p.material));
   });
-  const le = { zenith: { value: new _e(h.night) }, horizon: { value: new _e(h.violet) }, clock: { value: 0 } }, Be = `varying vec3 direction;
-uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
+  const le = { zenith: { value: new _e(h.night) }, horizon: { value: new _e(h.violet) }, clock: { value: 0 } }, Be = `varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
-void main(){
- vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);
- float h=smoothstep(-.2,.75,d.y);vec3 color=mix(horizon,zenith,h);
- float clouds=noise(uv*vec2(13.,7.)+vec2(clock*.002,0.))*.65+noise(uv*vec2(29.,19.)-vec2(clock*.001,0.))*.25;
- color+=vec3(0.);
- float ribbon=.62+.10*sin(uv.x*14.+clock*.015)+.035*sin(uv.x*35.-clock*.01);
- float aurora=exp(-pow((uv.y-ribbon)*37.,2.))*(.35+.65*noise(vec2(uv.x*60.,uv.y*3.)));
- color+=vec3(.14,.17,.30)*aurora*.28;
- vec2 grid=uv*vec2(350.,180.);vec2 id=floor(grid),f=fract(grid)-.5;float star=step(.985,hash(id))*exp(-dot(f,f)*170.)*(.65+.35*sin(clock*.15+hash(id)*24.));
- color+=vec3(.55,.59,.72)*star*smoothstep(.46,.7,uv.y);
+void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
+ float path=.64+.11*sin(uv.x*6.28318+1.1);float band=exp(-pow((uv.y-path)/.075,2.));float n=noise(uv*vec2(55.,35.))*.6+noise(uv*vec2(120.,75.))*.28+noise(uv*vec2(240.,150.))*.12;float lane=smoothstep(.25,.75,noise(uv*vec2(80.,30.)+6.));float galaxy=band*(.16+.65*n)*(.42+.58*lane);
+ color+=mix(vec3(.12,.10,.15),vec3(.23,.20,.26),n)*galaxy*.62;
+ vec2 grid=uv*vec2(680.,340.),id=floor(grid),f=fract(grid)-.5;float stars=step(.952,hash(id))*exp(-dot(f,f)*155.);vec2 g2=uv*vec2(1200.,600.),id2=floor(g2),f2=fract(g2)-.5;float fine=step(.978-band*.045,hash(id2+25.))*exp(-dot(f2,f2)*210.);float twinkle=.87+.13*sin(clock*.35+hash(id)*26.);color+=(vec3(.78,.80,.90)*stars*.55+vec3(.61,.64,.75)*fine*.38)*twinkle*smoothstep(.43,.65,uv.y);
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -30071,15 +30064,17 @@ void main(){
   tt.position.z = -50, x.add(tt);
   const Ne = new xt();
   Z.add(Ne);
-  const Le = new wl(new Uint8Array([105, 155, 205, 245]), 4, 1, El);
+  const birdFlock=[];const birdMaterial=new Ei({color:'#d5d2de',transparent:true,opacity:.86});
+for(let i=0;i<16;i++){const bird=new xt(),body=new Qe(new gn(1,8,5),birdMaterial);body.scale.set(.075,.055,.19);bird.add(body);const wings=[];for(const side of [-1,1]){const pivot=new xt(),wing=new Qe(new gn(1,8,4),birdMaterial);wing.position.x=side*.20;wing.scale.set(.27,.018,.095);pivot.add(wing);bird.add(pivot);wings.push({pivot,side});}bird.position.set(Math.sin(i*2.4)*22,9+(i%5)*1.8,-37-i*5.4);Ne.add(bird);birdFlock.push({bird,wings,phase:i*1.7,baseY:bird.position.y,baseZ:bird.position.z});}
+const Le = new wl(new Uint8Array([105, 155, 205, 245]), 4, 1, El);
   Le.minFilter = Le.magFilter = an, Le.needsUpdate = !0;
   function softenCloud(material){material.onBeforeCompile=shader=>{
  shader.vertexShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.vertexShader;
  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ncloudPoint=position;cloudNormal=normalize(mat3(modelMatrix)*normal);cloudView=cameraPosition-(modelMatrix*vec4(position,1.)).xyz;'.replace('\n',String.fromCharCode(10)));
  shader.fragmentShader='float cloudHash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}float cloudNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(cloudHash(i),cloudHash(i+vec3(1,0,0)),f.x),mix(cloudHash(i+vec3(0,1,0)),cloudHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(cloudHash(i+vec3(0,0,1)),cloudHash(i+vec3(1,0,1)),f.x),mix(cloudHash(i+vec3(0,1,1)),cloudHash(i+vec3(1,1,1)),f.x),f.y),f.z);}varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.fragmentShader;
- shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.50+.34*cloudNoise(cloudPoint*3.8)+.16*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,2.2)*smoothstep(.1,.9,wisps);diffuseColor.rgb=vec3(.94,.96,1.);'.replace('\n',String.fromCharCode(10)));
+ shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.82+.12*cloudNoise(cloudPoint*3.8)+.06*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,.85)*smoothstep(.1,.9,wisps);diffuseColor.rgb=mix(vec3(.74,.77,.82),vec3(1.),smoothstep(-.8,.65,cloudPoint.y));'.replace('\n',String.fromCharCode(10)));
 };material.customProgramCacheKey=()=> 'white-cloud-soft-volume-v2';}
-const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.68});softenCloud(rt);
+const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.92});softenCloud(rt);
   rt.userData.cloud = !0, W.push(rt);
   const ct = new gn(1, 24, 16), Mt = [], G = ct.attributes.position, Ie = [];
   for (let p = 0; p < G.count; p++) {

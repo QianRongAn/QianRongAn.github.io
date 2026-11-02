@@ -1,40 +1,7 @@
-/* Experience redesign: scoped to #experience; palette/fonts reuse the site's own variables.
-   NOTE: dream-glass.css uses doubled-id selectors (#experience#experience ...), so the
-   competing rules here are written with doubled ids too, otherwise they lose the cascade. */
-#experience#experience section.xp{position:relative}
-/* crystal mode is disabled for this page - drop the floating growth copy it injected */
-#experience .experience-growth-labels{display:none!important}
-/* and hide the 3D canvas host whenever it is switched to the experience page */
-#crystalPagesCanvas[data-page="experience"]{display:none!important}
-#experience#experience .xp-rail{position:absolute;left:19px;top:104px;bottom:28px;width:1px;transform-origin:top;
-  background:linear-gradient(var(--line-color),rgba(208,186,152,0))}
-#experience#experience section.xp .content-item.xp-card,
-#experience#experience section.xp .content-item.xp-card:hover{position:relative;margin:0 0 28px 56px!important;
-  padding:28px 34px 22px!important;border:1px solid var(--glass-border)!important;border-radius:18px;
-  background:var(--glass-bg-content)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 10px 30px rgba(35,20,12,.08)!important;transform:none!important}
-#experience#experience .xp-card::before{content:"";position:absolute;left:-43px;top:36px;width:11px;height:11px;
-  border-radius:50%;background:#fff;border:1.5px solid var(--deep-red);z-index:2}
-/* the pre-existing counter badge sits on top of .xp-no - drop it inside decorated cards */
-#experience#experience .xp-card::after{display:none!important}
-#experience#experience .xp-card.is-now::before{background:var(--deep-red);box-shadow:0 0 0 0 rgba(145,4,12,.35);animation:xp-pulse 2.4s infinite}
-@keyframes xp-pulse{70%{box-shadow:0 0 0 9px rgba(145,4,12,0)}100%{box-shadow:0 0 0 0 rgba(145,4,12,0)}}
-#experience#experience .xp-no{position:absolute;right:26px;top:12px;font:56px/1 'Aboreto','Georgia',serif;color:transparent;
-  -webkit-text-stroke:1px var(--light-tan);pointer-events:none}
-#experience#experience .xp-date{display:inline-block;font:500 12px/1 var(--sans-font);letter-spacing:.08em;color:var(--text-secondary);
-  padding:6px 13px;border:1px solid var(--line-color);border-radius:999px;background:rgba(208,186,152,.18)}
-#experience#experience .xp-card .details h3{margin:12px 0 4px!important;padding-right:70px}
-#experience#experience .xp-card .date-location.xp-org{display:block;margin:0 0 14px!important;font:400 14px/1.5 var(--sans-font)!important;
-  color:var(--text-secondary)!important;letter-spacing:0!important;line-height:1.5!important}
-#experience#experience .xp-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-#experience#experience .xp-tags span{font:500 12px/1 var(--sans-font);padding:5px 10px;border-radius:999px;color:var(--deep-red);
-  background:rgba(145,4,12,.07);border:1px solid rgba(145,4,12,.18)}
-/* tags / toggle can land inside the dark .glass-well panel - keep them legible there */
-#experience#experience .glass-well .xp-tags span{color:#f6e3ec;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.1)}
-#experience#experience .xp-card .details ul{padding-left:18px}
-#experience#experience .xp-card .details ul li{text-align:left}
-#experience#experience .xp-fold:not(.is-open) .xp-extra{display:none}
-#experience#experience .xp-more{margin-top:4px;padding:4px 0;border:0;background:none;cursor:pointer;
-  font:500 13px/1 var(--sans-font);letter-spacing:.04em;color:var(--deep-red)}
-#experience#experience .glass-well .xp-more{color:#f2dae7}
-#experience#experience .xp-more:hover{text-decoration:underline;text-underline-offset:4px}
+html.experience-solar body:before{background:#eee7d9!important;filter:none!important}html.experience-solar body:after{display:none!important}
+#experience#experience section.solar-experience{background:#eee7d9!important;color:#563e3b!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:60px 5vw!important;overflow:visible!important}
+#experience#experience .solar-experience>.section-title,#experience .experience-growth-labels{display:none!important}
+.solar-hero{position:relative;padding:30px 0 100px;isolation:isolate;overflow:hidden}.solar-eyebrow{font:12px 'Open Sans',Arial,sans-serif;letter-spacing:.15em}.solar-hero h2{position:relative;z-index:1;font:300 clamp(65px,9vw,140px)/.94 Recoleta,Georgia,serif!important;letter-spacing:-.065em!important;margin:50px 0 30px!important;text-align:left!important;color:#563e3b!important}.solar-hero h2 em{font-weight:300}.solar-hero p{position:relative;z-index:1;font:16px/1.6 'Open Sans',Arial,sans-serif!important;text-align:left!important;max-width:340px}.solar-sun{position:absolute;width:clamp(180px,30vw,390px);aspect-ratio:1;border-radius:50%;right:0;top:15%;background:radial-gradient(circle at 35% 30%,#ffdb92,#dfad6b 65%,#c29879);transform:translate(var(--sun-x,0),var(--sun-y,0));transition:transform 1s cubic-bezier(.19,1,.22,1);display:grid;place-items:center;color:#eee7d9;z-index:0}.solar-sun span{font:200px Georgia;animation:solar-turn 60s linear infinite}
+.solar-chapters{display:flex;flex-wrap:wrap;gap:14px 28px;padding:22px 0;border-top:1px solid #563e3b44;border-bottom:1px solid #563e3b44;margin-bottom:45px}.solar-chapters a{font:12px/1.5 'Open Sans',Arial,sans-serif;color:#563e3b;text-decoration:none;position:relative;padding-bottom:5px}.solar-chapters a:after{content:'';position:absolute;left:0;bottom:0;height:1px;width:100%;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.19,1,.22,1)}.solar-chapters a:hover:after,.solar-chapters a.is-current:after{transform:scaleX(1)}
+#experience#experience .content-item.solar-role{position:relative!important;background:transparent!important;border:0!important;border-bottom:1px solid #563e3b44!important;box-shadow:none!important;backdrop-filter:none!important;border-radius:0!important;margin:0!important;padding:55px 0 65px 90px!important;scroll-margin-top:110px;opacity:1!important;transform:none!important}#experience .solar-role:before,#experience .solar-role:after{display:none!important}.solar-number{position:absolute;left:0;top:60px;font:42px/1 Recoleta,Georgia,serif;color:#ad7d59}#experience#experience .solar-role .details h3{font:300 clamp(32px,4vw,54px)/1.1 Recoleta,Georgia,serif!important;color:#563e3b!important;text-align:left!important;letter-spacing:-.025em}#experience#experience .solar-role :is(.glass-card-head,.glass-well,.details){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;color:#563e3b!important}#experience#experience .solar-role .date-location{font:400 13px/1.8 'Open Sans',Arial,sans-serif!important;color:#79665f!important}#experience#experience .solar-role li{font:400 15px/1.85 'Open Sans',Arial,sans-serif!important;color:#563e3b!important;text-align:left!important;margin:14px 0!important}.solar-details summary{cursor:pointer;list-style:none;padding:18px 0;font:14px 'Open Sans',Arial,sans-serif;border-bottom:1px solid #563e3b33}.solar-details summary:after{content:'↗';float:right;transition:transform .4s}.solar-details[open] summary:after{transform:rotate(90deg)}.solar-details[open] ul{animation:solar-reveal .7s ease both}
+@keyframes solar-turn{to{transform:rotate(360deg)}}@keyframes solar-reveal{from{opacity:0;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0)}}@media(max-width:700px){.solar-sun{opacity:.45;right:-35px}.solar-hero{padding-bottom:60px}#experience#experience .content-item.solar-role{padding-left:45px!important}.solar-number{font-size:26px}}@media(prefers-reduced-motion:reduce){.solar-sun span,.solar-details[open] ul{animation:none}.solar-sun{transition:none}}

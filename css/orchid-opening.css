@@ -1,10 +1,9 @@
-/* Relief stays inside the original silhouettes; no ambient backlight before flight. */
-#journeyCanvas .journey-orchid-screen img{filter:drop-shadow(-1px -1px 1px #c5bddb70) drop-shadow(2px 3px 2px #000)!important;}
-#journeyCanvas .journey-orchid-screen:after{content:'';position:absolute;inset:0 auto 0 0;width:200%;left:var(--orchid-atlas-offset,0%);pointer-events:none;mask:url('../image/orchid-silhouette-atlas.png') 0 0/100% 100% no-repeat;-webkit-mask:url('../image/orchid-silhouette-atlas.png') 0 0/100% 100% no-repeat;background:radial-gradient(ellipse at 21% 43%,#aaa4c16b 0,transparent 13%),radial-gradient(ellipse at 32% 65%,#a7a3c044 0,transparent 12%),radial-gradient(ellipse at 65% 30%,#b0a6c958 0,transparent 15%),radial-gradient(ellipse at 79% 59%,#a5a6bd55 0,transparent 13%),repeating-radial-gradient(ellipse at 25% 51%,#9b95ad0a 0 12px,#0a080f30 22px 29px);opacity:.8;}
+/* Restore the original silhouette and scene blur; one event starts flight, backlight and subtitle. */
+#journeyCanvas .journey-orchid-screen img{filter:brightness(0) drop-shadow(0 0 1px #aaa4c54d)!important}
+#journeyCanvas .journey-orchid-screen:after{display:none!important}
 html:not(.orchid-butterfly-active) #heroScreen .hero-focus{clip-path:inset(0 100% 0 0)!important;opacity:0!important}
-html.orchid-butterfly-active #heroScreen .hero-focus{clip-path:inset(0 0 0 0)!important;opacity:1!important;transition:clip-path 2.2s cubic-bezier(.22,.65,.25,1),opacity .25s!important;transform:none!important}
+html.orchid-butterfly-active #heroScreen .hero-focus{clip-path:inset(0)!important;opacity:1!important;transition:clip-path 2.2s cubic-bezier(.22,.65,.25,1),opacity .25s!important;transform:none!important}
 html:not(.orchid-butterfly-active) .signature path{animation-play-state:paused!important}
 html.orchid-butterfly-active .signature path{animation-play-state:running!important}
-#heroScreen .hero-title,#heroScreen .hero-focus-line,#heroScreen .hero-line-rise{animation:none!important;transform:none!important}
+#heroScreen .hero-focus-line,#heroScreen .hero-line-rise{animation:none!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){html #heroScreen .hero-focus{clip-path:none!important;opacity:1!important;transition:none!important}}
-
