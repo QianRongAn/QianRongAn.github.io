@@ -27,7 +27,7 @@ export function createSaturn(){
  uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
   float latitude=vUv.y;float bands=.5+.5*sin(latitude*58.+.22*sin(latitude*17.));
-  vec3 color=mix(vec3(.43,.37,.28),vec3(.64,.58,.46),.40+.24*bands);
+  vec3 color=mix(vec3(.065,.030,.016),vec3(.20,.11,.060),.40+.24*bands);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
   gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>

@@ -1,9 +1,7 @@
-/* Restore the original silhouette and scene blur; one event starts flight, backlight and subtitle. */
 #journeyCanvas .journey-orchid-screen img{filter:brightness(0) drop-shadow(0 0 1px #aaa4c54d)!important}
 #journeyCanvas .journey-orchid-screen:after{display:none!important}
-html:not(.orchid-butterfly-active) #heroScreen .hero-focus{clip-path:inset(0 100% 0 0)!important;opacity:0!important}
-html.orchid-butterfly-active #heroScreen .hero-focus{clip-path:inset(0)!important;opacity:1!important;transition:clip-path 2.2s cubic-bezier(.22,.65,.25,1),opacity .25s!important;transform:none!important}
+html:not(.orchid-butterfly-active) #heroScreen .hero-focus,html.orchid-butterfly-active #heroScreen .hero-focus{clip-path:inset(0 calc(100% - var(--intro-reveal,0)*100%) 0 0)!important;opacity:var(--intro-reveal,0)!important;transition:none!important;transform:none!important}
 html:not(.orchid-butterfly-active) .signature path{animation-play-state:paused!important}
 html.orchid-butterfly-active .signature path{animation-play-state:running!important}
 #heroScreen .hero-focus-line,#heroScreen .hero-line-rise{animation:none!important;transform:none!important}
-@media(prefers-reduced-motion:reduce){html #heroScreen .hero-focus{clip-path:none!important;opacity:1!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){html #heroScreen .hero-focus{clip-path:none!important;opacity:1!important}}

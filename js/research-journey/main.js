@@ -29333,7 +29333,7 @@ function Mb() {
  uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
   float latitude=vUv.y;float bands=.5+.5*sin(latitude*58.+.22*sin(latitude*17.));
-  vec3 color=mix(vec3(.43,.37,.28),vec3(.64,.58,.46),.40+.24*bands);
+  vec3 color=mix(vec3(.065,.030,.016),vec3(.20,.11,.060),.40+.24*bands);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
   gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>
@@ -29748,7 +29748,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       const p = innerHeight / (2 * Math.tan(It.degToRad(A.fov / 2)) * 3);
       U.forEach((E) => {
         E.style.width = `${2.1 * 0.62 * p}px`, E.style.height = `${2.8 * 0.62 * p}px`, E.style.left = "0", E.style.top = "0";
-      }), M.setPixelRatio(Math.min(devicePixelRatio || 1, Is() ? 2 : 1)), M.setSize(innerWidth, innerHeight), y.dataset.dpr = String(M.getPixelRatio());
+      }), M.setPixelRatio(Math.min(devicePixelRatio || 1, 2)), M.setSize(innerWidth, innerHeight), y.dataset.dpr = String(M.getPixelRatio());
     }
     fc();
   }, fc = function() {
@@ -29766,9 +29766,9 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
       ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
-    }), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*zt(0,.45,E-er)*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
+    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
-    }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0.25 * zt(0.95, 1, p);
+    }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0;
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
     if (C.getPoint(q, A.position), L.getPoint(q, wd), A.lookAt(wd), A.rotateZ(Math.sin(p * Math.PI * 4) * 0.025), p < 0.12) {
       const ae = x;
@@ -29934,7 +29934,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
   x.add(A);
   const v = new xt();
   A.add(v);
-  const T = new Qe(new Mi(5, 4), new vn({ transparent: !0, depthWrite: !1, uniforms: { opacity: { value: 0.16 } }, vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", fragmentShader: "varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.48,.44,.57),a*opacity);}" }));
+  const T = new Qe(new Mi(5, 4), new vn({ transparent: !0, depthWrite: !1, uniforms: { opacity: { value: 0 } }, vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", fragmentShader: "varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.48,.44,.57),a*opacity);}" }));
   T.position.set(0, -0.1, -3.2), v.add(T);
   const N = [], U = [0, 1].map((p) => {
     const E = document.createElement("div");
@@ -30339,8 +30339,8 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   }
   const Ni = new xt();
   Z.add(Ni);
-  const es = V(h.violet, 0.035), Ll = V(h.blue, 0.025);
-  es.bumpMap = Fe, es.bumpScale = 0.11, es.map = Fe, es.roughness = 1, es.clearcoat = 0, Ll.bumpMap = fe, Ll.bumpScale = 0.08, Ll.roughness = 0.78;
+  const es = V("#39334e", 0), Ll = V(h.blue, 0.025);
+  es.bumpMap = Fe, es.bumpScale = 0.11, es.map = Fe, es.envMapIntensity=0,es.sheen=0,es.emissiveIntensity=0,es.roughness = 1, es.clearcoat = 0, Ll.bumpMap = fe, Ll.bumpScale = 0.08, Ll.roughness = 0.78;
   const zu = { value: 0 };
   es.onBeforeCompile = (p) => {
     p.uniforms.groundClock = zu, p.vertexShader = `varying vec3 surveyPosition;
@@ -30353,7 +30353,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), p.fragmentShader = `va
  float path=1.-smoothstep(.65,1.8,abs(q.x-1.1*sin(q.y*.095)-.4*sin(q.y*.27)));
  vec3 earth=mix(vec3(.86,.84,.98),vec3(1.10,1.02,1.07),path*.48);
  float ruts=sin(q.y*39.+sin(q.x*13.))*sin(q.x*47.);
- diffuseColor.rgb*=earth*(.83+patches*.08+grain*.16+ruts*path*.035);
+ diffuseColor.rgb*=earth*(.77+patches*.20+grain*.24+ruts*path*.035);
 
  `);
   };
@@ -30371,20 +30371,20 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), p.fragmentShader = `va
   Cs.roughness = 0.97, Cs.clearcoat = 0, Cs.bumpMap = fe, Cs.bumpScale = 0.13;
   const Zr = V(h.blue, 0.015);
   Zr.roughness = 1, Zr.clearcoat = 0, Zr.sheen = 0, Zr.flatShading = !0;
-  const Jr = 108, Zo = 70, ku = 5, Jo = [], $o = new $t(new Gi(0.1, 0.22, 1, 7, 5), Cs, Jr * (ku + 1)), $r = new $t(new vl(1, 1), Zr, Jr * Zo), Kt = new At();
+  const Jr = 180, Zo = 70, ku = 5, Jo = [], $o = new $t(new Gi(0.1, 0.22, 1, 7, 5), Cs, Jr * (ku + 1)), $r = new $t(new vl(1, 1), Zr, Jr * Zo), Kt = new At();
   function naturalForestSite(index){
  const side=index%2?1:-1;
  for(let attempt=0;attempt<12000;attempt++){
   const cluster=forestClusters[Math.floor(forestRandom()*forestClusters.length)],grouped=attempt<2500&&forestRandom()<.68;
-  const x=side*(grouped?cluster.x+(forestRandom()+forestRandom()-1)*9:11.5+forestRandom()*23),z=grouped?cluster.z+(forestRandom()+forestRandom()-1)*27:14-forestRandom()*132;
-  if(Math.abs(x)<11.5||Math.abs(x)>34.5||z>14||z< -118)continue;
-  if(Jo.some(tree=>Math.hypot(x-tree.x,z-tree.z)<6.45))continue;
+  const x=side*(grouped?cluster.x+(forestRandom()+forestRandom()-1)*9:6.8+forestRandom()*27.7),z=grouped?cluster.z+(forestRandom()+forestRandom()-1)*27:14-forestRandom()*132;
+  if(Math.abs(x)<6.8||Math.abs(x)>34.5||z>14||z< -118)continue;
+  if(Jo.some(tree=>Math.hypot(x-tree.x,z-tree.z)<4.8))continue;
   return {side,x,z,floor:On(x,z),height:4.4+forestRandom()*3.2};
  }
  throw new Error('Natural forest spacing capacity exceeded');
 }
 let forestSeed=72613;function forestRandom(){forestSeed=(Math.imul(forestSeed,1664525)+1013904223)>>>0;return forestSeed/4294967296;}
-const forestClusters=Array.from({length:9},()=>({x:14+forestRandom()*17,z:5-forestRandom()*112}));
+const forestClusters=Array.from({length:9},()=>({x:9+forestRandom()*22,z:5-forestRandom()*112}));
 for (let p = 0; p < Jr; p++) {
     const {side:E,z:P,x:O,floor:B,height:K}=naturalForestSite(p);
     Jo.push({ x: O, z: P, floor: B, height: K }), Ul(p * 6, new w(O, B, P), new w(O + E * 0.35, B + K, P - 0.2), 1);
@@ -30436,7 +30436,7 @@ for (let p = 0; p < Jr; p++) {
             }
             K.setAttribute("color", new ut(we, 3));
           }
-          const te = new tn({ color: ee ? "#675565" : "#ffffff", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.32, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
+          const te = new tn({ color: ee ? "#574957" : "#8f9eaf", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.32, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
           ee || (te.onBeforeCompile = (we) => {
             we.uniforms.forestFillLevel = Wu, we.uniforms.forestFogLimit = Xu, we.fragmentShader = `uniform float forestFillLevel;uniform float forestFogLimit;
 ` + we.fragmentShader, we.fragmentShader = we.fragmentShader.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
@@ -30447,7 +30447,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
           const Ae = Jo.filter((we, Re) => Re % 3 === B), qe = new $t(K, te, Ae.length), Ze = new At();
           Ae.forEach((we, Re) => {
             const ae = we.height / I;
-            Ze.position.set(we.x, we.floor - 0.06, we.z), Ze.rotation.set(Math.sin(Re * 2.1) * 0.035, Re * 2.39996 + B, 0.025 * Math.cos(Re)), Ze.scale.set(Math.min(ae*(1.05+Math.sin(Re)*.13),2.7/Math.max(crownRadius,.01)),ae,Math.min(ae*(.96+Math.cos(Re)*.13),2.7/Math.max(crownRadius,.01))), Ze.updateMatrix(), qe.setMatrixAt(Re, Ze.matrix), qe.setColorAt(Re, new _e("#ffffff").lerp(new _e(Re % 3 ? "#b5c0dc" : "#dfc8de"), 0.08 + Re % 5 * 0.04));
+            Ze.position.set(we.x, we.floor - 0.06, we.z), Ze.rotation.set(Math.sin(Re * 2.1) * 0.035, Re * 2.39996 + B, 0.025 * Math.cos(Re)), Ze.scale.set(Math.min(ae*(1.05+Math.sin(Re)*.13),2.0/Math.max(crownRadius,.01)),ae,Math.min(ae*(.96+Math.cos(Re)*.13),2.0/Math.max(crownRadius,.01))), Ze.updateMatrix(), qe.setMatrixAt(Re, Ze.matrix), qe.setColorAt(Re, new _e("#ffffff").lerp(new _e(Re % 3 ? "#b5c0dc" : "#dfc8de"), 0.08 + Re % 5 * 0.04));
           }), qe.computeBoundingSphere(), Gu.add(qe);
         }
     }), Kr.remove($o, $r), $o.geometry.dispose(), $r.geometry.dispose(), y.dataset.forest = "soft-watercolour-fir";
@@ -30611,7 +30611,7 @@ const Qu = Vl(8, 16);
   }));
   for (let p = 0; p < 10; p++) {
     const E = new Qe(jl, es);
-    E.position.set((p % 2 ? 1 : -1) * (5 + H() * 7), 8 + H() * 9, 7 - p * 6), E.scale.set(1.2 + H() * 2, 1.5 + H() * 3, 1 + H() * 2), E.rotation.z = H(), Ni.add(E);
+    E.position.set((p % 2 ? 1 : -1) * (5 + H() * 7), 8 + H() * 9, 7 - p * 6), E.scale.set(1.2 + H() * 2, 1.5 + H() * 3, 1 + H() * 2), E.rotation.z = H(), E.visible=false,Ni.add(E);
   }
   const aa = new Mi(70, 54, 70, 70);
   aa.rotateX(-Math.PI / 2);
@@ -30713,7 +30713,7 @@ const Qu = Vl(8, 16);
   let gd = 0, _d = -1;
   const ro = { phase: 0 };
   let fa, vd = -1, yd = 0, Md = 0, Sd = 0, bd = 16;
-  M && (M.setPixelRatio(Math.min(devicePixelRatio || 1, 1)), M.outputColorSpace = jt, y.appendChild(M.domElement));
+  M && (M.setPixelRatio(Math.min(devicePixelRatio || 1, 2)), M.outputColorSpace = jt, y.appendChild(M.domElement));
   const wd = new w(), Qs = It.clamp, Am = new _e(h.white), Rm = new _e(h.ink), Td = new _e();
   let Oi = 0, pa = 0, mi = 0, Ds = 0, rs = 0, Sn = new URLSearchParams(location.search).get("enter") === "about", er = -1, Ad = 0, Rd = 0, tr = 0, oo = 1, nr = -1, Cd = 0, hc = -1, uc = 0, ma = 0, os = 0, as = 0, ir = !1, zn;
   const dc = { y: 0 };
