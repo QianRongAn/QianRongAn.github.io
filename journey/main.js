@@ -8,6 +8,7 @@ import './style.css';
 import { initCrystalPages } from './crystal-pages.js';
 import { initActivityWave } from './activity-wave.js';
 import { createMermaidTail } from './mermaid-tail.js';
+import { createSupermoon, createSaturn } from './celestial-bodies.js';
 const activityPage=document.getElementById('extracurricular');
 const activityObserver=new MutationObserver(()=>{if(activityPage.classList.contains('active')){activityObserver.disconnect();initActivityWave();}});
 if(activityPage?.classList.contains('active'))initActivityWave();else if(activityPage)activityObserver.observe(activityPage,{attributes:true,attributeFilter:['class']});
@@ -26,7 +27,7 @@ const section = document.getElementById('researchJourney');
 const container = document.getElementById('container');
 const intro = document.getElementById('intro');
 const palette = { night: '#120848', violet: '#4a3a7a', dusk: '#b892b8', mist: '#a8a9bd', wall: '#979eb7', gold: '#D0BA98', blue: '#516DB0', red: '#91040C', white: '#ffffff', ink: '#242320' };
-const stops = [[0, palette.night], [.35, palette.violet], [.6, palette.dusk], [.85, palette.mist], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
+const stops = [[0, palette.night], [.35, '#252064'], [.6, '#344fa0'], [.85, '#709fd0'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
 const captions = [
     [0, .13, 'left', '01 / RESEARCH', 'Nan Wang', 'Computational Biology · Biomedical AI', '计算生物学 · 生物医学 AI'],
     [.13, .25, 'left', 'LIFE, IN PATTERNS', 'From sequence<br>to <em>insight.</em>', 'Immune repertoires · molecular structure · interpretable models', '免疫组库 · 分子结构 · 可解释模型'],
@@ -73,7 +74,7 @@ let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); } catch (error) { host.dataset.state = 'fallback';console.error('Journey WebGL initialization failed',error); }
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(palette.night); scene.fog = new THREE.FogExp2(palette.night, .047);
-const camera = new THREE.PerspectiveCamera(47, 1, .1, 160);
+const camera = new THREE.PerspectiveCamera(47, 1, .1, 360);
 const cameraCurve = new THREE.CatmullRomCurve3([
  new THREE.Vector3(0,1.4,14),new THREE.Vector3(1.8,4,2),new THREE.Vector3(-1.8,10,-12),
  new THREE.Vector3(.7,5.5,-28),new THREE.Vector3(-.7,-2.5,-44),new THREE.Vector3(1,-5,-59),
@@ -220,31 +221,16 @@ const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(145,48,32),new THREE.Sh
 // Distant painted cloud banks: broad flat bases and unequal rising lobes.
 const skyObjects=new THREE.Group();world.add(skyObjects);
 const cloudRamp=new THREE.DataTexture(new Uint8Array([105,155,205,245]),4,1,THREE.RedFormat);cloudRamp.minFilter=cloudRamp.magFilter=THREE.NearestFilter;cloudRamp.needsUpdate=true;
-const cloudMaterial=new THREE.MeshToonMaterial({color:palette.white,vertexColors:true,gradientMap:cloudRamp,transparent:true,opacity:.86});materials.push(cloudMaterial);
+const cloudMaterial=new THREE.MeshToonMaterial({color:palette.white,vertexColors:true,gradientMap:cloudRamp,transparent:true,depthWrite:false,opacity:.86});cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
 const cloudGeometry=new THREE.SphereGeometry(1,24,16),cloudBanks=[];
 const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#a8a9bd').lerp(new THREE.Color('#fff9ee'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
 for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
  for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,.75+hump*1.8,1.1+random());bank.add(lobe);}
 }
-const lunarTexture=new THREE.TextureLoader(sceneryManager).load('image/white-planet-surface.png');lunarTexture.colorSpace=THREE.SRGBColorSpace;
-// Separate moons: the distant planet meets the horizon; the smaller moon stays whole.
-const moonVertex=`varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vUv=uv;vWorld=(modelMatrix*vec4(position,1.)).xyz;vec4 p=modelViewMatrix*vec4(position,1.);vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-vWorld);gl_Position=projectionMatrix*p;}`;
-const moonFragment=`uniform sampler2D surface;uniform float opacity;uniform float horizon;uniform float shadowFade;uniform float lightDepth;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;varying vec3 vWorld;void main(){vec3 stone=texture2D(surface,vUv).rgb;vec3 n=normalize(vNormal);float light=dot(n,normalize(vec3(.95,.12,lightDepth)));float sun=max(light,0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);float phase=mix(1.,smoothstep(-.08,.40,light),shadowFade);float above=smoothstep(horizon-.5,horizon+.5,vWorld.y);vec3 color=mix(stone,vec3(1.),.42)*(.63+.37*sqrt(sun))+vec3(.045)*rim;gl_FragColor=vec4(color,opacity*phase*above);
-#include <colorspace_fragment>
-}`;
-function lunarMaterial(horizon,shadowFade){return new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:lunarTexture},opacity:{value:0},horizon:{value:horizon},shadowFade:{value:shadowFade},lightDepth:{value:shadowFade?.04:.8}},vertexShader:moonVertex,fragmentShader:moonFragment});}
-const moonMaterial=lunarMaterial(-6,1),moon=new THREE.Mesh(new THREE.SphereGeometry(31,96,64),moonMaterial);moon.position.set(-2,-5,-188);skyObjects.add(moon);
-let firstMoonSeed=807;const firstMoonRandom=()=>{firstMoonSeed=(firstMoonSeed*1664525+1013904223)>>>0;return firstMoonSeed/4294967296;};
-const smallMoonGeometry=new THREE.SphereGeometry(3.1,64,40);
-const firstMoonCanvas=document.createElement('canvas');firstMoonCanvas.width=1024;firstMoonCanvas.height=512;const firstMoonContext=firstMoonCanvas.getContext('2d');
-firstMoonContext.fillStyle='#efbdad';firstMoonContext.fillRect(0,0,1024,512);
-for(let i=0;i<160;i++){const x=firstMoonRandom()*1024,y=firstMoonRandom()*512,r=10+firstMoonRandom()*110;for(const offset of [-1024,0,1024]){const wash=firstMoonContext.createRadialGradient(x+offset,y,0,x+offset,y,r);wash.addColorStop(0,i%3?'rgba(112,88,100,.065)':'rgba(255,225,206,.13)');wash.addColorStop(1,'rgba(190,140,140,0)');firstMoonContext.fillStyle=wash;firstMoonContext.fillRect(x+offset-r,y-r,r*2,r*2);}}
-for(let i=0;i<400;i++){const x=firstMoonRandom()*1024,y=firstMoonRandom()*512,r=1+firstMoonRandom()*5;const wash=firstMoonContext.createRadialGradient(x,y,0,x,y,r);wash.addColorStop(0,'rgba(112,88,100,.08)');wash.addColorStop(1,'rgba(190,140,140,0)');firstMoonContext.fillStyle=wash;firstMoonContext.fillRect(x-r,y-r,r*2,r*2);}
-const firstMoonTexture=new THREE.CanvasTexture(firstMoonCanvas);firstMoonTexture.colorSpace=THREE.SRGBColorSpace;
-const smallMoonMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:firstMoonTexture},opacity:{value:1}},vertexShader:moonVertex,fragmentShader:`uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vec3 n=normalize(vNormal);float sun=max(dot(n,normalize(vec3(-.7,.45,.8))),0.);float rim=pow(1.-abs(dot(n,normalize(vView))),3.);vec3 stone=texture2D(surface,vUv).rgb;gl_FragColor=vec4(stone*(.52+.48*sqrt(sun))+vec3(.055,.035,.025)*rim,opacity);
-#include <colorspace_fragment>
-}`});materials.push(smallMoonMaterial);
-const smallMoon=new THREE.Mesh(smallMoonGeometry,smallMoonMaterial);smallMoon.position.set(6.7,9.3,-92);skyObjects.add(smallMoon);
+// Lunar detail stays on a complete disc; foreground terrain supplies natural occlusion.
+const lunarTexture=new THREE.TextureLoader(sceneryManager).load('assets/space/lroc-color-2k.jpg');lunarTexture.colorSpace=THREE.SRGBColorSpace;
+const moon=createSupermoon(lunarTexture),moonMaterial=moon.material;skyObjects.add(moon);
+const saturn=createSaturn();skyObjects.add(saturn);
 
 // Meta-ACDC: side-chain contact graph with a peptide ribbon and one risk core.
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
@@ -816,10 +802,11 @@ function measure(){
     if(renderer){glassCamera.aspect=innerWidth/innerHeight;glassCamera.updateProjectionMatrix();camera.aspect=innerWidth/innerHeight;camera.fov=mobile?58:47;camera.updateProjectionMatrix();const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);orchidScreens.forEach(screen=>{screen.style.width=`${2.1*.62*unit}px`;screen.style.height=`${2.8*.62*unit}px`;screen.style.left='0';screen.style.top='0';});renderer.setPixelRatio(Math.min(devicePixelRatio||1,publicationMode()?2:1));renderer.setSize(innerWidth,innerHeight);host.dataset.dpr=String(renderer.getPixelRatio());}updateTarget();
 }
 function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
-function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.4);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color(palette.dusk),.14);}
+function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.55);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color('#739ed5'),.10);}
 function paint(t,time){
     if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
-    moonMaterial.uniforms.opacity.value=.84*smooth(.26,.55,t)*(1-smooth(.97,1,t));
+    moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.97,1,t));
+    moon.visible=moonMaterial.uniforms.opacity.value>.001;
     skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.845;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
@@ -831,14 +818,14 @@ function paint(t,time){
     orchidGlow.material.uniforms.opacity.value=.46*(1-opening);
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
-    cloudBanks.forEach((bank,i)=>bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012);
-    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.025+.25*smooth(.95,1,t);
+    cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
+    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=.017+.25*smooth(.95,1,t);
     const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
-    const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;smallMoonMaterial.uniforms.opacity.value=fade*emergence;
-    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
+    const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;saturn.userData.opacity.value=fade*emergence*(1-smooth(.57,.67,t));saturn.visible=saturn.userData.opacity.value>.001;
+    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
     wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
@@ -914,8 +901,8 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
-const previewScenes={orchids:0,sky:2,meadow:10,bilayer:8,signals:9,meta:4,immune:11,clinic:12,ncc:13,crispr:17,papers:18};
-const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};if(document.readyState==='complete')openingReady.then(showScene);else addEventListener('load',()=>openingReady.then(showScene),{once:true});}
+const previewScenes={orchids:0,sky:2,premeadow:8,signals:9,engineering:16,meadow:10,bilayer:8,meta:4,immune:11,clinic:12,ncc:13,crispr:17,papers:18};
+const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};document.addEventListener('journey:reveal',()=>openingReady.then(showScene),{once:true});}
 initCrystalPages(renderer,()=>scene.environment,wings);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
