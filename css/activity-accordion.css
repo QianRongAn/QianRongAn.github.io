@@ -17,3 +17,5 @@
 #extracurricular .activities-gallery.activity-accordion,#extracurricular .activity-accordion :is(.activity-accordion-rail,.activity-accordion-panel,.activity-accordion-photo,.activity-accordion-controls,button){pointer-events:auto!important}
 
 .activity-accordion-panel{flex:1 1 0!important;min-width:28px!important}.activity-accordion-panel.is-active{flex:0 0 var(--expanded-width,55%)!important}.activity-accordion-panel.is-active .activity-accordion-photo{object-fit:cover!important;background:transparent!important}.activity-accordion-panel{background:transparent!important}
+
+.activity-accordion-photo{filter:grayscale(1) brightness(.48)!important;transition:filter 850ms cubic-bezier(.2,.75,.2,1)!important}.activity-accordion-panel.is-active .activity-accordion-photo{filter:grayscale(0) brightness(1)!important}
