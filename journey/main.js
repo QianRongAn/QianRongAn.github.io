@@ -6,12 +6,10 @@ import { initStructureStudy } from './structure-study.js';
 initStructureStudy();
 import './style.css';
 import { initCrystalPages } from './crystal-pages.js';
-import { initActivityWave } from './activity-wave.js';
+
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon, createSaturn } from './celestial-bodies.js';
-const activityPage=document.getElementById('extracurricular');
-const activityObserver=new MutationObserver(()=>{if(activityPage.classList.contains('active')){activityObserver.disconnect();initActivityWave();}});
-if(activityPage?.classList.contains('active'))initActivityWave();else if(activityPage)activityObserver.observe(activityPage,{attributes:true,attributeFilter:['class']});
+
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -89,7 +87,7 @@ const gazeCurve = new THREE.CatmullRomCurve3([
 scene.add(camera);
 const foreground=new THREE.Group();camera.add(foreground);
 const orchidGlow=new THREE.Mesh(new THREE.PlaneGeometry(5,4),new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{opacity:{value:.16}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.48,.44,.57),a*opacity);}'}));orchidGlow.position.set(0,-.1,-3.2);foreground.add(orchidGlow);
-const orchidImages=[],orchidScreens=[0,1].map(i=>{const plant=document.createElement('div');plant.className='journey-orchid-screen';const image=new Image();image.src='image/orchid-silhouette-atlas.png';image.alt='';image.decoding='async';image.loading='eager';image.style.left=i?'-100%':'0';plant.append(image);orchidImages.push(image);host.appendChild(plant);return plant;});
+const orchidImages=[],orchidScreens=[0,1].map(i=>{const plant=document.createElement('div');plant.className='journey-orchid-screen';const image=new Image();image.src='image/orchid-silhouette-atlas.png';image.alt='';image.decoding='async';image.loading='eager';image.style.left=i?'-100%':'0';plant.style.setProperty('--orchid-atlas-offset',i?'-100%':'0%');plant.append(image);orchidImages.push(image);host.appendChild(plant);return plant;});
 const openingReady=Promise.all([openingWarmup,...orchidImages.map(image=>image.decode().catch(()=>{}))]);
 
 const world = new THREE.Group();scene.add(world);
@@ -815,7 +813,10 @@ function paint(t,time){
     const edge=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3*camera.aspect;
     const unit=innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*3);
     orchidScreens.forEach((screen,i)=>{const x=THREE.MathUtils.lerp(i?-.42:.42,i?edge-.18:-edge+.18,opening);screen.style.display=t<.20?'block':'none';screen.style.transform=`translate3d(${innerWidth/2+x*unit}px,${innerHeight-2.8*.62*unit/2+(i?11:16)/1024*(2.8*.62*unit)+2}px,0) translate(-50%,-50%)`;screen.style.opacity=String(1-smooth(.14,.20,t));});
-    orchidGlow.material.uniforms.opacity.value=.46*(1-opening);
+    const butterflyOn=flightStarted>=0&&time>=flightStarted;
+    wings.visible=t>=.12||butterflyOn;
+    if(root.classList.contains('orchid-butterfly-active')!==butterflyOn)root.classList.toggle('orchid-butterfly-active',butterflyOn);
+    orchidGlow.material.uniforms.opacity.value=butterflyOn?.46*smooth(0,.45,time-flightStarted)*(1-opening):0;
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
@@ -851,7 +852,7 @@ function paint(t,time){
     if(!skipped)intro.style.setProperty('opacity',String(smooth(.975,1,t)),'important');
     section.querySelector('.journey-scroll').style.opacity=String(1-smooth(.01,.06,t));
     host.dataset.progress=t.toFixed(3);host.dataset.background='#'+scene.background.getHexString();host.style.backgroundColor=host.dataset.background;host.dataset.camera='CatmullRomCurve3';
-    if(renderer){renderer.domElement.style.filter=t<.12?`blur(${68*(1-flight)}px)`:'';if(t<.12)wings.traverse(part=>{if(part.material)part.material.opacity=(part.material.userData.baseOpacity??1)*fade;});renderer.render(scene,camera);}
+    if(renderer){renderer.domElement.style.filter='';if(t<.12)wings.traverse(part=>{if(part.material)part.material.opacity=(part.material.userData.baseOpacity??1)*fade;});renderer.render(scene,camera);}
     const openingText=document.getElementById('heroScreen');if(openingText&&root.classList.contains('intro-text-active')){openingText.style.opacity=String(1-opening);openingText.style.display=t<.12?'block':'none';}
     host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.flapping=String(opening<1);host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
 }
@@ -860,7 +861,7 @@ function isVisible(){return host.dataset.state!=='context-lost'&&!document.hidde
 function tick(now){frame=0;if(!isVisible())return;if(now-previous<1000/(current<.20?60:30)){frame=requestAnimationFrame(tick);return;}const dt=Math.min((now-previous)/1000||.016,.06);previous=now;elapsed+=dt;current+=(target-current)*(1-Math.exp(-dt*10));if(Math.abs(target-current)<.0001)current=target;if(publicationMode())paintGlass(elapsed);else paint(current,elapsed);if(publicationMode()||current<1||target<1||elapsed-oldCopyStarted<.8)frame=requestAnimationFrame(tick);}
 function resume(){if(skipped){host.style.display=publicationMode()?'':'none';host.style.zIndex=publicationMode()?'0':'-1';}if(isVisible()&&!frame){previous=performance.now();frame=requestAnimationFrame(tick);}if(!isVisible()){cancelAnimationFrame(frame);frame=0;}}
 function skip(){const openingText=document.getElementById('heroScreen');if(openingText){openingText.style.display='none';openingText.hidden=true;}scrollTween?.kill();skipped=true;root.classList.add('journey-skipped');root.classList.remove('journey-dark');intro.style.setProperty('opacity','1','important');section.hidden=true;host.style.display='none';resume();}
-function start(){flightStarted=-1;scrollTween?.kill();requestedBeat=0;leavingJourney=false;lastWheel=performance.now();wheelLock=lastWheel+1150;if(motion.matches){finishReduced();return;}skipped=false;section.hidden=false;host.style.zIndex='-1';host.style.background='';host.style.display='';root.classList.remove('journey-skipped');measure();window.scrollTo({top:sectionTop,behavior:'instant'});target=current=.065;requestedBeat=1;flightStarted=elapsed;wheelLock=performance.now()+4400;window.scrollTo({top:sectionTop+travel*.065,behavior:'instant'});copyIndex=-1;oldCopy=-1;focusStarted=elapsed;paint(.065,elapsed);resume();}
+function start(){flightStarted=-1;scrollTween?.kill();requestedBeat=0;leavingJourney=false;lastWheel=performance.now();wheelLock=lastWheel+1150;if(motion.matches){finishReduced();return;}skipped=false;section.hidden=false;host.style.zIndex='-1';host.style.background='';host.style.display='';root.classList.remove('journey-skipped');measure();window.scrollTo({top:sectionTop,behavior:'instant'});target=current=.065;requestedBeat=1;flightStarted=elapsed+.9;wheelLock=performance.now()+4400;window.scrollTo({top:sectionTop+travel*.065,behavior:'instant'});copyIndex=-1;oldCopy=-1;focusStarted=elapsed;paint(.065,elapsed);resume();}
 function finishReduced(){skipped=true;root.classList.add('journey-reduced','journey-skipped');intro.style.setProperty('opacity','1','important');section.hidden=true;host.style.display='';world.visible=false;scene.background.set(palette.wall);scene.fog.color.copy(scene.background);if(renderer)renderer.render(scene,camera);const hero=document.getElementById('heroScreen');if(hero){hero.hidden=true;hero.style.display='none';hero.dispatchEvent(new Event('hero:dismiss'));}root.classList.remove('hero-locked','journey-dark');resume();}
 window.SiteJourney={start,skip,ready:openingReady};
 new MutationObserver(resume).observe(document.getElementById('publications'),{attributes:true,attributeFilter:['class']});

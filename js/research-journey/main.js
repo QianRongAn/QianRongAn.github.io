@@ -29260,108 +29260,6 @@ function xb(s, e, t) {
   }
   new MutationObserver(dt).observe(n, { attributes: !0, attributeFilter: ["class"] }), new MutationObserver(dt).observe(i, { attributes: !0, attributeFilter: ["class"] }), new MutationObserver(dt).observe(r, { attributes: !0, attributeFilter: ["class"] }), addEventListener("resize", yt), document.addEventListener("visibilitychange", Ee), s == null || s.domElement.addEventListener("webglcontextrestored", dt), yt(), dt();
 }
-function xm() {
-  const s = document.querySelector("#extracurricular .activities-gallery"), e = document.getElementById("extracurricular");
-  if (!s) return;
-  const t = [...s.querySelectorAll(".activity-image")];
-  if (!t.length) return;
-  const n = matchMedia("(prefers-reduced-motion: reduce)");
-  let i;
-  try {
-    i = new Pu({ alpha: !0, antialias: !0, powerPreference: "low-power" });
-  } catch {
-    return;
-  }
-  s.classList.add("activity-wave");
-  const r = document.createElement("div");
-  r.className = "activity-wave-stage", r.setAttribute("role", "group"), r.setAttribute("aria-label", "Academic activity photo carousel");
-  const o = document.createElement("div");
-  o.className = "activity-wave-controls", o.innerHTML = '<button type="button" aria-label="Previous photograph">←</button><span aria-live="polite">1 / ' + t.length + '</span><button type="button" aria-label="Next photograph">→</button>';
-  const a = document.createElement("div");
-  a.className = "activity-wave-sources", t.forEach((T) => a.append(T)), s.append(r, o, a), r.append(i.domElement), i.domElement.tabIndex = 0, i.domElement.setAttribute("aria-label", "Drag to browse photographs. Arrow keys change photograph; Enter opens the original.");
-  const l = new Gs();
-  l.fog = new mu("#dedcec", 9, 20);
-  const c = new Zt(40, 1, 0.1, 40);
-  c.position.z = 8.4;
-  const h = new b_(), d = new he(), u = [], f = t.length * 4.4;
-  let _ = 0, S = 0, g = 0, m = 0, y = 0, M = null, x = 0;
-  t.forEach((T, N) => {
-    const U = new Mi(4.1, 2.9, 32, 16), F = new Ei({ color: "#ffffff", side: nn });
-    F.onBeforeCompile = (W) => {
-      W.fragmentShader = W.fragmentShader.replace("#include <map_fragment>", `#include <map_fragment>
-          vec2 edge=abs(vMapUv-.5)-vec2(.475,.465);
-          if(length(max(edge,0.))>.025)discard;`);
-    };
-    const Z = new Qe(U, F);
-    Z.userData.index = N, l.add(Z);
-    const ne = U.attributes.position.array.slice();
-    u.push({ mesh: Z, original: ne });
-    function z() {
-      if (!T.naturalWidth) return;
-      const W = document.createElement("canvas");
-      W.width = 1200, W.height = 848;
-      const V = W.getContext("2d");
-      V.fillStyle = "#e9e5ef", V.fillRect(0, 0, W.width, W.height);
-      const re = Math.min(1200 / T.naturalWidth, 774 / T.naturalHeight), ue = T.naturalWidth * re, Se = T.naturalHeight * re;
-      V.drawImage(T, (1200 - ue) / 2, (774 - Se) / 2, ue, Se), V.fillStyle = "#423c52", V.font = "24px Georgia", V.fillText("Academic activities", 28, 819), V.textAlign = "right", V.fillText(String(N + 1).padStart(2, "0"), 1172, 819);
-      const xe = new xs(W);
-      xe.colorSpace = jt, F.map = xe, F.needsUpdate = !0, L();
-    }
-    T.complete ? z() : T.addEventListener("load", z, { once: !0 }), T.loading = "eager";
-  });
-  function A() {
-    const T = r.clientWidth, N = r.clientHeight;
-    i.setPixelRatio(Math.min(devicePixelRatio || 1, 1.25)), i.setSize(T, N), c.aspect = T / N, c.updateProjectionMatrix(), L();
-  }
-  function C(T) {
-    if (m = 0, document.hidden || !e.classList.contains("active")) return;
-    const N = Math.min((T - y) / 1e3 || 0.016, 0.05);
-    y = T, !M && !n.matches && (S += _ * N * 5), g = n.matches ? S : It.damp(g, S, 7, N), u.forEach(({ mesh: U, original: F }, Z) => {
-      const ne = It.euclideanModulo(Z * 4.4 - g + f / 2, f) - f / 2;
-      U.position.x = ne, U.visible = Math.abs(ne) < 13;
-      const z = U.geometry.attributes.position;
-      for (let W = 0; W < z.count; W++) {
-        const V = F[W * 3], re = F[W * 3 + 1], ue = ne + V;
-        z.setXYZ(W, V, re + 0.17 * Math.sin(ue * 0.65), -0.085 * ue * ue + 0.25 * Math.sin(ue * 0.8));
-      }
-      z.needsUpdate = !0, U.geometry.computeVertexNormals(), U.geometry.computeBoundingSphere();
-    }), x = It.euclideanModulo(Math.round(g / 4.4), t.length), o.querySelector("span").textContent = x + 1 + " / " + t.length, i.render(l, c), (Math.abs(S - g) > 1e-3 || Math.abs(_) > 0.01) && (m = requestAnimationFrame(C));
-  }
-  function L() {
-    m || (y = performance.now(), m = requestAnimationFrame(C));
-  }
-  function v(T) {
-    S = (Math.round(S / 4.4) + T) * 4.4, L();
-  }
-  o.querySelectorAll("button").forEach((T, N) => T.addEventListener("click", () => v(N ? 1 : -1))), r.addEventListener("pointerdown", (T) => {
-    M = { x: T.clientX, start: T.clientX, target: S }, r.setPointerCapture(T.pointerId);
-  }), r.addEventListener("pointerleave", () => {
-    _ = 0;
-  }), r.addEventListener("pointermove", (T) => {
-    const N = r.getBoundingClientRect(), U = (T.clientX - N.left) / N.width * 2 - 1;
-    if (_ = Math.abs(U) < 0.12 ? 0 : U, !M) {
-      L();
-      return;
-    }
-    S = M.target + (M.x - T.clientX) * 0.013, L();
-  }), r.addEventListener("pointerup", (T) => {
-    if (!M) return;
-    const N = Math.abs(T.clientX - M.start);
-    if (M = null, N < 6) {
-      const U = r.getBoundingClientRect();
-      d.set((T.clientX - U.left) / U.width * 2 - 1, -(T.clientY - U.top) / U.height * 2 + 1), h.setFromCamera(d, c);
-      const F = h.intersectObjects(u.map((Z) => Z.mesh))[0];
-      F && t[F.object.userData.index].click();
-    } else
-      S = Math.round(S / 4.4) * 4.4, L();
-  }), r.addEventListener("pointercancel", () => {
-    M = null;
-  }), r.addEventListener("wheel", (T) => {
-    (Math.abs(T.deltaX) > Math.abs(T.deltaY) || T.shiftKey) && (T.preventDefault(), S += (T.deltaX || T.deltaY) * 8e-3, L());
-  }, { passive: !1 }), i.domElement.addEventListener("keydown", (T) => {
-    T.key === "ArrowRight" || T.key === "ArrowLeft" ? (T.preventDefault(), v(T.key === "ArrowRight" ? 1 : -1)) : T.key === "Enter" && t[x].click();
-  }), new ResizeObserver(A).observe(r), new MutationObserver(L).observe(e, { attributes: !0, attributeFilter: ["class"] }), document.addEventListener("visibilitychange", L), n.addEventListener("change", L), A();
-}
 function vb(s) {
   const e = new xt();
   e.name = "Sea_bass_inspired_mermaid_tail", e.userData.reference = "https://sketchfab.com/3d-models/blackfin-seabass-lateolabrax-latus-1d90d18f5d2044d8ae1eeaf8819a8c85";
@@ -29452,10 +29350,7 @@ function Mb() {
   return r.rotation.x = -Math.PI / 2, r.name = "Saturn rings", r.renderOrder = 1, s.add(r), s.userData.opacity = e, s;
 }
 US();
-const br = document.getElementById("extracurricular"), ym = new MutationObserver(() => {
-  br.classList.contains("active") && (ym.disconnect(), xm());
-});
-br != null && br.classList.contains("active") ? xm() : br && ym.observe(br, { attributes: !0, attributeFilter: ["class"] });
+
 if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || innerWidth <= 768 && innerHeight <= 1024)) {
   let m = function() {
     const p = s.lang.startsWith("zh");
@@ -29866,7 +29761,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
       ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
-    }), T.material.uniforms.opacity.value = 0.46 * (1 - I), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, Mt.forEach((ae, de) => {
+    }), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*zt(0,.45,E-er)*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
     }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0.25 * zt(0.95, 1, p);
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
@@ -29911,7 +29806,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const qe = zt(0.74, 0.82, p);
     Td.lerpColors(Am, Rm, qe), l.style.setProperty("--journey-ink", "#" + Td.getHexString());
     const Ze = !Sn && p < 0.85;
-    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = p < 0.12 ? `blur(${68 * (1 - P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
+    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = "", p < 0.12 && Me.traverse((ae) => {
       ae.material && (ae.material.opacity = (ae.material.userData.baseOpacity ?? 1) * ee);
     }), M.render(x, A));
     const we = document.getElementById("heroScreen");
@@ -29936,7 +29831,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       co();
       return;
     }
-    Sn = !1, l.hidden = !1, y.style.zIndex = "-1", y.style.background = "", y.style.display = "", s.classList.remove("journey-skipped"), ao(), window.scrollTo({ top: tr, behavior: "instant" }), Ds = mi = 0.065, as = 1, er = rs, os = performance.now() + 4400, window.scrollTo({ top: tr + oo * 0.065, behavior: "instant" }), nr = -1, hc = -1, Ns(0.065, rs), gi();
+    Sn = !1, l.hidden = !1, y.style.zIndex = "-1", y.style.background = "", y.style.display = "", s.classList.remove("journey-skipped"), ao(), window.scrollTo({ top: tr, behavior: "instant" }), Ds = mi = 0.065, as = 1, er = rs + .9, os = performance.now() + 4400, window.scrollTo({ top: tr + oo * 0.065, behavior: "instant" }), nr = -1, hc = -1, Ns(0.065, rs), gi();
   }, co = function() {
     Sn = !0, s.classList.add("journey-reduced", "journey-skipped"), c.style.setProperty("opacity", "1", "important"), l.hidden = !0, y.style.display = "", Z.visible = !1, x.background.set(h.wall), x.fog.color.copy(x.background), M && M.render(x, A);
     const p = document.getElementById("heroScreen");
@@ -30040,7 +29935,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
     const E = document.createElement("div");
     E.className = "journey-orchid-screen";
     const P = new Image();
-    return P.src = "image/orchid-silhouette-atlas.png", P.alt = "", P.decoding = "async", P.loading = "eager", P.style.left = p ? "-100%" : "0", E.append(P), N.push(P), y.appendChild(E), E;
+    return P.src = "image/orchid-silhouette-atlas.png", P.alt = "", P.decoding = "async", P.loading = "eager", P.style.left = p ? "-100%" : "0", E.style.setProperty("--orchid-atlas-offset",p?"-100%":"0%"), E.append(P), N.push(P), y.appendChild(E), E;
   }), F = Promise.all([a, ...N.map((p) => p.decode().catch(() => {
   }))]), Z = new xt();
   x.add(Z), x.add(new Ml(h.mist, h.violet, 0.62));
