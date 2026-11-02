@@ -29756,7 +29756,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
   }, Pd = function(p) {
     let E = 0;
     for (; E < d.length - 2 && p > d[E + 1].t; ) E++;
-    x.background.lerpColors(d[E].color, d[E + 1].color, Qs((p - d[E].t) / (d[E + 1].t - d[E].t), 0, 1)), x.fog.color.copy(x.background), le.zenith.value.copy(x.background).multiplyScalar(0.72), le.horizon.value.copy(x.background).lerp(new _e("#b6a9bd"), 0.24);
+    x.background.lerpColors(d[E].color, d[E + 1].color, Qs((p - d[E].t) / (d[E + 1].t - d[E].t), 0, 1)), x.fog.color.copy(x.background), le.zenith.value.copy(x.background).multiplyScalar(0.72), le.horizon.value.copy(x.background).lerp(new _e("#a99ad6"), 0.24);
   }, Ns = function(p, E) {
     var Re;
     M && (M.domElement.parentNode !== y && y.append(M.domElement), M.toneMapping = Wn), ke.uniforms.opacity.value = 0.98 * zt(0.26, 0.55, p) * (1 - zt(0.97, 1, p)), Ue.visible = ke.uniforms.opacity.value > 1e-3, le.clock.value = E, zu.value = E, Wu.value = 0.7 * zt(0.35, 0.6, p), Xu.value = 1 - 0.82 * zt(0.35, 0.65, p), Xe.visible = p > 0.17 && p < 0.44, fn.visible = p > 0.29 && p < 0.52, Ii.visible = p > 0.38 && p < 0.49, Cn.visible = p > 0.37 && p < 0.6, R.visible = !1, Q.visible = !1, De.visible = p > 0.48 && p < 0.821, Ye.visible = !0, pi.visible = p > 0.845, Y.visible = p > 0.115 && p < 0.27, ec.visible = !1;
@@ -29869,7 +29869,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     o = p;
   }), l = document.getElementById("researchJourney");
   document.getElementById("container");
-  const c = document.getElementById("intro"), h = { night: "#120848", violet: "#4a3a7a", dusk: "#b892b8", mist: "#a8a9bd", wall: "#979eb7", gold: "#D0BA98", blue: "#516DB0", red: "#91040C", white: "#ffffff", ink: "#242320" }, d = [[0, h.night], [0.35, "#34354f"], [0.6, "#626783"], [0.85, "#a2abc2"], [1, h.wall]].map(([p, E]) => ({ t: p, color: new _e(E) })), u = [
+  const c = document.getElementById("intro"), h = { night: "#120848", violet: "#4a3a7a", dusk: "#b892b8", mist: "#a8a9bd", wall: "#979eb7", gold: "#D0BA98", blue: "#516DB0", red: "#91040C", white: "#ffffff", ink: "#242320" }, d = [[0, h.night], [0.35, "#343079"], [0.6, "#5264a2"], [0.85, "#8c9ed0"], [1, h.wall]].map(([p, E]) => ({ t: p, color: new _e(E) })), u = [
     [0, 0.13, "left", "01 / RESEARCH", "Nan Wang", "Computational Biology · Biomedical AI", "计算生物学 · 生物医学 AI"],
     [0.13, 0.25, "left", "LIFE, IN PATTERNS", "From sequence<br>to <em>insight.</em>", "Immune repertoires · molecular structure · interpretable models", "免疫组库 · 分子结构 · 可解释模型"],
     [0.25, 0.3, "right", "02 / META-ACDC", "Recognition,<br><em>reconsidered.</em>", "TCR off-target prediction · EGNN · side-chain AUROC 0.933", "TCR 脱靶风险预测 · 等变图神经网络 · AUROC 0.933"],
@@ -30072,9 +30072,9 @@ const Le = new wl(new Uint8Array([105, 155, 205, 245]), 4, 1, El);
  shader.vertexShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.vertexShader;
  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ncloudPoint=position;cloudNormal=normalize(mat3(modelMatrix)*normal);cloudView=cameraPosition-(modelMatrix*vec4(position,1.)).xyz;'.replace('\n',String.fromCharCode(10)));
  shader.fragmentShader='float cloudHash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}float cloudNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(cloudHash(i),cloudHash(i+vec3(1,0,0)),f.x),mix(cloudHash(i+vec3(0,1,0)),cloudHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(cloudHash(i+vec3(0,0,1)),cloudHash(i+vec3(1,0,1)),f.x),mix(cloudHash(i+vec3(0,1,1)),cloudHash(i+vec3(1,1,1)),f.x),f.y),f.z);}varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.fragmentShader;
- shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.82+.12*cloudNoise(cloudPoint*3.8)+.06*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,.85)*smoothstep(.1,.9,wisps);diffuseColor.rgb=mix(vec3(.74,.77,.82),vec3(1.),smoothstep(-.8,.65,cloudPoint.y));'.replace('\n',String.fromCharCode(10)));
+ shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.82+.12*cloudNoise(cloudPoint*3.8)+.06*cloudNoise(cloudPoint*9.2);diffuseColor.a*=pow(face,1.35)*smoothstep(.02,.48,face*wisps);diffuseColor.rgb=mix(vec3(.74,.77,.82),vec3(1.),smoothstep(-.8,.65,cloudPoint.y));'.replace('\n',String.fromCharCode(10)));
 };material.customProgramCacheKey=()=> 'white-cloud-soft-volume-v2';}
-const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.92});softenCloud(rt);
+const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.98});softenCloud(rt);
   rt.userData.cloud = !0, W.push(rt);
   const ct = new gn(1, 24, 16), Mt = [], G = ct.attributes.position, Ie = [];
   for (let p = 0; p < G.count; p++) {
@@ -30089,7 +30089,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
     E.position.set((p % 2 ? 1 : -1) * (15 + H() * 18), 9 + H() * 8, -50 - p * 12), E.rotation.y = H() * 0.6, Ne.add(E), Mt.push(E);
     for (let P = 0; P < 9; P++) {
       const I = new Qe(ct, rt), O = P / 8, B = Math.sin(O * Math.PI);
-      I.position.set((O - 0.5) * 11, Math.pow(B, 1.4) * (1.3 + H() * 1.8), Math.sin(P * 2.1) * 0.9), I.scale.set(2 + H() * 1.9, 0.75 + B * 1.8, 1.1 + H()), E.add(I);
+      I.position.set((O - 0.5) * 11, Math.pow(B, 1.4) * (1.3 + H() * 1.8), Math.sin(P * 2.1) * 0.9), I.scale.set(2 + H() * 1.9, 1.6 + B * 2.2, 1.1 + H()), E.add(I);
     }
   }
   const ce = new tm(n).load("assets/space/lroc-color-2k.jpg");
@@ -30257,7 +30257,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   const Rt = [[1.76, 2.91], [1.89, 2.96], [1.89, 3.06], [2, 3.1], [2.04, 3.16], [2.04, 3.22], [1.96, 3.26], [1.99, 3.33], [2.11, 3.38], [2.11, 3.46], [2.02, 3.52]].map(([p, E]) => new he(p, E));
   Ye.add(new Qe(new ys(Rt, 72), ot)), Yt(1.79, 0.08, 2.95, Pt);
   const Mn = new Qe(new gn(2.02, 64, 28, 0, Math.PI * 2, 0, Math.PI / 2), ot);
-  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);const pavilionRib=V("#dcd8e0",.015);pavilionRib.roughness=.8;pavilionRib.clearcoat=0;
+  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);const pavilionRib=new Ei({color:"#b9a0d4",transparent:true});W.push(pavilionRib);
   for (let p = 0; p < 12; p++) {
     const E = p / 12 * Math.PI * 2, P = Array.from({ length: 28 }, (I, O) => {
       const B = O / 27 * Math.PI / 2, K = 2.04 * Math.sin(B);
@@ -30339,7 +30339,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   }
   const Ni = new xt();
   Z.add(Ni);
-  const es = V("#39334e", 0), Ll = V(h.blue, 0.025);
+  const es = V("#51417e", 0), Ll = V(h.blue, 0.025);
   es.bumpMap = Fe, es.bumpScale = 0.11, es.map = Fe, es.envMapIntensity=0,es.sheen=0,es.emissiveIntensity=0,es.roughness = 1, es.clearcoat = 0, Ll.bumpMap = fe, Ll.bumpScale = 0.08, Ll.roughness = 0.78;
   const zu = { value: 0 };
   es.onBeforeCompile = (p) => {
@@ -30429,14 +30429,14 @@ for (let p = 0; p < Jr; p++) {
           K.computeVertexNormals();K.computeBoundingBox();const crownRadius=Math.SQRT2*Math.max(Math.abs(K.boundingBox.min.x),Math.abs(K.boundingBox.max.x),Math.abs(K.boundingBox.min.z),Math.abs(K.boundingBox.max.z));
           const ee = O.material.name.toLowerCase().includes("bark");
           if (!ee) {
-            const we = [], Re = new _e(["#8589a6", "#998ca9", "#8399aa"][B]), ae = new _e(["#bdc6d6", "#d2c1d7", "#c0cdd5"][B]);
+            const we = [], Re = new _e(["#7068a9", "#9274ad", "#6a87ac"][B]), ae = new _e(["#ada8df", "#c0a4d8", "#a2bce3"][B]);
             for (let de = 0; de < q.count; de++) {
               const He = q.getX(de), Je = q.getY(de), at = q.getZ(de), lt = Math.hypot(He, at), Ot = It.clamp(0.25 + lt * 0.13 + Je / I * 0.12 + 0.06 * Math.sin(Je * 2 + He * 2 + at * 2), 0.15, 0.7), Gt = Re.clone().lerp(ae, Ot);
               we.push(Gt.r, Gt.g, Gt.b);
             }
             K.setAttribute("color", new ut(we, 3));
           }
-          const te = new tn({ color: ee ? "#574957" : "#8f9eaf", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.32, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
+          const te = new tn({ color: ee ? "#574957" : "#b4b8e2", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.32, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
           ee || (te.onBeforeCompile = (we) => {
             we.uniforms.forestFillLevel = Wu, we.uniforms.forestFogLimit = Xu, we.fragmentShader = `uniform float forestFillLevel;uniform float forestFogLimit;
 ` + we.fragmentShader, we.fragmentShader = we.fragmentShader.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
@@ -30552,7 +30552,7 @@ const Qu = Vl(8, 16);
       const te = Wl.clone();
       te.vertexColors = !0, te.transparent = !0, te.userData.baseOpacity = 1, W.push(te), q.computeBoundingBox();
       const Ae = q.boundingBox.getSize(new w()), qe = Math.max(Ae.x, Ae.y, Ae.z);
-      td(q);
+      if(B.name!=='bellflower')td(q);else{const pos=q.attributes.position;for(let k=0;k<pos.count;k++)pos.setY(k,pos.getY(k)*1.45);q.computeBoundingBox();}
       const Ze = nd(q), we = Sm[K], Re = we.flatMap((Je) => Array(Je.count).fill(Je)), ae = new $t(q, te, Re.length), de = new At();
       let He = 0;
       for (let Je = 0; Je < Re.length; Je++) {

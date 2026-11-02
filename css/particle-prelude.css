@@ -16,3 +16,5 @@
 
 /* Keep playback on the native video compositor instead of screen blending. */
 .particle-prelude video{mix-blend-mode:normal;mask-image:none;-webkit-mask-image:none;opacity:var(--prelude-fade);background:#120848;transform:translate(-50%,-50%) translateZ(0)}
+
+.particle-prelude video{mix-blend-mode:screen;mask-image:radial-gradient(ellipse,black 35%,transparent 72%);-webkit-mask-image:radial-gradient(ellipse,black 35%,transparent 72%);opacity:calc(.95 * var(--prelude-fade));background:transparent}
