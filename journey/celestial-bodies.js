@@ -26,10 +26,10 @@ export function createSaturn(){
  const planetMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:true,uniforms:{opacity},vertexShader:vertex,fragmentShader:`
  uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
-  float latitude=vUv.y;float bands=.5+.5*sin(latitude*115.+.65*sin(latitude*37.));
-  vec3 color=mix(vec3(.61,.47,.29),vec3(.92,.82,.60),.38+.48*bands);
+  float latitude=vUv.y;float bands=.5+.5*sin(latitude*58.+.22*sin(latitude*17.));
+  vec3 color=mix(vec3(.43,.37,.28),vec3(.64,.58,.46),.40+.24*bands);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
-  gl_FragColor=vec4(color*(.34+.66*sqrt(sun)),opacity);
+  gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>
  }`});
  const globe=new THREE.Mesh(new THREE.SphereGeometry(3.1,64,40),planetMaterial);globe.scale.y=.90;globe.name='Saturn globe';saturn.add(globe);
@@ -37,12 +37,12 @@ export function createSaturn(){
  uniform float opacity;varying vec2 ring;
  void main(){
   float radius=length(ring);float t=(radius-3.85)/(7.1-3.85);
-  float bands=.63+.15*sin(radius*72.)+.12*sin(radius*181.);
+  float bands=.78+.045*sin(radius*72.)+.025*sin(radius*181.);
   float division=1.-.92*(smoothstep(5.66,5.72,radius)-smoothstep(5.88,5.94,radius));
   float edge=smoothstep(0.,.025,t)*(1.-smoothstep(.975,1.,t));
   vec3 p=vec3(ring.x,0.,-ring.y),light=normalize(vec3(-.65,.45,.8));float along=dot(p,light);
   float shadow=along<0.?smoothstep(8.5,10.5,dot(p,p)-along*along):1.;
-  vec3 color=mix(vec3(.52,.44,.34),vec3(.91,.85,.70),t)*mix(.35,1.,shadow);
+  vec3 color=mix(vec3(.48,.46,.40),vec3(.77,.75,.67),t)*mix(.35,1.,shadow);
   gl_FragColor=vec4(color,opacity*bands*division*edge);
   #include <colorspace_fragment>
  }`});

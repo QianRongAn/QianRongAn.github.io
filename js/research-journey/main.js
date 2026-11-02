@@ -26620,43 +26620,48 @@ function ap(s, e, t) {
 function yS(s, e) {
   return new Rn((Pr(s, 0, e, 4) - 0.5) * 0.2, Pr(s, 0, e, 5) * Math.PI * 2, (Pr(s, 0, e, 6) - 0.5) * 0.2);
 }
-function MS({ species: s, views: e, floor: t, viewClear: n, treeClear: i, random: r }) {
-  const o = [], a = s.map(() => []), l = new Zt(47, 1.85, 0.1, 160), c = [];
-  for (let u = 10; u > -107; u -= 2.8) for (let f = -10.5; f <= 10.5; f += 2.8) c.push({ x: f + (r() - 0.5) * 2.4, z: u + (r() - 0.5) * 2.4 });
-  function h(u, f, _ = 8) {
-    const S = new w(u.x, t(u.x, u.z) + 0.9, u.z), g = S.distanceTo(f.position);
-    if (g < _ || g > 34) return null;
-    const m = S.clone().project(l);
-    if (m.z < -1 || m.z > 1 || Math.abs(m.x) > 0.9 || m.y < -0.9 || m.y > 0.12) return null;
-    for (let y = 1; y < 12; y++) {
-      const M = f.position.clone().lerp(S, y / 12);
-      if (t(M.x, M.z) > M.y - 0.12) return null;
-    }
-    return m;
-  }
-  function d(u, f, _ = !1) {
-    l.position.copy(u.position), l.lookAt(u.gaze), l.updateMatrixWorld(), f.forEach(([S, g]) => {
-      if (o.some((v) => {
-        const T = h(v, u, _ ? 5.5 : 8);
-        return T && Math.hypot(T.x - S, T.y - g) < (_ ? 0.24 : 0.38);
-      })) return;
-      const m = a.reduce((v, T, N) => T.length < a[v].length ? N : v, 0), y = ["cymbidium", "phalaenopsis", "gladiolus"].includes(s[m]), M = _ ? y ? 2.9 : 2.5 : y ? 3.9 : 3.4, x = M * (0.85 + r() * 0.3);
-      let A = null, C = 1 / 0;
-      for (const v of c) {
-        const { x: T, z: N } = v;
-        if (Math.hypot(T - 3.4, N + 66) < 4.2 || !n(T, N) || !i(T, N, M) || o.some((Z) => Math.hypot(T - Z.x, N - Z.z) < (Math.max(M, x) + Math.max(Z.rx, Z.rz)) * (_ ? 0.85 : 1) + 0.25)) continue;
-        const U = h(v, u, _ ? 5.5 : 8);
-        if (!U) continue;
-        const F = Math.hypot(U.x - S, U.y - g);
-        F < C && (C = F, A = v);
-      }
-      if (!A) return;
-      const L = { ...A, rx: M, rz: x, count: (_ ? 14 : y ? 12 : 17) + Math.floor(r() * 5), species: s[m] };
-      o.push(L), a[m].push(L);
-    });
-  }
-  return e.forEach((u) => d(u, [[0.57, -0.4], [-0.08, -0.66], [-0.62, -0.53]])), e.slice(4, 13).forEach((u) => d(u, [[-0.76,-0.72],[-0.48,-0.43],[0.48,-0.72],[0.77,-0.38]], !0)), { centers: o, bySpecies: a };
+
+
+// Place persistent ground clumps where the actual shots can see them, without turning plants.
+function MS({species,views,floor,viewClear,treeClear,random}){
+ const centers=[],bySpecies=species.map(()=>[]),camera=new Zt(47,1.85,.1,160);
+ const candidates=[];
+ for(let z=10;z> -107;z-=1.4)for(let x=-10.5;x<=10.5;x+=1.4)candidates.push({x:x+(random()-.5)*2.4,z:z+(random()-.5)*2.4});
+ function projection(point,view,minDistance=8){
+  const head=new w(point.x,floor(point.x,point.z)+.9,point.z),distance=head.distanceTo(view.position);
+  if(distance<minDistance||distance>34)return null;
+  const p=head.clone().project(camera);
+  if(p.z< -1||p.z>1||Math.abs(p.x)>.9||p.y<-.9||p.y>.12)return null;
+  // Reject flowers hidden behind an intervening rise in the terrain.
+  for(let i=1;i<12;i++){const q=view.position.clone().lerp(head,i/12);if(floor(q.x,q.z)>q.y-.12)return null;}
+  return p;
+ }
+ function plantView(view,targets,infill=false){
+  camera.position.copy(view.position);camera.lookAt(view.gaze);camera.updateMatrixWorld();
+  targets.forEach(([sx,sy])=>{
+   if(centers.some(c=>{const p=projection(c,view,infill?3.8:8);return p&&Math.hypot(p.x-sx,p.y-sy)<(infill?.24:.38);}))return;
+   const kind=bySpecies.reduce((best,clumps,i)=>clumps.length<bySpecies[best].length?i:best,0),broad=['cymbidium','phalaenopsis','gladiolus'].includes(species[kind]);
+   const rx=infill?(broad?1.55:1.3):(broad?3.9:3.4),rz=rx*(.85+random()*.3);
+   let best=null,score=Infinity;
+   for(const candidate of candidates){
+    const {x,z}=candidate;
+    if(Math.hypot(x-3.4,z+66)<3.0+rx*.25||!viewClear(x,z)||!treeClear(x,z,rx)||centers.some(c=>Math.hypot(x-c.x,z-c.z)<(Math.max(rx,rz)+Math.max(c.rx,c.rz))*(infill?.85:1)+.25))continue;
+    const p=projection(candidate,view,infill?3.8:8);if(!p)continue;
+    const value=Math.hypot(p.x-sx,p.y-sy);
+    if(value<score){score=value;best=candidate;}
+   }
+   if(!best)return;
+   const clump={...best,rx,rz,count:(infill?14:broad?12:17)+Math.floor(random()*5),species:species[kind]};
+   centers.push(clump);bySpecies[kind].push(clump);
+  });
+ }
+ views.slice(8,11).forEach(view=>plantView(view,[[-.70,-.60],[-.42,-.78],[.42,-.78],[.72,-.58]],true));
+ views.forEach(view=>plantView(view,[[.57,-.40],[-.08,-.66],[-.62,-.53]]));
+ // Fill visible gaps around the approach and first pavilion shots after preserving the main clumps.
+ views.slice(4,13).forEach(view=>plantView(view,[[-.76,-.72],[-.48,-.43],[.48,-.72],[.77,-.38]],true));
+ return{centers,bySpecies};
 }
+
 function lp(s, e, t, n, i, r = !1) {
   const o = e.trim().split(/\s+/);
   if (!r || o.length < 2) {
@@ -29327,10 +29332,10 @@ function Mb() {
   const e = { value: 1 }, t = new vn({ transparent: !0, depthWrite: !0, uniforms: { opacity: e }, vertexShader: vm, fragmentShader: `
  uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
-  float latitude=vUv.y;float bands=.5+.5*sin(latitude*115.+.65*sin(latitude*37.));
-  vec3 color=mix(vec3(.61,.47,.29),vec3(.92,.82,.60),.38+.48*bands);
+  float latitude=vUv.y;float bands=.5+.5*sin(latitude*58.+.22*sin(latitude*17.));
+  vec3 color=mix(vec3(.43,.37,.28),vec3(.64,.58,.46),.40+.24*bands);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
-  gl_FragColor=vec4(color*(.34+.66*sqrt(sun)),opacity);
+  gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>
  }` }), n = new Qe(new gn(3.1, 64, 40), t);
   n.scale.y = 0.9, n.name = "Saturn globe", s.add(n);
@@ -29338,12 +29343,12 @@ function Mb() {
  uniform float opacity;varying vec2 ring;
  void main(){
   float radius=length(ring);float t=(radius-3.85)/(7.1-3.85);
-  float bands=.63+.15*sin(radius*72.)+.12*sin(radius*181.);
+  float bands=.78+.045*sin(radius*72.)+.025*sin(radius*181.);
   float division=1.-.92*(smoothstep(5.66,5.72,radius)-smoothstep(5.88,5.94,radius));
   float edge=smoothstep(0.,.025,t)*(1.-smoothstep(.975,1.,t));
   vec3 p=vec3(ring.x,0.,-ring.y),light=normalize(vec3(-.65,.45,.8));float along=dot(p,light);
   float shadow=along<0.?smoothstep(8.5,10.5,dot(p,p)-along*along):1.;
-  vec3 color=mix(vec3(.52,.44,.34),vec3(.91,.85,.70),t)*mix(.35,1.,shadow);
+  vec3 color=mix(vec3(.48,.46,.40),vec3(.77,.75,.67),t)*mix(.35,1.,shadow);
   gl_FragColor=vec4(color,opacity*bands*division*edge);
   #include <colorspace_fragment>
  }` }), r = new Qe(new Eu(3.85, 7.1, 384, 6), i);
@@ -30068,7 +30073,13 @@ void main(){
   Z.add(Ne);
   const Le = new wl(new Uint8Array([105, 155, 205, 245]), 4, 1, El);
   Le.minFilter = Le.magFilter = an, Le.needsUpdate = !0;
-  const rt = new Ei({ color: "#ffffff", vertexColors: !0, fog: !1, transparent: !0, depthWrite: !1, opacity: 1 });
+  function softenCloud(material){material.onBeforeCompile=shader=>{
+ shader.vertexShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.vertexShader;
+ shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\ncloudPoint=position;cloudNormal=normalize(mat3(modelMatrix)*normal);cloudView=cameraPosition-(modelMatrix*vec4(position,1.)).xyz;'.replace('\n',String.fromCharCode(10)));
+ shader.fragmentShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.fragmentShader;
+ shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat face=abs(dot(normalize(cloudNormal),normalize(cloudView)));float wisps=.72+.16*sin(cloudPoint.x*13.+sin(cloudPoint.y*17.))+ .12*sin(cloudPoint.z*19.+cloudPoint.x*9.);diffuseColor.a*=pow(face,2.2)*smoothstep(.1,.9,wisps);diffuseColor.rgb=vec3(.94,.96,1.);'.replace('\n',String.fromCharCode(10)));
+};material.customProgramCacheKey=()=> 'white-cloud-soft-volume-v2';}
+const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.68});softenCloud(rt);
   rt.userData.cloud = !0, W.push(rt);
   const ct = new gn(1, 24, 16), Mt = [], G = ct.attributes.position, Ie = [];
   for (let p = 0; p < G.count; p++) {
@@ -30366,8 +30377,21 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), p.fragmentShader = `va
   const Zr = V(h.blue, 0.015);
   Zr.roughness = 1, Zr.clearcoat = 0, Zr.sheen = 0, Zr.flatShading = !0;
   const Jr = 108, Zo = 70, ku = 5, Jo = [], $o = new $t(new Gi(0.1, 0.22, 1, 7, 5), Cs, Jr * (ku + 1)), $r = new $t(new vl(1, 1), Zr, Jr * Zo), Kt = new At();
-  for (let p = 0; p < Jr; p++) {
-    const E = p % 2 ? 1 : -1, row=Math.floor(p/36), slot=Math.floor(p/2)%18, P=14-slot*7.2-row*2.4, O=E*(12.4+row*8)+(H()-.5)*.25, B=On(O,P), K=4.6+H()*2.6;
+  function naturalForestSite(index){
+ const side=index%2?1:-1;
+ for(let attempt=0;attempt<12000;attempt++){
+  const cluster=forestClusters[Math.floor(forestRandom()*forestClusters.length)],grouped=attempt<2500&&forestRandom()<.68;
+  const x=side*(grouped?cluster.x+(forestRandom()+forestRandom()-1)*9:11.5+forestRandom()*23),z=grouped?cluster.z+(forestRandom()+forestRandom()-1)*27:14-forestRandom()*132;
+  if(Math.abs(x)<11.5||Math.abs(x)>34.5||z>14||z< -118)continue;
+  if(Jo.some(tree=>Math.hypot(x-tree.x,z-tree.z)<6.45))continue;
+  return {side,x,z,floor:On(x,z),height:4.4+forestRandom()*3.2};
+ }
+ throw new Error('Natural forest spacing capacity exceeded');
+}
+let forestSeed=72613;function forestRandom(){forestSeed=(Math.imul(forestSeed,1664525)+1013904223)>>>0;return forestSeed/4294967296;}
+const forestClusters=Array.from({length:9},()=>({x:14+forestRandom()*17,z:5-forestRandom()*112}));
+for (let p = 0; p < Jr; p++) {
+    const {side:E,z:P,x:O,floor:B,height:K}=naturalForestSite(p);
     Jo.push({ x: O, z: P, floor: B, height: K }), Ul(p * 6, new w(O, B, P), new w(O + E * 0.35, B + K, P - 0.2), 1);
     for (let q = 0; q < ku; q++) {
       const ee = q * 2.4 + p, te = 1.2 + H() * 1.3;
@@ -30503,7 +30527,8 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
     eo.setXYZ(p, E * O, P * O, I * O);
   }
   jl.computeVertexNormals();
-  const Qu = Vl(8, 16);
+  function archPhalaenopsis(geometry){geometry.computeBoundingBox();const min=geometry.boundingBox.min.y,height=Math.max(.001,geometry.boundingBox.max.y-min),p=geometry.attributes.position;for(let k=0;k<p.count;k++){const y=p.getY(k)-min,u=Math.max(0,y/height),angle=.82*u,offset=height*(1-Math.cos(angle))/.82;p.setXYZ(k,p.getX(k)+offset,min+height*Math.sin(angle)/.82,p.getZ(k)+.10*height*u*u);}geometry.computeBoundingBox();return geometry;}
+const Qu = Vl(8, 16);
   new ll(n).load("models/meadow-flowers.glb?v=no-lavender65", (p) => {
     p.scene.updateMatrixWorld(!0);
     let E = 0;
@@ -30514,7 +30539,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
       if (K < 0) return;
       E++;
       let q = ["bellflower", "chrysanthemum", "daisy", "evening_primrose", "water_lily", "camellia"].includes(B.name) ? ed(B.name) : B.geometry.clone().applyMatrix4(B.matrixWorld);
-      q.deleteAttribute("normal"), q = FS(q, 1e-4), q.computeVertexNormals(), ht(q);
+      (B.name==='phalaenopsis'&&archPhalaenopsis(q)),q.deleteAttribute("normal"), q = FS(q, 1e-4), q.computeVertexNormals(), ht(q);
       const ee = q.attributes.color;
       if (ee) {
         const Je = new _e(h.blue).lerp(new _e(h.mist), 0.22);
