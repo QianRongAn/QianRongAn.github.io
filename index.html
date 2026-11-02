@@ -5,6 +5,14 @@
     <style>html.intro-boot{background:#000!important}html.intro-boot body{background:#000!important}html.intro-boot body>*{visibility:hidden!important}html.intro-boot body>.particle-prelude{visibility:visible!important}html:not(.intro-text-active) #heroScreen{display:none!important}</style>
     <link rel="preload" href="fonts/Producer_Regular.ttf" as="font" type="font/ttf" crossorigin>
     <meta charset="UTF-8">
+<script>
+(function(){
+ if(new URLSearchParams(location.search).get('enter')==='about'||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ var request=fetch('media/particle-butterfly-final-4k.mp4?v=4k35',{cache:'force-cache',priority:'high'}).then(function(r){if(!r.ok)throw new Error('Video download failed');return r.blob();});
+ request.catch(function(){});
+ window.preludeVideoDownload=request;
+})();
+</script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,7 +95,7 @@
             src: url('font/bidaq.otf') format('opentype');
             font-weight: 400;
             font-style: normal;
-            font-display: block;
+            font-display: swap;
         }
         @font-face {
             font-family: 'Inter Display';
@@ -193,11 +201,6 @@
     </script>
     <link rel="stylesheet" href="css/fontawesome.css">
     <link rel="preload" href="font/playfair-display-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="image/orchid-silhouette-atlas.png" as="image">
-    <link rel="preload" href="image/education-pearl-lily.png" as="image">
-    <link rel="preload" href="image/education-pearl-petal.png" as="image">
-    <link rel="preload" href="wall.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="me.webp" as="image" fetchpriority="high">
     <!-- 移除非必要的预加载以释放带宽 -->
     <style>
         :root {
@@ -3061,8 +3064,8 @@
     <script src="js/pub-gallery.js?v=20261026-tail-scroll89" defer></script>
     <script src="js/hero-magnet.js?v=20261018-glass" defer></script>
     <script src="js/curtain-dna.js?v=20261018-dna45" defer></script>
-    <link rel="stylesheet" href="css/particle-prelude.css?v=preload40-late32">
-    <script src="js/particle-prelude.js?v=4k40" defer></script>
+    <link rel="stylesheet" href="css/particle-prelude.css?v=20261102-download1">
+    <script src="js/particle-prelude.js?v=20261102-download1" defer></script>
     <script src="js/hero.js?v=20261024-stage77" defer></script>
     <script src="js/nav-spotlight.js?v=20261018-glow" defer></script>
     <link rel="stylesheet" href="css/dream-glass.css?v=education41">
