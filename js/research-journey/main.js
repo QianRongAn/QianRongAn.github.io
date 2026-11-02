@@ -26651,11 +26651,11 @@ function MS({ species: s, views: e, floor: t, viewClear: n, treeClear: i, random
         F < C && (C = F, A = v);
       }
       if (!A) return;
-      const L = { ...A, rx: M, rz: x, count: (_ ? 9 : y ? 12 : 17) + Math.floor(r() * 5), species: s[m] };
+      const L = { ...A, rx: M, rz: x, count: (_ ? 14 : y ? 12 : 17) + Math.floor(r() * 5), species: s[m] };
       o.push(L), a[m].push(L);
     });
   }
-  return e.forEach((u) => d(u, [[0.57, -0.4], [-0.08, -0.66], [-0.62, -0.53]])), e.slice(4, 11).forEach((u) => d(u, [[-0.74, -0.79], [0.32, -0.79], [0.77, -0.3]], !0)), { centers: o, bySpecies: a };
+  return e.forEach((u) => d(u, [[0.57, -0.4], [-0.08, -0.66], [-0.62, -0.53]])), e.slice(4, 13).forEach((u) => d(u, [[-0.76,-0.72],[-0.48,-0.43],[0.48,-0.72],[0.77,-0.38]], !0)), { centers: o, bySpecies: a };
 }
 function lp(s, e, t, n, i, r = !1) {
   const o = e.trim().split(/\s+/);
@@ -29414,10 +29414,13 @@ function yb(s) {
  void main(){
   vec3 stone=texture2D(surface,vUv).rgb;
   float face=max(dot(normalize(vNormal),normalize(vView)),0.);
-  vec3 color=(stone*1.5+vec3(.055,.052,.045))*(.86+.14*sqrt(face));
-  gl_FragColor=vec4(color,opacity);
+  float rim=pow(1.-face,2.4);
+  float relief=clamp(dot(stone,vec3(.2126,.7152,.0722)),0.,1.);
+  vec3 color=mix(vec3(.54,.63,.76),vec3(.94,.98,1.),smoothstep(.12,.7,relief));
+  color+=vec3(.12,.15,.18)*rim;
+  gl_FragColor=vec4(color,opacity*(.55+.26*rim));
   #include <colorspace_fragment>
- }` }), t = new Qe(new gn(35, 96, 64), e);
+ }` }), t = new Qe(new gn(29, 128, 80), e);
   return t.name = "Supermoon", t.position.set(-14, 14, -185), t.rotation.y = -Math.PI / 2, t;
 }
 function Mb() {
@@ -30359,7 +30362,7 @@ void main(){
       const B = O / 27 * Math.PI / 2, K = 2.04 * Math.sin(B);
       return new w(Math.cos(E) * K, 3.48 + 1.45 * Math.cos(B), Math.sin(E) * K);
     });
-    ie(Ye, P, 0.043, ot, 40);
+    ie(Ye, P, 0.043, ye, 40);
   }
   const Dn = new $t(new Hn(0.09, 0.12, 0.1), Pt, 48), Nn = new At();
   for (let p = 0; p < 48; p++) {
@@ -30467,9 +30470,9 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), p.fragmentShader = `va
   Cs.roughness = 0.97, Cs.clearcoat = 0, Cs.bumpMap = fe, Cs.bumpScale = 0.13;
   const Zr = V(h.blue, 0.015);
   Zr.roughness = 1, Zr.clearcoat = 0, Zr.sheen = 0, Zr.flatShading = !0;
-  const Jr = 72, Zo = 70, ku = 5, Jo = [], $o = new $t(new Gi(0.1, 0.22, 1, 7, 5), Cs, Jr * (ku + 1)), $r = new $t(new vl(1, 1), Zr, Jr * Zo), Kt = new At();
+  const Jr = 108, Zo = 70, ku = 5, Jo = [], $o = new $t(new Gi(0.1, 0.22, 1, 7, 5), Cs, Jr * (ku + 1)), $r = new $t(new vl(1, 1), Zr, Jr * Zo), Kt = new At();
   for (let p = 0; p < Jr; p++) {
-    const E = p % 2 ? 1 : -1, P = 14 - Math.floor(p / 2) * 3.4, I = E > 0 ? Math.max(0, Math.min((-P - 10) * 0.4, (P + 44) * 0.6, 9)) : 0, O = E * (11 + H() * 7) + (E > 0 && P > -20 ? 3.2 : 0) + I, B = On(O, P), K = 4.2 + H() * 4.3;
+    const E = p % 2 ? 1 : -1, row=Math.floor(p/36), slot=Math.floor(p/2)%18, P=14-slot*7.2-row*2.4, O=E*(12.4+row*8)+(H()-.5)*.25, B=On(O,P), K=4.6+H()*2.6;
     Jo.push({ x: O, z: P, floor: B, height: K }), Ul(p * 6, new w(O, B, P), new w(O + E * 0.35, B + K, P - 0.2), 1);
     for (let q = 0; q < ku; q++) {
       const ee = q * 2.4 + p, te = 1.2 + H() * 1.3;
@@ -30509,7 +30512,7 @@ surveyPosition=(modelMatrix*vec4(transformed,1.)).xyz;`), p.fragmentShader = `va
             const He = Math.hypot(Re, de), Je = Math.atan2(de, Re), at = He / 2, lt = 1 + 0.1 * Math.sin(ae * 1.8 + B * 2.1 + Je * 3);
             q.setXYZ(we, Re * lt, ae - Math.pow(He, 1.3) * (0.1 + B * 0.035) + Math.sin(Je * 5 + ae) * at * 0.06, de * lt);
           }
-          K.computeVertexNormals();
+          K.computeVertexNormals();K.computeBoundingBox();const crownRadius=Math.SQRT2*Math.max(Math.abs(K.boundingBox.min.x),Math.abs(K.boundingBox.max.x),Math.abs(K.boundingBox.min.z),Math.abs(K.boundingBox.max.z));
           const ee = O.material.name.toLowerCase().includes("bark");
           if (!ee) {
             const we = [], Re = new _e(["#8589a6", "#998ca9", "#8399aa"][B]), ae = new _e(["#bdc6d6", "#d2c1d7", "#c0cdd5"][B]);
@@ -30530,7 +30533,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
           const Ae = Jo.filter((we, Re) => Re % 3 === B), qe = new $t(K, te, Ae.length), Ze = new At();
           Ae.forEach((we, Re) => {
             const ae = we.height / I;
-            Ze.position.set(we.x, we.floor - 0.06, we.z), Ze.rotation.set(Math.sin(Re * 2.1) * 0.035, Re * 2.39996 + B, 0.025 * Math.cos(Re)), Ze.scale.set(ae * (1.05 + Math.sin(Re) * 0.13), ae, ae * (0.96 + Math.cos(Re) * 0.13)), Ze.updateMatrix(), qe.setMatrixAt(Re, Ze.matrix), qe.setColorAt(Re, new _e("#ffffff").lerp(new _e(Re % 3 ? "#b5c0dc" : "#dfc8de"), 0.08 + Re % 5 * 0.04));
+            Ze.position.set(we.x, we.floor - 0.06, we.z), Ze.rotation.set(Math.sin(Re * 2.1) * 0.035, Re * 2.39996 + B, 0.025 * Math.cos(Re)), Ze.scale.set(Math.min(ae*(1.05+Math.sin(Re)*.13),2.7/Math.max(crownRadius,.01)),ae,Math.min(ae*(.96+Math.cos(Re)*.13),2.7/Math.max(crownRadius,.01))), Ze.updateMatrix(), qe.setMatrixAt(Re, Ze.matrix), qe.setColorAt(Re, new _e("#ffffff").lerp(new _e(Re % 3 ? "#b5c0dc" : "#dfc8de"), 0.08 + Re % 5 * 0.04));
           }), qe.computeBoundingSphere(), Gu.add(qe);
         }
     }), Kr.remove($o, $r), $o.geometry.dispose(), $r.geometry.dispose(), y.dataset.forest = "soft-watercolour-fir";

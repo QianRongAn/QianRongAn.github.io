@@ -3,16 +3,19 @@ import * as THREE from 'three';
 const vertex=`varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vUv=uv;vec3 world=(modelMatrix*vec4(position,1.)).xyz;vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-world);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
 
 export function createSupermoon(texture){
- const material=new THREE.ShaderMaterial({transparent:true,depthWrite:true,uniforms:{surface:{value:texture},opacity:{value:0}},vertexShader:vertex,fragmentShader:`
+ const material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{surface:{value:texture},opacity:{value:0}},vertexShader:vertex,fragmentShader:`
  uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
   vec3 stone=texture2D(surface,vUv).rgb;
   float face=max(dot(normalize(vNormal),normalize(vView)),0.);
-  vec3 color=(stone*1.5+vec3(.055,.052,.045))*(.86+.14*sqrt(face));
-  gl_FragColor=vec4(color,opacity);
+  float rim=pow(1.-face,2.4);
+  float relief=clamp(dot(stone,vec3(.2126,.7152,.0722)),0.,1.);
+  vec3 color=mix(vec3(.54,.63,.76),vec3(.94,.98,1.),smoothstep(.12,.7,relief));
+  color+=vec3(.12,.15,.18)*rim;
+  gl_FragColor=vec4(color,opacity*(.55+.26*rim));
   #include <colorspace_fragment>
  }`});
- const moon=new THREE.Mesh(new THREE.SphereGeometry(35,96,64),material);
+ const moon=new THREE.Mesh(new THREE.SphereGeometry(29,128,80),material);
  moon.name='Supermoon';moon.position.set(-14,14,-185);moon.rotation.y=-Math.PI/2;
  return moon;
 }

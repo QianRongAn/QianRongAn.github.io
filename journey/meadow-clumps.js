@@ -29,12 +29,12 @@ export function planBotanicalClumps({species,views,floor,viewClear,treeClear,ran
     if(value<score){score=value;best=candidate;}
    }
    if(!best)return;
-   const clump={...best,rx,rz,count:(infill?9:broad?12:17)+Math.floor(random()*5),species:species[kind]};
+   const clump={...best,rx,rz,count:(infill?14:broad?12:17)+Math.floor(random()*5),species:species[kind]};
    centers.push(clump);bySpecies[kind].push(clump);
   });
  }
  views.forEach(view=>plantView(view,[[.57,-.40],[-.08,-.66],[-.62,-.53]]));
  // Fill visible gaps around the approach and first pavilion shots after preserving the main clumps.
- views.slice(4,11).forEach(view=>plantView(view,[[-.74,-.79],[.32,-.79],[.77,-.30]],true));
+ views.slice(4,13).forEach(view=>plantView(view,[[-.76,-.72],[-.48,-.43],[.48,-.72],[.77,-.38]],true));
  return{centers,bySpecies};
 }

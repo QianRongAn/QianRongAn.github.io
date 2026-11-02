@@ -5,3 +5,10 @@ html[lang^="zh"] body :is(p,li,blockquote,figcaption,.tech-description){text-jus
 #researchJourney :is(.journey-panel,.journey-panel h2,.journey-panel p,.journey-kicker,.journey-title-line,.journey-title-line>span){text-align:left!important;text-align-last:start!important;text-justify:auto;word-spacing:normal;}
 /* Preserve the opening subtitle's original right-side alignment. */
 #heroScreen .hero-focus,#heroScreen .hero-focus-line { text-align:right!important; text-align-last:right!important; word-spacing:normal; }
+
+/* Scoped typography refinements: headings stay left; About body copy is justified. */
+@font-face{font-family:'Open Sans';src:url('../font/open-sans-400.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+#researchJourney .journey-panel p,#researchJourney .journey-panel p *{font-family:'Open Sans','Microsoft YaHei',sans-serif!important;font-weight:400!important}
+body #container .content-section :is(h1,h2),#thesis#thesis :is(h1,h2,.section-title,.section-title *){text-align:left!important;text-align-last:start!important;text-justify:auto;word-spacing:normal}
+html.about-crystal #about#about .about-crystal-card .about-paragraph{ text-align:justify!important;text-align-last:start!important;text-justify:inter-word; }
+html[lang^="zh"].about-crystal #about#about .about-crystal-card .about-paragraph{text-justify:inter-character}
