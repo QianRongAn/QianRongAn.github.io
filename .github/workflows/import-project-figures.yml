@@ -40,6 +40,9 @@ jobs:
               if not im:
                   continue
               source = im.group(1)
+              if not source.startswith("https://"):
+                  saved = json.loads((assets / "sources.json").read_text())
+                  source = next(item["source"] for item in saved if item["project"] == key)
               candidates = [source]
               if "frontiersin.org" in source:
                   candidates.append(source.replace(".webp", ".jpg"))
@@ -61,7 +64,7 @@ jobs:
                       dest = assets / (key + "." + ext)
                       dest.write_bytes(data)
                       relative = "assets/figures/" + dest.name
-                      tag = im.group(0).replace(source, relative).replace(' loading="lazy"', ' loading="eager"')
+                      tag = im.group(0).replace(im.group(1), relative).replace(' loading="lazy"', ' loading="eager"')
                       tag = tag.replace(' referrerpolicy="no-referrer"', "")
                       tag = tag.replace(' decoding="async"', ' decoding="async" width="' + str(image.width) + '" height="' + str(image.height) + '"')
                       html = html.replace(im.group(0), tag, 1)
