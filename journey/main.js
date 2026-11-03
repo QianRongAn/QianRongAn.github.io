@@ -40,19 +40,49 @@ function polishCurrentGarden(c){
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const r=Math.hypot((x-64)/64,(y-64)/64),k=(y*128+x)*4;ai.data[k+3]=Math.max(0,Math.pow(Math.max(0,1-r),2)*180);}
  ax.putImageData(ai,0,0);const am=c.cloudMaterial.clone();am.onBeforeCompile=()=>{};am.customProgramCacheKey=()=> 'trunk-contact-118';am.map=new T.CanvasTexture(ac);am.color.set('#171226');am.fog=false;am.depthWrite=false;am.polygonOffset=true;am.polygonOffsetFactor=-1;am.opacity=.2;am.userData={baseOpacity:.2};c.materials.push(am);
  const contacts=new T.InstancedMesh(new T.PlaneGeometry(1.7,1.7),am,c.treePlacements.length);c.treePlacements.forEach((p,i)=>{dummy.position.set(p.x,p.floor+.025,p.z);dummy.rotation.set(-Math.PI/2,0,0);dummy.scale.setScalar(.8+(i%5)*.08);dummy.updateMatrix();contacts.setMatrixAt(i,dummy.matrix);});contacts.computeBoundingSphere();c.forest.add(contacts);
- // Gloriosa: six recurved, wavy tepals, yellow bases and scarlet tips, with long spreading stamens.
- const positions=[],colors=[],normals=[];const yellow=new T.Color('#e1bd66'),red=new T.Color('#ce625a'),stemColor=new T.Color('#737896');
+ // White Gloriosa: six separate, strongly reflexed tepals; six spreading stamens.
+ // Reference: SANBI botanical description and Crown Jewels' white cultivar photographs.
+ const positions=[],colors=[],normals=[],ivory=new T.Color('#f7f7ee'),white=new T.Color('#ffffff'),stemColor=new T.Color('#737896'),pollen=new T.Color('#c5bf94');
  function piece(g,col,position=new T.Vector3(),rotation=new T.Vector3(),scale=new T.Vector3(1,1,1)){
   g=g.clone();const d=new T.Object3D();d.position.copy(position);d.rotation.set(rotation.x,rotation.y,rotation.z);d.scale.copy(scale);d.updateMatrix();g.applyMatrix4(d.matrix);if(g.index)g=g.toNonIndexed();if(!g.attributes.normal)g.computeVertexNormals();const p=g.attributes.position,n=g.attributes.normal,cl=g.attributes.color;
   for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));if(cl)colors.push(cl.getX(i),cl.getY(i),cl.getZ(i));else colors.push(col.r,col.g,col.b);}g.dispose();
  }
- piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(),new T.Vector3(.03,.6,0),new T.Vector3(.08,1.1,.02)]),20,.012,6,false),stemColor);
- for(let j=0;j<6;j++){const a=j*Math.PI/3,ps=[],cs=[],ix=[],rows=18,cols=8;
-  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){const t=u/rows,w=v/cols*2-1,r=.06+.29*Math.sin(t*Math.PI*.88),width=.065*Math.pow(Math.sin(Math.PI*t),.65),wave=Math.sin(t*27)*Math.abs(w)*.018;ps.push(Math.cos(a)*r-Math.sin(a)*w*width,1.02+.58*t+wave,Math.sin(a)*r+Math.cos(a)*w*width);const col=yellow.clone().lerp(red,Math.min(1,t*1.7));cs.push(col.r,col.g,col.b);if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}}
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,red);
-  const tip=new T.Vector3(Math.cos(a)*.31,.96,Math.sin(a)*.31);piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(.08,1.03,.02),tip]),8,.005,5,false),yellow);piece(new T.SphereGeometry(.025,12,8),yellow,tip,new T.Vector3(),new T.Vector3(1.6,.45,.5));
+ function line(points,radius,color,steps=24){piece(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),steps,radius,6,false),color);}
+ // A hooked pedicel holds a nodding bloom; the ovary hangs beneath the tepals.
+ line([[0,0,0],[.025,.42,.008],[.045,.82,0]],.011,stemColor);
+ line([[.045,.78,0],[-.10,1.12,.015],[-.06,1.25,.012],[.015,1.19,0],[0,1.075,0]],.008,stemColor);
+ piece(new T.SphereGeometry(1,16,10),stemColor,new T.Vector3(0,1.055,0),new T.Vector3(),new T.Vector3(.022,.060,.022));
+ const profile=new T.CatmullRomCurve3([[.025,1.075,0],[.10,1.12,0],[.23,1.27,0],[.31,1.43,0],[.33,1.54,0],[.35,1.60,0]].map(p=>new T.Vector3(...p)),false,'catmullrom',.35);
+ for(let j=0;j<6;j++){
+  const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=36,cols=10;
+  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){
+   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.011*Math.sin(t*29+j*.35)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.008*(1-w*w)*Math.sin(Math.PI*t),twist=.018*Math.sin(t*Math.PI)*w;
+   const radial=center.x+cup,side=w*width;ps.push(Math.cos(a)*radial-Math.sin(a)*side,center.y+edgeWave+twist-.045*(j%3)*t,Math.sin(a)*radial+Math.cos(a)*side);
+   const col=ivory.clone().lerp(white,.35+.65*t);cs.push(col.r,col.g,col.b);
+   if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
+  }
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,white);
+  const b=a+.10,tip=new T.Vector3(Math.cos(b)*.31,.985,Math.sin(b)*.31);
+  line([[0,1.055,0],[Math.cos(b)*.13,1.015,Math.sin(b)*.13],[tip.x,tip.y,tip.z]],.0035,ivory,20);
+  // Long anthers sit across the filament tips, instead of forming a central ball.
+  piece(new T.SphereGeometry(1,16,8),pollen,tip,new T.Vector3(0,-b,0),new T.Vector3(.032,.007,.010));
  }
- for(let j=0;j<4;j++)piece(c.flowerPetalGeometry,stemColor,new T.Vector3(.03,.2+j*.17,0),new T.Vector3(-.35,j*2.4,0),new T.Vector3(.22,.30,.24));
+ // The lateral style bends away from the ovary and ends in three slender stigmas.
+ const styleTip=new T.Vector3(.305,.94,.055);
+ line([[0,1.015,0],[.10,.94,.02],[styleTip.x,styleTip.y,styleTip.z]],.0037,ivory,20);
+ for(let k=0;k<3;k++)line([[styleTip.x,styleTip.y,styleTip.z],[.333,.944+(k-1)*.012,.055+(k-1)*.018]],.0023,ivory,10);
+ // Lanceolate leaves taper into coiling tendrils, characteristic of a climbing lily.
+ for(let j=0;j<4;j++){
+  const a=j*2.4,y=.20+j*.15,ps=[],ix=[];
+  for(let u=0;u<=18;u++)for(let v=0;v<=4;v++){
+   const t=u/18,w=v/4*2-1,r=.025+.19*t,width=.036*Math.sin(Math.PI*t),h=y+.12*Math.sin(t*Math.PI*.8);
+   ps.push(Math.cos(a)*r-Math.sin(a)*w*width,h+.005*(1-w*w),Math.sin(a)*r+Math.cos(a)*w*width);
+   if(u<18&&v<4){const k=u*5+v;ix.push(k,k+1,k+5,k+1,k+6,k+5);}
+  }
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setIndex(ix);g.computeVertexNormals();piece(g,stemColor);
+  const endY=y+.12*Math.sin(Math.PI*.8);line(Array.from({length:17},(_,k)=>{const t=k/16,r=.215+.045*t;return [Math.cos(a)*r-Math.sin(a)*Math.sin(t*Math.PI*2)*.014,endY+.023*t+Math.cos(t*Math.PI*2)*.014,Math.sin(a)*r+Math.cos(a)*Math.sin(t*Math.PI*2)*.014];}),.0023,stemColor,20);
+ }
+
  const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
  const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.66;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
@@ -243,7 +273,7 @@ const foreOutline=new THREE.CatmullRomCurve3([new THREE.Vector3(.12,.28,0),new T
 const hindOutline=new THREE.CatmullRomCurve3([new THREE.Vector3(.12,.12,0),new THREE.Vector3(1.1,.35,0),new THREE.Vector3(2.15,-.55,0),new THREE.Vector3(1.65,-1.7,0),new THREE.Vector3(.8,-1.65,0),new THREE.Vector3(.12,-.2,0)],true,'catmullrom',.25);
 function wingPoint(u,v,side,hind){
  const edge=(hind?hindOutline:foreOutline).getPoint(v),rootY=hind?-.05:.25;
- return new THREE.Vector3(side*(.12+(edge.x-.12)*u),rootY+(edge.y-rootY)*u,Math.sin(u*Math.PI)*.075+Math.pow(u,3)*(.035+Math.sin(v*7)*.018)+Math.pow(u,9)*Math.sin(v*48)*.004+(hind?-.10:.015));
+ return new THREE.Vector3(side*(.12+(edge.x-.12)*u),rootY+(edge.y-rootY)*u,Math.sin(u*Math.PI)*.32+Math.pow(u,3)*(.18+Math.sin(v*7)*.10)+Math.pow(u,9)*Math.sin(v*48)*.025+(hind?-.12:0));
 }
 
 for(const side of [-1,1])for(const hind of [false,true]){
@@ -257,12 +287,12 @@ for(const side of [-1,1])for(const hind of [false,true]){
  const edge=[];for(let i=0;i<=U;i++)edge.push(i);for(let j=1;j<=V;j++)edge.push(j*(U+1)+U);for(let i=U-1;i>=0;i--)edge.push(V*(U+1)+i);for(let j=V-1;j>0;j--)edge.push(j*(U+1));
  for(let i=0;i<edge.length;i++){const a=edge[i],b=edge[(i+1)%edge.length];indices.push(a,a+layerSize,b+layerSize,a,b+layerSize,b);}
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(new Float32Array(verts.length),3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setIndex(indices);geometry.computeVertexNormals();
- const material=new THREE.MeshPhysicalMaterial({color:palette.white,vertexColors:true,roughness:.34,metalness:0,iridescence:.52,iridescenceIOR:1.3,iridescenceThicknessRange:[180,440],transmission:0,thickness:.002,ior:1.35,clearcoat:.35,clearcoatRoughness:.25,bumpMap:microTexture,bumpScale:.002,side:THREE.DoubleSide,transparent:true,opacity:1});materials.push(material);const surface=new THREE.Mesh(geometry,material);surface.userData.wingSurface=true;pivot.add(surface);
+ const material=new THREE.MeshPhysicalMaterial({color:palette.white,vertexColors:true,roughness:.34,metalness:0,iridescence:.52,iridescenceIOR:1.3,iridescenceThicknessRange:[180,440],transmission:.13,thickness:.002,ior:1.35,clearcoat:.35,clearcoatRoughness:.25,bumpMap:microTexture,bumpScale:.018,side:THREE.DoubleSide,transparent:true,opacity:1});materials.push(material);const surface=new THREE.Mesh(geometry,material);surface.userData.wingSurface=true;pivot.add(surface);
  for(let j=1;j<11;j++){
-  const v=j/11,points=Array.from({length:33},(_,k)=>{const u=k/32,p=wingPoint(u,v+Math.sin(u*Math.PI)*.022,side,hind);p.z+=.004;return p;});tube(pivot,points,.002,pearl,42);
-  for(const branch of [-1,1]){const pts=Array.from({length:18},(_,k)=>{const u=.5+k/17*.48,p=wingPoint(u,v+branch*(u-.5)*.12,side,hind);p.z+=.004;return p;});tube(pivot,pts,.0012,rose,24);}
+  const v=j/11,points=Array.from({length:33},(_,k)=>{const u=k/32,p=wingPoint(u,v+Math.sin(u*Math.PI)*.022,side,hind);p.z+=.019;return p;});tube(pivot,points,.007,pearl,42);
+  for(const branch of [-1,1]){const pts=Array.from({length:18},(_,k)=>{const u=.5+k/17*.48,p=wingPoint(u,v+branch*(u-.5)*.12,side,hind);p.z+=.02;return p;});tube(pivot,pts,.0035,rose,24);}
  }
- tube(pivot,Array.from({length:81},(_,i)=>wingPoint(1,i/80,side,hind)),.0025,rose,96);
+ tube(pivot,Array.from({length:81},(_,i)=>wingPoint(1,i/80,side,hind)),.012,rose,96);
 }
 const thorax=orb(wings,0,.15,.12,.23,violet);thorax.scale.multiply(new THREE.Vector3(.7,1.8,.8));
 for(let i=0;i<10;i++){const segment=orb(wings,0,-.1-i*.115,.08,.108-i*.006,pearl);segment.scale.y=1.2*(.108-i*.006);}
@@ -923,7 +953,7 @@ function paint(t,time){
     orchidGlow.material.uniforms.opacity.value=butterflyOn?.24*introReveal*(1-opening):0;
     backgroundAt(t);scene.background.multiplyScalar(emergence);skyUniforms.horizon.value.multiplyScalar(emergence);scene.fog.color.copy(scene.background);
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
-    birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*(32+phase*.5)+phase)*.63);});
+    birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*4.2+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
@@ -932,7 +962,7 @@ function paint(t,time){
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;saturn.userData.opacity.value=fade*emergence*(1-smooth(.57,.67,t));saturn.visible=saturn.userData.opacity.value>.001;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
-    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock;pivot.rotation.y=pivot.userData.side*(.55+Math.sin(phase)*.65*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
+    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
     dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;

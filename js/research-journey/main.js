@@ -40,19 +40,49 @@ function polishCurrentGarden(c){
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const r=Math.hypot((x-64)/64,(y-64)/64),k=(y*128+x)*4;ai.data[k+3]=Math.max(0,Math.pow(Math.max(0,1-r),2)*180);}
  ax.putImageData(ai,0,0);const am=c.cloudMaterial.clone();am.onBeforeCompile=()=>{};am.customProgramCacheKey=()=> 'trunk-contact-118';am.map=new T.CanvasTexture(ac);am.color.set('#171226');am.fog=false;am.depthWrite=false;am.polygonOffset=true;am.polygonOffsetFactor=-1;am.opacity=.2;am.userData={baseOpacity:.2};c.materials.push(am);
  const contacts=new T.InstancedMesh(new T.PlaneGeometry(1.7,1.7),am,c.treePlacements.length);c.treePlacements.forEach((p,i)=>{dummy.position.set(p.x,p.floor+.025,p.z);dummy.rotation.set(-Math.PI/2,0,0);dummy.scale.setScalar(.8+(i%5)*.08);dummy.updateMatrix();contacts.setMatrixAt(i,dummy.matrix);});contacts.computeBoundingSphere();c.forest.add(contacts);
- // Gloriosa: six recurved, wavy tepals, yellow bases and scarlet tips, with long spreading stamens.
- const positions=[],colors=[],normals=[];const yellow=new T.Color('#e1bd66'),red=new T.Color('#ce625a'),stemColor=new T.Color('#737896');
+ // White Gloriosa: six separate, strongly reflexed tepals; six spreading stamens.
+ // Reference: SANBI botanical description and Crown Jewels' white cultivar photographs.
+ const positions=[],colors=[],normals=[],ivory=new T.Color('#f7f7ee'),white=new T.Color('#ffffff'),stemColor=new T.Color('#737896'),pollen=new T.Color('#c5bf94');
  function piece(g,col,position=new T.Vector3(),rotation=new T.Vector3(),scale=new T.Vector3(1,1,1)){
   g=g.clone();const d=new T.Object3D();d.position.copy(position);d.rotation.set(rotation.x,rotation.y,rotation.z);d.scale.copy(scale);d.updateMatrix();g.applyMatrix4(d.matrix);if(g.index)g=g.toNonIndexed();if(!g.attributes.normal)g.computeVertexNormals();const p=g.attributes.position,n=g.attributes.normal,cl=g.attributes.color;
   for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));if(cl)colors.push(cl.getX(i),cl.getY(i),cl.getZ(i));else colors.push(col.r,col.g,col.b);}g.dispose();
  }
- piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(),new T.Vector3(.03,.6,0),new T.Vector3(.08,1.1,.02)]),20,.012,6,false),stemColor);
- for(let j=0;j<6;j++){const a=j*Math.PI/3,ps=[],cs=[],ix=[],rows=18,cols=8;
-  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){const t=u/rows,w=v/cols*2-1,r=.06+.29*Math.sin(t*Math.PI*.88),width=.065*Math.pow(Math.sin(Math.PI*t),.65),wave=Math.sin(t*27)*Math.abs(w)*.018;ps.push(Math.cos(a)*r-Math.sin(a)*w*width,1.02+.58*t+wave,Math.sin(a)*r+Math.cos(a)*w*width);const col=yellow.clone().lerp(red,Math.min(1,t*1.7));cs.push(col.r,col.g,col.b);if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}}
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,red);
-  const tip=new T.Vector3(Math.cos(a)*.31,.96,Math.sin(a)*.31);piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(.08,1.03,.02),tip]),8,.005,5,false),yellow);piece(new T.SphereGeometry(.025,12,8),yellow,tip,new T.Vector3(),new T.Vector3(1.6,.45,.5));
+ function line(points,radius,color,steps=24){piece(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),steps,radius,6,false),color);}
+ // A hooked pedicel holds a nodding bloom; the ovary hangs beneath the tepals.
+ line([[0,0,0],[.025,.42,.008],[.045,.82,0]],.011,stemColor);
+ line([[.045,.78,0],[-.10,1.12,.015],[-.06,1.25,.012],[.015,1.19,0],[0,1.075,0]],.008,stemColor);
+ piece(new T.SphereGeometry(1,16,10),stemColor,new T.Vector3(0,1.055,0),new T.Vector3(),new T.Vector3(.022,.060,.022));
+ const profile=new T.CatmullRomCurve3([[.025,1.075,0],[.10,1.12,0],[.23,1.27,0],[.31,1.43,0],[.33,1.54,0],[.35,1.60,0]].map(p=>new T.Vector3(...p)),false,'catmullrom',.35);
+ for(let j=0;j<6;j++){
+  const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=36,cols=10;
+  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){
+   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.011*Math.sin(t*29+j*.35)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.008*(1-w*w)*Math.sin(Math.PI*t),twist=.018*Math.sin(t*Math.PI)*w;
+   const radial=center.x+cup,side=w*width;ps.push(Math.cos(a)*radial-Math.sin(a)*side,center.y+edgeWave+twist-.045*(j%3)*t,Math.sin(a)*radial+Math.cos(a)*side);
+   const col=ivory.clone().lerp(white,.35+.65*t);cs.push(col.r,col.g,col.b);
+   if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
+  }
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,white);
+  const b=a+.10,tip=new T.Vector3(Math.cos(b)*.31,.985,Math.sin(b)*.31);
+  line([[0,1.055,0],[Math.cos(b)*.13,1.015,Math.sin(b)*.13],[tip.x,tip.y,tip.z]],.0035,ivory,20);
+  // Long anthers sit across the filament tips, instead of forming a central ball.
+  piece(new T.SphereGeometry(1,16,8),pollen,tip,new T.Vector3(0,-b,0),new T.Vector3(.032,.007,.010));
  }
- for(let j=0;j<4;j++)piece(c.flowerPetalGeometry,stemColor,new T.Vector3(.03,.2+j*.17,0),new T.Vector3(-.35,j*2.4,0),new T.Vector3(.22,.30,.24));
+ // The lateral style bends away from the ovary and ends in three slender stigmas.
+ const styleTip=new T.Vector3(.305,.94,.055);
+ line([[0,1.015,0],[.10,.94,.02],[styleTip.x,styleTip.y,styleTip.z]],.0037,ivory,20);
+ for(let k=0;k<3;k++)line([[styleTip.x,styleTip.y,styleTip.z],[.333,.944+(k-1)*.012,.055+(k-1)*.018]],.0023,ivory,10);
+ // Lanceolate leaves taper into coiling tendrils, characteristic of a climbing lily.
+ for(let j=0;j<4;j++){
+  const a=j*2.4,y=.20+j*.15,ps=[],ix=[];
+  for(let u=0;u<=18;u++)for(let v=0;v<=4;v++){
+   const t=u/18,w=v/4*2-1,r=.025+.19*t,width=.036*Math.sin(Math.PI*t),h=y+.12*Math.sin(t*Math.PI*.8);
+   ps.push(Math.cos(a)*r-Math.sin(a)*w*width,h+.005*(1-w*w),Math.sin(a)*r+Math.cos(a)*w*width);
+   if(u<18&&v<4){const k=u*5+v;ix.push(k,k+1,k+5,k+1,k+6,k+5);}
+  }
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setIndex(ix);g.computeVertexNormals();piece(g,stemColor);
+  const endY=y+.12*Math.sin(Math.PI*.8);line(Array.from({length:17},(_,k)=>{const t=k/16,r=.215+.045*t;return [Math.cos(a)*r-Math.sin(a)*Math.sin(t*Math.PI*2)*.014,endY+.023*t+Math.cos(t*Math.PI*2)*.014,Math.sin(a)*r+Math.cos(a)*Math.sin(t*Math.PI*2)*.014];}),.0023,stemColor,20);
+ }
+
  const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
  const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.66;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
@@ -29543,7 +29573,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     p.setAttribute("uv", new _n(K, 2));
   }, pt = function(p, E, P, I) {
     const O = (I ? _t : st).getPoint(E), B = I ? -0.05 : 0.25;
-    return new w(P * (0.12 + (O.x - 0.12) * p), B + (O.y - B) * p, Math.sin(p * Math.PI) * 0.075 + Math.pow(p, 3) * (0.035 + Math.sin(E * 7) * 0.018) + Math.pow(p, 9) * Math.sin(E * 48) * 0.004 + (I ? -0.10 : 0.015));
+    return new w(P * (0.12 + (O.x - 0.12) * p), B + (O.y - B) * p, Math.sin(p * Math.PI) * 0.32 + Math.pow(p, 3) * (0.18 + Math.sin(E * 7) * 0.1) + Math.pow(p, 9) * Math.sin(E * 48) * 0.025 + (I ? -0.12 : 0));
   }, Ts = function(p, E = !1) {
     var K;
     const P = document.createElement("canvas");
@@ -29860,7 +29890,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
       ae.style.display = p < 0.12 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.09, 0.12, p));
-    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .24*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*(32+phase*.5)+phase)*.63);});Mt.forEach((ae, de) => {
+    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .24*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*4.2+phase)*.63);});Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
     }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0;
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
@@ -29872,8 +29902,8 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     Z.visible = ee > 0 && p >= 0.075, me.userData.opacity.value = ee * O * (1 - zt(0.57, 0.67, p)), me.visible = me.userData.opacity.value > 1e-3, W.forEach((ae) => {
       ae.opacity = ae.userData.baseOpacity * ee * O * (ae.userData.cloud ? zt(0.2, 0.32, p) : 1) * (ae.userData.dna ? zt(0.115, 0.14, p) * (1 - zt(0.24, 0.27, p)) : 1) * (ae.userData.molecular ? zt(0.34, 0.41, p) : 1) * (ae.userData.careerTimeline ? 1 - zt(0.805, 0.82, p) : 1);
     }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * It.lerp(13, 1, P) * (1 - I), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2, 1, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
-      const de = Ad;
-      ae.rotation.y = ae.userData.side * (0.55 + Math.sin(de) * 0.65 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
+      const de = Ad - (ae.userData.hind ? 0.24 : 0);
+      ae.rotation.y = ae.userData.side * (0.24 + Math.sin(de) * 0.75 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
     }), Me.position.y = Math.sin(E * 0.9) * 0.09, p<.12&&followOpeningLight(A,Me,T,openingLightPoint), Y.rotation.set(0.08, E * 0.055, -0.12), y.dataset.dnaVisible = String(Y.visible), Xe.rotation.y = Math.sin(E * 0.19) * 0.2, fn.rotation.y = Math.sin(E * 0.14) * 0.12, Pi.z += (Ks.x * Math.PI * 1.1 - Pi.z) * 0.17, Pi.y += (Ks.y * 0.45 - Pi.y) * 0.17, Ys.rotation.set(0, Pi.y, Pi.z + Math.sin(E * 0.18) * 0.06), Kn.rotation.y = 0.12 + Math.sin(E * 0.11) * 0.1, Q.position.x = j.x - 14 * zt(0.835, 0.87, p), Q.children.forEach((ae) => {
       ae.rotation.y = -0.4 + Math.sin(E * 0.2) * 0.12;
     }), R.children.forEach((ae, de) => {
@@ -30087,25 +30117,25 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
     }
     const we = new Lt();
     we.setAttribute("position", new ut(I, 3)), we.setAttribute("normal", new ut(new Float32Array(I.length), 3)), we.setAttribute("uv", new ut(O, 2)), we.setAttribute("color", new ut(K, 3)), we.setIndex(B), we.computeVertexNormals();
-    const Re = new tn({ color: h.white, vertexColors: !0, roughness: 0.34, metalness: 0, iridescence: 0.52, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 440], transmission: 0, thickness: 0.002, ior: 1.35, clearcoat: 0.35, clearcoatRoughness: 0.25, bumpMap: fe, bumpScale: 0.002, side: nn, transparent: !0, opacity: 1 });
+    const Re = new tn({ color: h.white, vertexColors: !0, roughness: 0.34, metalness: 0, iridescence: 0.52, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 440], transmission: 0.13, thickness: 0.002, ior: 1.35, clearcoat: 0.35, clearcoatRoughness: 0.25, bumpMap: fe, bumpScale: 0.018, side: nn, transparent: !0, opacity: 1 });
     W.push(Re);
     const ae = new Qe(we, Re);
     ae.userData.wingSurface = !0, P.add(ae);
     for (let de = 1; de < 11; de++) {
       const He = de / 11, Je = Array.from({ length: 33 }, (at, lt) => {
         const Ot = lt / 32, Gt = pt(Ot, He + Math.sin(Ot * Math.PI) * 0.022, p, E);
-        return Gt.z += 0.004, Gt;
+        return Gt.z += 0.019, Gt;
       });
-      ie(P, Je, .002, xe, 42);
+      ie(P, Je, 7e-3, xe, 42);
       for (const at of [-1, 1]) {
         const lt = Array.from({ length: 18 }, (Ot, Gt) => {
           const Wt = 0.5 + Gt / 17 * 0.48, ls = pt(Wt, He + at * (Wt - 0.5) * 0.12, p, E);
-          return ls.z += 0.004, ls;
+          return ls.z += 0.02, ls;
         });
-        ie(P, lt, .0012, Se, 24);
+        ie(P, lt, 35e-4, Se, 24);
       }
     }
-    ie(P, Array.from({ length: 81 }, (de, He) => pt(1, He / 80, p, E)), .0025, Se, 96);
+    ie(P, Array.from({ length: 81 }, (de, He) => pt(1, He / 80, p, E)), 0.012, Se, 96);
   }
   dt(Me, 0, 0.15, 0.12, 0.23, re).scale.multiply(new w(0.7, 1.8, 0.8));
   for (let p = 0; p < 10; p++) {
