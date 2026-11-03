@@ -19,8 +19,9 @@
 
 .particle-prelude video{mix-blend-mode:screen;mask-image:radial-gradient(ellipse,black 35%,transparent 72%);-webkit-mask-image:radial-gradient(ellipse,black 35%,transparent 72%);opacity:calc(.95 * var(--prelude-fade));background:transparent}
 
-/* Show the complete 4K frame at the largest size that fits both viewport axes.
-   Keep a small safe margin; never crop wings or fade them with an edge mask. */
-.particle-prelude video{width:calc(100% - 32px);height:calc(100% - 32px);max-width:2225px;object-fit:contain;object-position:center;mask-image:none;-webkit-mask-image:none}
+/* Fit the complete 16:9 frame without an inset. Feather only the outer
+   background pixels to merge letterboxing with the stage; wings stay inside. */
+.particle-prelude video{width:min(100vw,177.777778vh);height:auto;max-width:none;object-fit:contain;object-position:center;--frame-edge:linear-gradient(transparent,#000 8%,#000 92%,transparent),linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:var(--frame-edge);mask-image:var(--frame-edge);-webkit-mask-composite:source-in;mask-composite:intersect}
+@supports(height:100dvh){.particle-prelude video{width:min(100vw,177.777778dvh)}}
 .particle-prelude-status{position:absolute;left:7vw;bottom:8vh;font:12px/1.7 'Open Sans',Arial,sans-serif;color:#bcb2d3;opacity:var(--prelude-fade)}
 .particle-prelude.is-loading .particle-prelude-status:before{content:'';display:inline-block;width:9px;height:9px;margin-right:10px;border:1px solid #bcb2d344;border-top-color:#bcb2d3;border-radius:50%;animation:prelude-spin .8s linear infinite}@keyframes prelude-spin{to{transform:rotate(360deg)}}
