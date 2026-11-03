@@ -15,6 +15,27 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
+
+// Material-only refinement. Independent hash leaves all planting randomness untouched.
+function mineralSurface(template,soil=false){
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
+ const context=canvas.getContext('2d'),pixels=context.createImageData(512,512);
+ for(let y=0;y<512;y++)for(let x=0;x<512;x++){
+  const hash=Math.sin(x*127.1+y*311.7)*43758.5453,noise=hash-Math.floor(hash);
+  const pore=noise>.985?(noise-.985)*900:0;
+  const value=soil?184+(noise-.5)*24:239+(noise-.5)*8-pore;
+  const k=(y*512+x)*4;pixels.data[k]=pixels.data[k+1]=pixels.data[k+2]=value;pixels.data[k+3]=255;
+ }
+ context.putImageData(pixels,0,0);const texture=template.clone();texture.image=canvas;
+ texture.repeat.set(soil?35:1,soil?70:1);texture.colorSpace='srgb';texture.needsUpdate=true;return texture;
+}
+function refineExistingStone(stones,template){
+ const texture=mineralSurface(template);
+ for(const material of stones){material.map=texture;material.bumpMap=texture;
+ material.bumpScale=.009;material.roughness=.88;material.clearcoat=0;material.sheen=0;
+ material.emissiveIntensity=0;material.envMapIntensity=.3;material.needsUpdate=true;}
+}
+
 if (!document.body.hasAttribute('data-structure-preview') && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (innerWidth <= 768 && innerHeight <= 1024))) {
 const root = document.documentElement;
 const spineStudy=new URLSearchParams(location.search).get('study')==='spine';
@@ -137,7 +158,7 @@ function surfaceTexture(kind,relief=false){
  }
  const texture=new THREE.CanvasTexture(canvas);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;if(!relief)texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
-const petalTexture=surfaceTexture('petal'),petalRelief=surfaceTexture('petal',true),soilTexture=surfaceTexture('soil');soilTexture.repeat.set(35,70);
+const petalTexture=surfaceTexture('petal'),petalRelief=surfaceTexture('petal',true),soilTexture=mineralSurface(microTexture,true);soilTexture.repeat.set(35,70);
 function botanicalUVs(geometry){
  const position=geometry.attributes.position,parent=Array.from({length:position.count},(_,i)=>i),find=i=>{while(parent[i]!==i){parent[i]=parent[parent[i]];i=parent[i];}return i;},index=geometry.index.array;
  for(let i=0;i<index.length;i+=3){const root=find(index[i]);parent[find(index[i+1])]=root;parent[find(index[i+2])]=root;}
@@ -332,6 +353,7 @@ const pavilion=new THREE.Group();pavilion.position.set(3.4,meadowFloor(3.4,-66)-
 const stone=matte(palette.white,.02);stone.roughness=.86;stone.clearcoat=0;stone.bumpMap=microTexture;stone.bumpScale=.016;
 const stoneRiser=matte(palette.mist,0);stoneRiser.roughness=.94;stoneRiser.clearcoat=0;stoneRiser.bumpMap=microTexture;stoneRiser.bumpScale=.012;
 const stoneShade=matte(palette.mist,.015);stoneShade.roughness=.9;stoneShade.clearcoat=0;
+refineExistingStone([stone,stoneRiser,stoneShade],microTexture);
 function pavilionCylinder(radius,height,y,material=stone){const part=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,64),material);part.position.y=y;pavilion.add(part);return part;}
 pavilionCylinder(2.22,.46,.23);pavilionCylinder(2.12,.10,.49);const baseRim=[[2.13,.45],[2.23,.45],[2.27,.48],[2.28,.52],[2.26,.55],[2.20,.56],[2.13,.56]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(baseRim,96),stone));
 const columnProfile=[new THREE.Vector2(.25,0),new THREE.Vector2(.25,.08),new THREE.Vector2(.21,.13),new THREE.Vector2(.18,.17),new THREE.Vector2(.14,.24)];
@@ -360,7 +382,7 @@ for(let i=0;i<3;i++){const shape=new THREE.Shape(),w=2.2,d=1.35-i*.28,r=.065;sha
 for(const x of [-1.1,1.1]){const plinth=new THREE.Mesh(new THREE.BoxGeometry(.46,.56,.68),stone);plinth.position.set(x,.28,2.1);pavilion.add(plinth);const cap=new THREE.Mesh(new THREE.BoxGeometry(.57,.08,.78),stone);cap.position.set(x,.60,2.1);pavilion.add(cap);}
 pavilion.traverse(part=>{if(part.isMesh){part.castShadow=true;part.receiveShadow=true;part.layers.enable(1);}});
 if(renderer){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;}
-const pavilionSun=new THREE.DirectionalLight('#ffffff',1.4);pavilionSun.position.copy(pavilion.position).add(new THREE.Vector3(-5,9,6));pavilionSun.target.position.copy(pavilion.position);pavilionSun.layers.set(1);camera.layers.enable(1);pavilionSun.castShadow=true;pavilionSun.shadow.mapSize.set(2048,2048);Object.assign(pavilionSun.shadow.camera,{left:-4,right:4,top:5,bottom:-4,near:1,far:24});pavilionSun.shadow.bias=-.00015;pavilionSun.shadow.normalBias=.012;scene.add(pavilionSun,pavilionSun.target);
+const pavilionSun=new THREE.DirectionalLight('#fff0db',1.2);pavilionSun.position.copy(pavilion.position).add(new THREE.Vector3(-5,9,6));pavilionSun.target.position.copy(pavilion.position);pavilionSun.layers.set(1);camera.layers.enable(1);pavilionSun.castShadow=true;pavilionSun.shadow.mapSize.set(2048,2048);Object.assign(pavilionSun.shadow.camera,{left:-4,right:4,top:5,bottom:-4,near:1,far:24});pavilionSun.shadow.bias=-.00015;pavilionSun.shadow.normalBias=.012;scene.add(pavilionSun,pavilionSun.target);
 const finialProfile=[[.13,4.91],[.14,4.97],[.095,5.03],[.09,5.1],[.045,5.17],[.07,5.21],[0,5.33]].map(([x,y])=>new THREE.Vector2(x,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(finialProfile,28),stone));
 
 const ivyMaterial=matte('#7b8b7a');ivyMaterial.roughness=.9;ivyMaterial.clearcoat=0;const ivyShape=new THREE.Shape();ivyShape.moveTo(0,-.08);ivyShape.bezierCurveTo(-.10,.02,-.06,.12,0,.065);ivyShape.bezierCurveTo(.07,.12,.1,.02,0,-.08);const ivyLeafGeometry=new THREE.ShapeGeometry(ivyShape,6),ivyLeaves=new THREE.InstancedMesh(ivyLeafGeometry,ivyMaterial,240),ivyDummy=new THREE.Object3D();ivyMaterial.side=THREE.DoubleSide;let ivyCount=0;
@@ -380,7 +402,7 @@ for(let i=0;i<6;i++) {
 // An inhabited, continuous biomorphic canyon: near surfaces occlude distant ones.
 const habitat = new THREE.Group(); world.add(habitat);
 const terrainMaterial=matte('#51417e',0), ridgeMaterial=matte(palette.blue,.025);
-terrainMaterial.bumpMap=soilTexture;terrainMaterial.bumpScale=.11;terrainMaterial.map=soilTexture;terrainMaterial.envMapIntensity=0;terrainMaterial.sheen=0;terrainMaterial.emissiveIntensity=0;terrainMaterial.roughness=1;terrainMaterial.clearcoat=0;ridgeMaterial.bumpMap=microTexture;ridgeMaterial.bumpScale=.08;ridgeMaterial.roughness=.78;
+terrainMaterial.bumpMap=soilTexture;terrainMaterial.bumpScale=.035;terrainMaterial.map=soilTexture;terrainMaterial.envMapIntensity=0;terrainMaterial.sheen=0;terrainMaterial.emissiveIntensity=0;terrainMaterial.roughness=1;terrainMaterial.clearcoat=0;ridgeMaterial.bumpMap=microTexture;ridgeMaterial.bumpScale=.08;ridgeMaterial.roughness=.78;
 const groundClock={value:0};
 terrainMaterial.onBeforeCompile=shader=>{
  shader.uniforms.groundClock=groundClock;
@@ -458,7 +480,7 @@ new GLTFLoader(sceneryManager).load('models/watercolour-fir.glb',gltf=>{
  for(let k=0;k<positions.count;k++){let x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k);const r=Math.hypot(x,z),a=Math.atan2(z,x),weight=r/2;const variation=1+.10*Math.sin(y*1.8+variant*2.1+a*3);positions.setXYZ(k,x*variation,y-Math.pow(r,1.3)*(.10+variant*.035)+Math.sin(a*5+y)*weight*.06,z*variation);}geometry.computeVertexNormals();geometry.computeBoundingBox();const crownRadius=Math.SQRT2*Math.max(Math.abs(geometry.boundingBox.min.x),Math.abs(geometry.boundingBox.max.x),Math.abs(geometry.boundingBox.min.z),Math.abs(geometry.boundingBox.max.z));
  const bark=part.material.name.toLowerCase().includes('bark');
  if(!bark){const pigments=[],shade=new THREE.Color(['#7068a9','#9274ad','#6a87ac'][variant]),tip=new THREE.Color(['#ada8df','#c0a4d8','#a2bce3'][variant]);for(let k=0;k<positions.count;k++){const x=positions.getX(k),y=positions.getY(k),z=positions.getZ(k),r=Math.hypot(x,z),wash=THREE.MathUtils.clamp(.25+r*.13+y/height*.12+.06*Math.sin(y*2+x*2+z*2),.15,.7),color=shade.clone().lerp(tip,wash);pigments.push(color.r,color.g,color.b);}geometry.setAttribute('color',new THREE.Float32BufferAttribute(pigments,3));}
- const material=new THREE.MeshPhysicalMaterial({color:bark?'#574957':'#b4b8e2',vertexColors:!bark,roughness:.92,metalness:0,clearcoat:0,sheen:.32,sheenColor:new THREE.Color('#e6dfeb'),side:THREE.DoubleSide,transparent:true});if(!bark)material.onBeforeCompile=shader=>{shader.uniforms.forestFillLevel=forestFillLevel;shader.uniforms.forestFogLimit=forestFogLimit;shader.fragmentShader='uniform float forestFillLevel;uniform float forestFogLimit;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.indirectDiffuse=max(reflectedLight.indirectDiffuse,diffuseColor.rgb*forestFillLevel);').replace('#include <fog_fragment>','#ifdef USE_FOG\nfloat forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,min(forestFog,forestFogLimit));\n#endif');};material.userData.baseOpacity=1;materials.push(material);
+ const material=new THREE.MeshPhysicalMaterial({color:bark?'#574957':'#b4b8e2',vertexColors:!bark,roughness:.92,metalness:0,clearcoat:0,sheen:.08,sheenColor:new THREE.Color('#e6dfeb'),side:THREE.DoubleSide,transparent:true});if(!bark)material.onBeforeCompile=shader=>{shader.uniforms.forestFillLevel=forestFillLevel;shader.uniforms.forestFogLimit=forestFogLimit;shader.fragmentShader='uniform float forestFillLevel;uniform float forestFogLimit;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.indirectDiffuse=max(reflectedLight.indirectDiffuse,diffuseColor.rgb*forestFillLevel);').replace('#include <fog_fragment>','#ifdef USE_FOG\nfloat forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,min(forestFog,forestFogLimit));\n#endif');};material.userData.baseOpacity=1;materials.push(material);
  const trees=treePlacements.filter((_,i)=>i%3===variant),batch=new THREE.InstancedMesh(geometry,material,trees.length),dummy=new THREE.Object3D();
  trees.forEach((tree,i)=>{const scale=tree.height/height;dummy.position.set(tree.x,tree.floor-.06,tree.z);dummy.rotation.set(Math.sin(i*2.1)*.035,i*2.39996+variant,.025*Math.cos(i));dummy.scale.set(Math.min(scale*(1.05+Math.sin(i)*.13),2.0/Math.max(crownRadius,.01)),scale,Math.min(scale*(.96+Math.cos(i)*.13),2.0/Math.max(crownRadius,.01)));dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);batch.setColorAt(i,new THREE.Color('#ffffff').lerp(new THREE.Color(i%3?'#b5c0dc':'#dfc8de'),.08+(i%5)*.04));});batch.computeBoundingSphere();detailedForest.add(batch);
  }});forest.remove(trunks,canopy);trunks.geometry.dispose();canopy.geometry.dispose();host.dataset.forest='soft-watercolour-fir';
@@ -517,7 +539,7 @@ const botanicalPlan=planBotanicalClumps({species:botanicalSpecies,views:botanica
 const botanicalClumps=botanicalPlan.bySpecies,clumpCenters=botanicalPlan.centers;
 
 const flowerCount=1200,petalsPerFlower=7,flowerPetalGeometry=petalGeometry(5,10);
-const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.48,metalness:0,transmission:0,thickness:.035,ior:1.36,clearcoat:.28,sheen:.7,sheenColor:new THREE.Color('#f3ddeb'),iridescence:.18,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
+const petalMaterial=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.64,metalness:0,transmission:0,thickness:.035,ior:1.36,clearcoat:.05,sheen:.24,sheenColor:new THREE.Color('#f3ddeb'),iridescence:.025,iridescenceThicknessRange:[180,300],bumpMap:microTexture,bumpScale:.012,side:THREE.DoubleSide});materials.push(petalMaterial);
 const foliageMaterial=matte(palette.blue,.015);foliageMaterial.roughness=.6;
 const petals=new THREE.InstancedMesh(flowerPetalGeometry,petalMaterial,flowerCount*petalsPerFlower);
 const leaves=new THREE.InstancedMesh(flowerPetalGeometry,foliageMaterial,flowerCount*3);

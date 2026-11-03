@@ -1,3 +1,24 @@
+
+// Material-only refinement. Independent hash leaves all planting randomness untouched.
+function mineralSurface(template,soil=false){
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
+ const context=canvas.getContext('2d'),pixels=context.createImageData(512,512);
+ for(let y=0;y<512;y++)for(let x=0;x<512;x++){
+  const hash=Math.sin(x*127.1+y*311.7)*43758.5453,noise=hash-Math.floor(hash);
+  const pore=noise>.985?(noise-.985)*900:0;
+  const value=soil?184+(noise-.5)*24:239+(noise-.5)*8-pore;
+  const k=(y*512+x)*4;pixels.data[k]=pixels.data[k+1]=pixels.data[k+2]=value;pixels.data[k+3]=255;
+ }
+ context.putImageData(pixels,0,0);const texture=template.clone();texture.image=canvas;
+ texture.repeat.set(soil?35:1,soil?70:1);texture.colorSpace='srgb';texture.needsUpdate=true;return texture;
+}
+function refineExistingStone(stones,template){
+ const texture=mineralSurface(template);
+ for(const material of stones){material.map=texture;material.bumpMap=texture;
+ material.bumpScale=.009;material.roughness=.88;material.clearcoat=0;material.sheen=0;
+ material.emissiveIntensity=0;material.envMapIntensity=.3;material.needsUpdate=true;}
+}
+
 /**
  * @license
  * Copyright 2010-2026 Three.js Authors
@@ -29964,7 +29985,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
   pe.putImageData(ge, 0, 0);
   const fe = new xs(Pe);
   fe.wrapS = fe.wrapT = bs, fe.repeat.set(5, 5), Oe("petal"), Oe("petal", !0);
-  const Fe = Oe("soil");
+  const Fe = mineralSurface(fe,true);
   Fe.repeat.set(35, 70);
   const st = new Ln([new w(0.12, 0.28, 0), new w(0.9, 2, 0), new w(2.8, 2.75, 0), new w(3.05, 1.85, 0), new w(2.15, 0.65, 0), new w(0.12, 0.12, 0)], !0, "catmullrom", 0.25), _t = new Ln([new w(0.12, 0.12, 0), new w(1.1, 0.35, 0), new w(2.15, -0.55, 0), new w(1.65, -1.7, 0), new w(0.8, -1.65, 0), new w(0.12, -0.2, 0)], !0, "catmullrom", 0.25);
   for (const p of [-1, 1]) for (const E of [!1, !0]) {
@@ -30242,7 +30263,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   const et = V(h.mist, 0);
   et.roughness = 0.94, et.clearcoat = 0, et.bumpMap = fe, et.bumpScale = 0.012;
   const Pt = V(h.mist, 0.015);
-  Pt.roughness = 0.9, Pt.clearcoat = 0, Yt(2.22, 0.46, 0.23), Yt(2.12, 0.1, 0.49);
+  Pt.roughness = 0.9, Pt.clearcoat = 0; refineExistingStone([ot,et,Pt],fe); Yt(2.22, 0.46, 0.23), Yt(2.12, 0.1, 0.49);
   const Qt = [[2.13, 0.45], [2.23, 0.45], [2.27, 0.48], [2.28, 0.52], [2.26, 0.55], [2.2, 0.56], [2.13, 0.56]].map(([p, E]) => new he(p, E));
   Ye.add(new Qe(new ys(Qt, 96), ot));
   const Ut = [new he(0.25, 0), new he(0.25, 0.08), new he(0.21, 0.13), new he(0.18, 0.17), new he(0.14, 0.24)], pn = new ys(Ut, 24), Ke = new Gi(0.105, 0.14, 2.14, 20), wn = new ys(Ut.map((p) => new he(p.x, p.y * -0.8)), 24);
@@ -30305,7 +30326,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   Ye.traverse((p) => {
     p.isMesh && (p.castShadow = !0, p.receiveShadow = !0, p.layers.enable(1));
   }), M && (M.shadowMap.enabled = !0, M.shadowMap.type = xp, M.shadowMap.autoUpdate = !1, M.shadowMap.needsUpdate = !0);
-  const Dt = new Ms("#ffffff", 1.4);
+  const Dt = new Ms("#fff0db", 1.2);
   Dt.position.copy(Ye.position).add(new w(-5, 9, 6)), Dt.target.position.copy(Ye.position), Dt.layers.set(1), A.layers.enable(1), Dt.castShadow = !0, Dt.shadow.mapSize.set(2048, 2048), Object.assign(Dt.shadow.camera, { left: -4, right: 4, top: 5, bottom: -4, near: 1, far: 24 }), Dt.shadow.bias = -15e-5, Dt.shadow.normalBias = 0.012, x.add(Dt, Dt.target);
   const di = [[0.13, 4.91], [0.14, 4.97], [0.095, 5.03], [0.09, 5.1], [0.045, 5.17], [0.07, 5.21], [0, 5.33]].map(([p, E]) => new he(p, E));
   Ye.add(new Qe(new ys(di, 28), ot));
@@ -30340,7 +30361,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   const Ni = new xt();
   Z.add(Ni);
   const es = V("#51417e", 0), Ll = V(h.blue, 0.025);
-  es.bumpMap = Fe, es.bumpScale = 0.11, es.map = Fe, es.envMapIntensity=0,es.sheen=0,es.emissiveIntensity=0,es.roughness = 1, es.clearcoat = 0, Ll.bumpMap = fe, Ll.bumpScale = 0.08, Ll.roughness = 0.78;
+  es.bumpMap = Fe, es.bumpScale = 0.035, es.map = Fe, es.envMapIntensity=0,es.sheen=0,es.emissiveIntensity=0,es.roughness = 1, es.clearcoat = 0, Ll.bumpMap = fe, Ll.bumpScale = 0.08, Ll.roughness = 0.78;
   const zu = { value: 0 };
   es.onBeforeCompile = (p) => {
     p.uniforms.groundClock = zu, p.vertexShader = `varying vec3 surveyPosition;
@@ -30436,7 +30457,7 @@ for (let p = 0; p < Jr; p++) {
             }
             K.setAttribute("color", new ut(we, 3));
           }
-          const te = new tn({ color: ee ? "#574957" : "#b4b8e2", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.32, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
+          const te = new tn({ color: ee ? "#574957" : "#b4b8e2", vertexColors: !ee, roughness: 0.92, metalness: 0, clearcoat: 0, sheen: 0.08, sheenColor: new _e("#e6dfeb"), side: nn, transparent: !0 });
           ee || (te.onBeforeCompile = (we) => {
             we.uniforms.forestFillLevel = Wu, we.uniforms.forestFogLimit = Xu, we.fragmentShader = `uniform float forestFillLevel;uniform float forestFogLimit;
 ` + we.fragmentShader, we.fragmentShader = we.fragmentShader.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
@@ -30462,7 +30483,7 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
   let zl = 0;
   const Qr = new xt();
   Ni.add(Qr);
-  const qu = ["bellflower", "cymbidium", "daisy", "chrysanthemum", "evening_primrose", "phalaenopsis", "water_lily", "gladiolus", "camellia"], Mm = [0.065, ...u.slice(1, 17).map((p) => (p[0] + p[1]) * 0.5)].map((p) => ({ position: C.getPoint(p), gaze: L.getPoint(p) })), Yu = MS({ species: qu, views: Mm, floor: On, viewClear: Nl, treeClear: Bl, random: Fn }), Sm = Yu.bySpecies, Hl = Yu.centers, ts = 1200, si = 7, Gl = Vl(5, 10), Wl = new tn({ color: "#ffffff", roughness: 0.48, metalness: 0, transmission: 0, thickness: 0.035, ior: 1.36, clearcoat: 0.28, sheen: 0.7, sheenColor: new _e("#f3ddeb"), iridescence: 0.18, iridescenceThicknessRange: [180, 300], bumpMap: fe, bumpScale: 0.012, side: nn });
+  const qu = ["bellflower", "cymbidium", "daisy", "chrysanthemum", "evening_primrose", "phalaenopsis", "water_lily", "gladiolus", "camellia"], Mm = [0.065, ...u.slice(1, 17).map((p) => (p[0] + p[1]) * 0.5)].map((p) => ({ position: C.getPoint(p), gaze: L.getPoint(p) })), Yu = MS({ species: qu, views: Mm, floor: On, viewClear: Nl, treeClear: Bl, random: Fn }), Sm = Yu.bySpecies, Hl = Yu.centers, ts = 1200, si = 7, Gl = Vl(5, 10), Wl = new tn({ color: "#ffffff", roughness: 0.64, metalness: 0, transmission: 0, thickness: 0.035, ior: 1.36, clearcoat: 0.05, sheen: 0.24, sheenColor: new _e("#f3ddeb"), iridescence: 0.025, iridescenceThicknessRange: [180, 300], bumpMap: fe, bumpScale: 0.012, side: nn });
   W.push(Wl);
   const Xl = V(h.blue, 0.015);
   Xl.roughness = 0.6;
