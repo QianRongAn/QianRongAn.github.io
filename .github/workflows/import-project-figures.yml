@@ -31,7 +31,7 @@ jobs:
                       body = response.read().decode()
                   with urlopen(base + "/?enter=about&v=" + version + "-" + str(attempt), timeout=15) as response:
                       root = response.read().decode()
-                  if 'assets/figures/prostate-aurka.webp' in body and version in root:
+                  if 'assets/figures/prostate-aurka.webp' in body and version in root and 'mobile-projects-link' in root:
                       break
               except Exception as error:
                   print("Waiting for publication", type(error).__name__, flush=True)
@@ -44,9 +44,14 @@ jobs:
                   context = browser.new_context(viewport=viewport, reduced_motion="reduce", is_mobile=(label=="mobile"), has_touch=(label=="mobile"))
                   tab = context.new_page()
                   tab.goto(base + "/?enter=about&v=" + version, wait_until="domcontentloaded")
-                  tab.wait_for_function("typeof window.switchPage === 'function'", timeout=30000)
-                  tab.evaluate("window.switchPage(3)")
-                  frame = tab.frame_locator("#projectsFrame")
+                  if label == "mobile":
+                      tab.locator("#mobileWarning .mobile-projects-link").wait_for(state="visible",timeout=30000)
+                      tab.locator("#mobileWarning .mobile-projects-link").click()
+                      frame = tab
+                  else:
+                      tab.wait_for_function("typeof window.switchPage === 'function'", timeout=30000)
+                      tab.evaluate("window.switchPage(3)")
+                      frame = tab.frame_locator("#projectsFrame")
                   frame.locator("#multicancer-fragmentomics .project-trigger").wait_for(state="visible",timeout=30000)
                   frame.locator("#multicancer-fragmentomics .project-reveal[inert]").wait_for(state="attached",timeout=30000)
                   assert frame.locator("article.project").count()==8
