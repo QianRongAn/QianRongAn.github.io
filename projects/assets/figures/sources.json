@@ -1,0 +1,42 @@
+[
+  {
+    "project": "multicancer-fragmentomics",
+    "file": "assets/figures/multicancer-fragmentomics.webp",
+    "source": "https://www.frontiersin.org/files/Articles/1630231/xml-images/fcell-13-1630231-g001.webp",
+    "width": 1772,
+    "height": 1334,
+    "bytes": 559606
+  },
+  {
+    "project": "prostate-aurka",
+    "file": "assets/figures/prostate-aurka.webp",
+    "source": "https://www.frontiersin.org/files/Articles/1608711/xml-images/fcell-13-1608711-g004.webp",
+    "width": 1772,
+    "height": 1830,
+    "bytes": 1417660
+  },
+  {
+    "project": "colorectal-invasion",
+    "file": "assets/figures/colorectal-invasion.webp",
+    "source": "https://www.frontiersin.org/files/Articles/1620388/xml-images/fcell-13-1620388-g003.webp",
+    "width": 1772,
+    "height": 1746,
+    "bytes": 871252
+  },
+  {
+    "project": "prostate-genomics",
+    "file": "assets/figures/prostate-genomics.png",
+    "source": "https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2Fs12957-025-04049-w/MediaObjects/12957_2025_4049_Fig1_HTML.png",
+    "width": 685,
+    "height": 286,
+    "bytes": 104386
+  },
+  {
+    "project": "kidney-immunotherapy",
+    "file": "assets/figures/kidney-immunotherapy.webp",
+    "source": "https://www.frontiersin.org/files/Articles/1596719/xml-images/fcell-13-1596719-g001.webp",
+    "width": 1772,
+    "height": 1826,
+    "bytes": 1035374
+  }
+]
