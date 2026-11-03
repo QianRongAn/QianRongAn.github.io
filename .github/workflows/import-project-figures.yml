@@ -103,17 +103,20 @@ jobs:
                   assert tab.locator("article.project").count() == 8
                   for entry in manifest:
                       card = tab.locator("#" + entry["project"])
-                      card.locator(".project-trigger").click(force=True)
+                      card.locator(".project-trigger").focus()
+            card.locator(".project-trigger").press("Enter")
                       tab.wait_for_function("(id) => { const im=document.querySelector('#'+id+' .paper-figure'); return im.complete && im.naturalWidth>200; }", arg=entry["project"], timeout=15000)
                       assert card.locator(".project-trigger").get_attribute("aria-expanded") == "true"
                       assert card.locator(".paper-figure").evaluate("(im) => new URL(im.currentSrc).origin === location.origin")
-                      card.locator(".image-button").click(force=True)
+                      card.locator(".image-button").focus()
+            card.locator(".image-button").press("Enter")
                       assert tab.locator(".lightbox").evaluate("(d) => d.open")
                       tab.wait_for_function("document.querySelector('#large-image').complete && document.querySelector('#large-image').naturalWidth>200")
                       tab.locator(".lightbox-close").click()
                       card.locator(".project-trigger").click(force=True)
                   assert not errors, errors
-                  tab.locator("#prostate-aurka .project-trigger").click(force=True)
+                  tab.locator("#prostate-aurka .project-trigger").focus()
+        tab.locator("#prostate-aurka .project-trigger").press("Enter")
                   tab.locator("#prostate-aurka .visual-column").scroll_into_view_if_needed()
                   tab.screenshot(path=str(review / (label + ".png")), full_page=True)
                   print("PASS browser:", label, "five local originals, expanded details and lightboxes", flush=True)
