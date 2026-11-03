@@ -29871,7 +29871,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const ee = 1 - zt(0.95, 0.998, p);
     Z.visible = ee > 0 && p >= 0.075, me.userData.opacity.value = ee * O * (1 - zt(0.57, 0.67, p)), me.visible = me.userData.opacity.value > 1e-3, W.forEach((ae) => {
       ae.opacity = ae.userData.baseOpacity * ee * O * (ae.userData.cloud ? zt(0.2, 0.32, p) : 1) * (ae.userData.dna ? zt(0.115, 0.14, p) * (1 - zt(0.24, 0.27, p)) : 1) * (ae.userData.molecular ? zt(0.34, 0.41, p) : 1) * (ae.userData.careerTimeline ? 1 - zt(0.805, 0.82, p) : 1);
-    }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * (Math.PI*2*(9.5+.5*Math.sin(E*.65))), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2, 1, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
+    }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * It.lerp(13, 1, P) * (1 - I), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2, 1, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
       const de = Ad;
       ae.rotation.y = ae.userData.side * (0.55 + Math.sin(de) * 0.65 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
     }), Me.position.y = Math.sin(E * 0.9) * 0.09, p<.12&&followOpeningLight(A,Me,T,openingLightPoint), Y.rotation.set(0.08, E * 0.055, -0.12), y.dataset.dnaVisible = String(Y.visible), Xe.rotation.y = Math.sin(E * 0.19) * 0.2, fn.rotation.y = Math.sin(E * 0.14) * 0.12, Pi.z += (Ks.x * Math.PI * 1.1 - Pi.z) * 0.17, Pi.y += (Ks.y * 0.45 - Pi.y) * 0.17, Ys.rotation.set(0, Pi.y, Pi.z + Math.sin(E * 0.18) * 0.06), Kn.rotation.y = 0.12 + Math.sin(E * 0.11) * 0.1, Q.position.x = j.x - 14 * zt(0.835, 0.87, p), Q.children.forEach((ae) => {
@@ -29909,7 +29909,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
       if(ae.material){ae.material.opacity=(ae.material.userData.baseOpacity??1)*ee*(er>=0&&E>=er?P:0);if(ae.userData.wingSurface){ae.material.emissive.set("#7f72b8");ae.material.emissiveIntensity=.22*(er>=0&&E>=er?P:0)*(1-I);}}
     }), M.render(x, A));
     const we = document.getElementById("heroScreen");
-    we && s.classList.contains("intro-text-active") && (we.style.opacity = String(1 - I), we.style.display = p < 0.12 ? "block" : "none"), y.dataset.butterflyClarity = P.toFixed(3), y.dataset.wingbeatHz=(9.5+.5*Math.sin(E*.65)).toFixed(2), y.dataset.flapping = String(I < 1), y.dataset.introStage = p < 0.065 ? "butterfly-flight" : p < 0.12 ? "orchids-opening" : "journey";
+    we && s.classList.contains("intro-text-active") && (we.style.opacity = String(1 - I), we.style.display = p < 0.12 ? "block" : "none"), y.dataset.butterflyClarity = P.toFixed(3), y.dataset.wingbeatHz=(It.lerp(13,1,P)*(1-I)/(Math.PI*2)).toFixed(2), y.dataset.flapping = String(I < 1), y.dataset.introStage = p < 0.065 ? "butterfly-flight" : p < 0.12 ? "orchids-opening" : "journey";
   }, ga = function() {
     return y.dataset.state !== "context-lost" && !document.hidden && (!Sn || Is()) && !t.matches && !s.classList.contains("hero-locked");
   }, _a = function(p) {
