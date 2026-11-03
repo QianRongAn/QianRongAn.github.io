@@ -7,7 +7,7 @@
   <div class="dna-background is-on" id="pageCurtain" aria-hidden="true"><canvas id="curtain-dna"></canvas></div>
   <header class="page-header"><div class="wordmark">Nan Wang<span>Computational biology &amp; biomedical AI</span></div><div class="header-note"><span class="live-dot"></span> Selected research</div></header>
   <main>
-    <div class="intro-line"><h1 class="eyebrow">Projects / 01—02</h1><span class="hint">Hover to explore · Click to keep open</span></div>
+    <div class="intro-line"><h1 class="eyebrow">Projects / 01—03</h1><span class="hint">Hover to explore · Click to keep open</span></div>
     <div class="projects">
       <article class="project" id="meta-acdc">
         <button class="project-trigger" aria-expanded="false" aria-controls="meta-detail"><span class="index">01</span><h2>Meta-<em>ACDC</em></h2><span class="project-count" aria-hidden="true">+</span></button>
@@ -65,6 +65,28 @@
             <div class="metrics"><div class="metric"><span class="metric-value">27,978</span><span class="metric-label">Papers in the<br>retraction-risk dataset</span></div><div class="metric"><span class="metric-value">0.856</span><span class="metric-label">LightGBM AUROC<br>in cross-validation</span></div><div class="metric"><span class="metric-value">≈6 ms</span><span class="metric-label">Repository-reported<br>cache-hit latency</span></div></div>
             <p class="metric-note">Repository-reported metrics · PR-AUC 0.812 · 30 unit tests.</p>
             <div class="research-note"><h4>Evidence that can be checked</h4><p>The retrieval workflow retains PMID traceability and makes conflicting conclusions visible. Retraction, concern, and correction flags add context when reviewing the retrieved literature.</p><p>For the separate risk model, the leakage audit is part of the result: publication-type labels, altered abstracts, and temporal censoring can otherwise make predictive performance misleading.</p></div>
+          </div>
+        </div></div></div>
+      </article>
+      <article class="project" id="pancreatic-resistance">
+        <button class="project-trigger" aria-expanded="false" aria-controls="pancreatic-detail"><span class="index">03</span><h2>Pancreatic Cancer <em>Resistance</em></h2><span class="project-count" aria-hidden="true">+</span></button>
+        <div class="project-reveal" id="pancreatic-detail"><div class="reveal-clip"><div class="detail-grid">
+          <div class="copy-column">
+            <h3 class="project-subtitle">PRRX2–SPP1 crosstalk in gemcitabine resistance</h3>
+            <p class="categories">Single-cell RNA-seq | Spatial Transcriptomics | Tumor Microenvironment</p>
+            <p class="project-context">How do cancer cells and macrophages cooperate during chemotherapy resistance?</p>
+            <div class="full-copy" tabindex="0" role="region" aria-label="Pancreatic cancer resistance paper summary">
+              <p><strong>Research question</strong>Identify cellular interactions associated with gemcitabine resistance in pancreatic ductal adenocarcinoma.</p>
+              <p><strong>Approach</strong>Combined bulk, single-cell, and spatial transcriptomics with trajectory and communication analyses; validation included cell-line experiments and clinical multicolor immunofluorescence.</p>
+              <p><strong>Key findings</strong>Resistant samples were enriched for PRRX2-positive epithelial cancer cells and SPP1-positive macrophages. Their TGFB1/TGFBR2 signaling was linked to epithelial–mesenchymal transition and matrix remodeling. PRRX2 promoted TGFB1 and FN1 programs; reducing PRRX2 decreased cancer-cell migration.</p>
+              <p><strong>Implications and limits</strong>The combined cellular signature correlated with worse prognosis. Dasatinib and ADC targets TROP2, MUC1, and CEACAM5 emerged as potential treatment directions, requiring further validation.</p>
+              <p><strong>Published study</strong>Liu et al. · Chinese Medical Journal · 2025<br><a href="https://pubmed.ncbi.nlm.nih.gov/41456929/" target="_blank" rel="noopener noreferrer">Read the article on PubMed</a><br><a href="https://doi.org/10.1097/CM9.0000000000003966" target="_blank" rel="noopener noreferrer">DOI: 10.1097/CM9.0000000000003966</a></p>
+            </div>
+          </div>
+          <div class="visual-column">
+            <div class="visual-topline"><span class="visual-label">Cellular crosstalk</span><span class="visual-label">03 / Concept visual</span></div>
+            <button class="image-button" aria-label="Enlarge pancreatic cancer resistance concept diagram"><img class="project-image diagram" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22900%22%20height%3D%22540%22%20viewBox%3D%220%200%20900%20540%22%3E%3Crect%20width%3D%22900%22%20height%3D%22540%22%20fill%3D%22%23ece6dc%22%2F%3E%3Cg%20font-family%3D%22Arial%2Csans-serif%22%20text-anchor%3D%22middle%22%20fill%3D%22%2323140c%22%3E%3Ctext%20x%3D%22450%22%20y%3D%2265%22%20font-size%3D%2219%22%20letter-spacing%3D%223%22%3EPANCREATIC%20CANCER%20%C2%B7%20RESISTANCE%3C%2Ftext%3E%3Crect%20x%3D%2260%22%20y%3D%22120%22%20width%3D%22330%22%20height%3D%22110%22%20rx%3D%2218%22%20fill%3D%22%23e3c9b9%22%2F%3E%3Crect%20x%3D%22510%22%20y%3D%22120%22%20width%3D%22330%22%20height%3D%22110%22%20rx%3D%2218%22%20fill%3D%22%23d6d9c5%22%2F%3E%3Ctext%20x%3D%22225%22%20y%3D%22164%22%20font-size%3D%2228%22%3EPRRX2%2B%20cancer%20cells%3C%2Ftext%3E%3Ctext%20x%3D%22225%22%20y%3D%22201%22%20font-size%3D%2218%22%3EEpithelial%20compartment%3C%2Ftext%3E%3Ctext%20x%3D%22675%22%20y%3D%22164%22%20font-size%3D%2228%22%3ESPP1%2B%20macrophages%3C%2Ftext%3E%3Ctext%20x%3D%22675%22%20y%3D%22201%22%20font-size%3D%2218%22%3ETumor%20microenvironment%3C%2Ftext%3E%3Cpath%20d%3D%22M395%20175H505M485%20165L505%20175%20485%20185M415%20165L395%20175%20415%20185%22%20stroke%3D%22%2391513d%22%20stroke-width%3D%223%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M225%20245V285H675V245M450%20285V325M440%20310L450%20325%20460%20310%22%20stroke%3D%22%2391513d%22%20stroke-width%3D%223%22%20fill%3D%22none%22%2F%3E%3Ctext%20x%3D%22450%22%20y%3D%22365%22%20font-size%3D%2228%22%3ETGFB1%20%2F%20TGFBR2%3C%2Ftext%3E%3Ctext%20x%3D%22450%22%20y%3D%22408%22%20font-size%3D%2221%22%3EEMT%20%2B%20extracellular%20matrix%20remodeling%3C%2Ftext%3E%3Ctext%20x%3D%22450%22%20y%3D%22455%22%20font-size%3D%2225%22%20fill%3D%22%2391513d%22%3EGemcitabine%20resistance%3C%2Ftext%3E%3Ctext%20x%3D%22450%22%20y%3D%22510%22%20font-size%3D%2215%22%20fill%3D%22%237c7063%22%3EConcept%20summary%20%C2%B7%20Not%20experimental%20data%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E" width="900" height="540" alt="Concept diagram linking PRRX2-positive cancer cells and SPP1-positive macrophages through TGFB1/TGFBR2 to EMT, matrix remodeling and gemcitabine resistance"><span class="image-zoom" aria-hidden="true">↗</span></button>
+            <p class="image-caption">Concept summary based on the published study · Not experimental data.</p>
           </div>
         </div></div></div>
       </article>
