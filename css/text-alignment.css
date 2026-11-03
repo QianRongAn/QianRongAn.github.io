@@ -12,3 +12,6 @@ html[lang^="zh"] body :is(p,li,blockquote,figcaption,.tech-description){text-jus
 body #container .content-section :is(h1,h2),#thesis#thesis :is(h1,h2,.section-title,.section-title *){text-align:left!important;text-align-last:start!important;text-justify:auto;word-spacing:normal}
 html.about-crystal #about#about .about-crystal-card .about-paragraph{ text-align:justify!important;text-align-last:start!important;text-justify:inter-word; }
 html[lang^="zh"].about-crystal #about#about .about-crystal-card .about-paragraph{text-justify:inter-character}
+
+@font-face{font-family:'Journey Open Sans';src:url('../font/open-sans-400.ttf?v=regular124') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+#researchJourney .journey-panel p,#researchJourney .journey-panel p *{font-family:'Journey Open Sans',Arial,sans-serif!important;font-style:normal!important;font-weight:400!important;font-variant:normal!important;font-stretch:normal!important}
