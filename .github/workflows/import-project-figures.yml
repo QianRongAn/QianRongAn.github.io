@@ -24,7 +24,7 @@ jobs:
           from playwright.sync_api import sync_playwright
           import time, subprocess
           base = "https://qianrongan.github.io"
-          version = "20261103-localfigures-v2"
+          version = "20261103-localfigures-v3"
           for attempt in range(36):
               try:
                   with urlopen(base + "/projects/index.html?v=" + version + "-" + str(attempt), timeout=15) as response:
