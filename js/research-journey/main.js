@@ -1,4 +1,12 @@
 
+// Foreground stays a silhouette; the soft light follows the luminous butterfly behind it.
+function followOpeningLight(camera,butterfly,glow,point){
+ camera.updateMatrixWorld();butterfly.updateWorldMatrix(true,false);
+ point.setFromMatrixPosition(butterfly.matrixWorld).project(camera);
+ const halfHeight=Math.tan(camera.fov*Math.PI/360)*3.2;
+ glow.position.set(point.x*halfHeight*camera.aspect,point.y*halfHeight,-3.2);
+}
+
 // Material-only refinement. Independent hash leaves all planting randomness untouched.
 function mineralSurface(template,soil=false){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
@@ -29787,7 +29795,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
       ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
-    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .46*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
+    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .24*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
     }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0;
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
@@ -29801,7 +29809,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * It.lerp(13, 1, P) * (1 - I), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2, 1, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
       const de = Ad - (ae.userData.hind ? 0.24 : 0);
       ae.rotation.y = ae.userData.side * (0.24 + Math.sin(de) * 0.75 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
-    }), Me.position.y = Math.sin(E * 0.9) * 0.09, Y.rotation.set(0.08, E * 0.055, -0.12), y.dataset.dnaVisible = String(Y.visible), Xe.rotation.y = Math.sin(E * 0.19) * 0.2, fn.rotation.y = Math.sin(E * 0.14) * 0.12, Pi.z += (Ks.x * Math.PI * 1.1 - Pi.z) * 0.17, Pi.y += (Ks.y * 0.45 - Pi.y) * 0.17, Ys.rotation.set(0, Pi.y, Pi.z + Math.sin(E * 0.18) * 0.06), Kn.rotation.y = 0.12 + Math.sin(E * 0.11) * 0.1, Q.position.x = j.x - 14 * zt(0.835, 0.87, p), Q.children.forEach((ae) => {
+    }), Me.position.y = Math.sin(E * 0.9) * 0.09, p<.12&&followOpeningLight(A,Me,T,openingLightPoint), Y.rotation.set(0.08, E * 0.055, -0.12), y.dataset.dnaVisible = String(Y.visible), Xe.rotation.y = Math.sin(E * 0.19) * 0.2, fn.rotation.y = Math.sin(E * 0.14) * 0.12, Pi.z += (Ks.x * Math.PI * 1.1 - Pi.z) * 0.17, Pi.y += (Ks.y * 0.45 - Pi.y) * 0.17, Ys.rotation.set(0, Pi.y, Pi.z + Math.sin(E * 0.18) * 0.06), Kn.rotation.y = 0.12 + Math.sin(E * 0.11) * 0.1, Q.position.x = j.x - 14 * zt(0.835, 0.87, p), Q.children.forEach((ae) => {
       ae.rotation.y = -0.4 + Math.sin(E * 0.2) * 0.12;
     }), R.children.forEach((ae, de) => {
       ae.rotation.y = -0.4 + Math.sin(E * 0.25 + de) * 0.12, ae.visible = ae.userData.pdb === "4C2U";
@@ -29832,8 +29840,8 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const qe = zt(0.74, 0.82, p);
     Td.lerpColors(Am, Rm, qe), l.style.setProperty("--journey-ink", "#" + Td.getHexString());
     const Ze = !Sn && p < 0.85;
-    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = p < .12 ? `blur(${68*(1-P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
-      ae.material && (ae.material.opacity = (ae.material.userData.baseOpacity ?? 1) * ee);
+    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = p < .12 ? `blur(${22*(1-P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
+      if(ae.material){ae.material.opacity=(ae.material.userData.baseOpacity??1)*ee*(er>=0&&E>=er?P:0);if(ae.userData.wingSurface){ae.material.emissive.set("#7f72b8");ae.material.emissiveIntensity=.22*(er>=0&&E>=er?P:0)*(1-I);}}
     }), M.render(x, A));
     const we = document.getElementById("heroScreen");
     we && s.classList.contains("intro-text-active") && (we.style.opacity = String(1 - I), we.style.display = p < 0.12 ? "block" : "none"), y.dataset.butterflyClarity = P.toFixed(3), y.dataset.flapping = String(I < 1), y.dataset.introStage = p < 0.065 ? "butterfly-flight" : p < 0.12 ? "orchids-opening" : "journey";
@@ -29955,8 +29963,8 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
   x.add(A);
   const v = new xt();
   A.add(v);
-  const T = new Qe(new Mi(5, 4), new vn({ transparent: !0, depthWrite: !1, uniforms: { opacity: { value: 0 } }, vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", fragmentShader: "varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.48,.44,.57),a*opacity);}" }));
-  T.position.set(0, -0.1, -3.2), v.add(T);
+  const T = new Qe(new Mi(5, 4), new vn({ transparent: !0, depthWrite: !1, uniforms: { opacity: { value: 0 } }, vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", fragmentShader: "varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.28,.38,.70),a*opacity);}" }));
+  T.position.set(0, -0.1, -3.2), v.add(T);T.material.blending=2;T.material.depthTest=false;T.renderOrder=-1;T.scale.set(1,.68,1);const openingLightPoint=new w();
   const N = [], U = [0, 1].map((p) => {
     const E = document.createElement("div");
     E.className = "journey-orchid-screen";
