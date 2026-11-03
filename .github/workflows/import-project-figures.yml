@@ -48,6 +48,7 @@ jobs:
                   tab.evaluate("window.switchPage(3)")
                   frame = tab.frame_locator("#projectsFrame")
                   frame.locator("#multicancer-fragmentomics .project-trigger").wait_for(state="visible",timeout=30000)
+                  frame.locator("#multicancer-fragmentomics .project-reveal[inert]").wait_for(state="attached",timeout=30000)
                   assert frame.locator("article.project").count()==8
                   for key in ["multicancer-fragmentomics","prostate-aurka","colorectal-invasion","prostate-genomics","kidney-immunotherapy"]:
                       card = frame.locator("#"+key)
@@ -55,7 +56,7 @@ jobs:
                       card.locator(".project-trigger").press("Enter")
                       image = card.locator(".paper-figure")
                       image.wait_for(state="visible")
-                      assert image.evaluate("(im) => im.complete && im.naturalWidth > 200"), key
+                      assert image.evaluate("async (im) => { await im.decode(); return im.naturalWidth > 200; }"), key
                       assert image.evaluate("(im) => new URL(im.currentSrc).origin === location.origin"), key
                       card.locator(".image-button").focus()
                       card.locator(".image-button").press("Enter")
