@@ -48,3 +48,6 @@ body:has(.is-open) main{margin-top:24px;padding-bottom:35px}body:has(.is-open) .
 
 /* Show the paper figure immediately after expansion on narrow screens. */
 @media(max-width:850px){.project:has(.paper-figure) .visual-column{grid-row:1}.project:has(.paper-figure) .copy-column{grid-row:2}}
+
+/* Keep the embedded image close control below the main site's navigation. */
+.embedded .lightbox-close{top:112px;right:20px}
