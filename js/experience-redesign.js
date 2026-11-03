@@ -34,6 +34,13 @@
     }
     return `<svg viewBox="0 0 480 480" fill="none" aria-hidden="true"><g class="xp-orbit"><ellipse cx="240" cy="240" rx="214" ry="214"/><ellipse cx="240" cy="240" rx="226" ry="226" stroke-dasharray="1 12"/></g><g class="xp-organism">${art}</g><path class="xp-fine" d="M28 60V28H60M420 28H452V60M452 420V452H420M60 452H28V420"/></svg>`;
   }
+
+  function emphasize(element){
+    const pattern=/(single-cell RNA-seq|spatial transcriptomics|bulk RNA-seq|non-viral|CAR-T|CRISPR(?:\/Cas9)?|Nanoinjection|nanoneedles|nanotubes|PRRX2\+?|SPP1\+?|AURKA|TGF-β|MMP2\+?|Dasatinib|gemcitabine resistance|neoantigen prediction|15% ahead of schedule|three papers|单细胞|空间转录组|非病毒|纳米注射|脱靶|肿瘤新抗原|生物标志物|吉西他滨耐药|细胞间通讯)/gi;
+    const nodes=[];function walk(node){for(const child of [...node.childNodes]){if(child.nodeType===3)nodes.push(child);else if(child.nodeType===1&&child.tagName!=='MARK')walk(child);}}walk(element);
+    for(const node of nodes){const parts=node.textContent.split(pattern);if(parts.length<2)continue;const fragment=document.createDocumentFragment();parts.forEach((text,i)=>{if(i%2){const mark=document.createElement('mark');mark.className='xp-keyword';mark.textContent=text;fragment.append(mark);}else fragment.append(document.createTextNode(text));});node.replaceWith(fragment);}
+  }
+
   function build() {
     const section=page.querySelector('section');
     if(!section)return;
@@ -70,7 +77,8 @@
       const year=meta?.textContent.match(/20\d{2}/)?.[0]||'';
       article.innerHTML=`<aside class="xp-specimen"><div class="xp-specimen-top"><span>0${i+1} / ${words.index}</span><span>${year}</span></div><h3 class="xp-concept">${words.roles[i]}</h3><div class="xp-specimen-art">${specimen(i)}</div><div class="xp-specimen-bottom"><span>${words.themes[i][0]}</span><span>↗</span></div><small class="xp-art-note">${words.note}</small></aside><div class="xp-record"><div class="xp-record-head"><span class="xp-record-kicker">0${i+1} — ${words.places[i]}</span></div><div class="xp-tags">${words.themes[i].map(t=>'<span>'+t+'</span>').join('')}</div></div>`;
       const head=article.querySelector('.xp-record-head');if(title)head.append(title);if(meta)head.append(meta);
-      if(ul){ul.className='xp-work';article.querySelector('.xp-record').append(ul);[...ul.children].forEach((li,k)=>{li.dataset.note=String(k+1).padStart(2,'0');});}
+      if(ul){ul.className='xp-work';article.querySelector('.xp-record').append(ul);const caption=document.createElement('div');caption.className='xp-specimen-caption';caption.innerHTML='<span class="xp-caption-index">01</span><span class="xp-caption-copy"></span>';article.querySelector('.xp-specimen').append(caption);const label=caption.querySelector('.xp-caption-copy');label.textContent=words.themes[i].join(' / ');[...ul.children].forEach((li,k)=>{li.dataset.note=String(k+1).padStart(2,'0');emphasize(li);const show=()=>{article.dataset.activeNote=li.dataset.note;caption.querySelector('.xp-caption-index').textContent=li.dataset.note;label.textContent=li.querySelector('mark,strong')?.textContent||words.themes[i][k%3];};li.addEventListener('pointerenter',show);li.addEventListener('focusin',show);});
+article.querySelectorAll('.xp-spot,.xp-organelle,.xp-bead').forEach((dot,k)=>{dot.addEventListener('pointerenter',()=>{label.textContent=words.themes[i][k%3];article.dataset.activeNote=String(k%ul.children.length+1).padStart(2,'0');});});}
       chapters.append(article);
       const item=document.createElement('span');item.className='xp-index-item';item.tabIndex=0;item.textContent=`0${i+1} / ${words.places[i]}`;
       // Hover previews the associated scientific specimen without moving the page.
@@ -87,7 +95,7 @@
     const articles=[...chapters.children],items=[...atlas.querySelectorAll('.xp-index-item')];
     function paint(){
       frame=0;if(!page.classList.contains('active'))return;
-      const vh=innerHeight;let active=0;
+      const vh=innerHeight;let active=0;const cover=atlas.querySelector('.xp-cover').getBoundingClientRect();atlas.style.setProperty('--cover-progress',Math.max(0,Math.min(1,-cover.top/Math.max(1,cover.height))).toFixed(3));
       articles.forEach((a,i)=>{
         const rect=a.getBoundingClientRect(),p=Math.max(0,Math.min(1,(vh*.7-rect.top)/(rect.height+vh*.25)));
         if(rect.top<vh*.5)active=i;
@@ -105,6 +113,7 @@
     const pointer=e=>{
       if(motion.matches||e.pointerType==='touch')return;
       const area=e.currentTarget,r=area.getBoundingClientRect();
+      area.style.setProperty('--pointer-pixel-x',(e.clientX-r.left)+'px');area.style.setProperty('--pointer-pixel-y',(e.clientY-r.top)+'px');
       area.style.setProperty('--pointer-x',((e.clientX-r.left)/r.width-.5).toFixed(3));
       area.style.setProperty('--pointer-y',((e.clientY-r.top)/r.height-.5).toFixed(3));
     };

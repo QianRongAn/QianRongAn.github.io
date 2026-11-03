@@ -76,3 +76,26 @@ html.experience-atlas #experience.active{padding:0!important}
 @media(max-width:800px){#experience#experience .xp-cover{min-height:640px}#experience#experience .xp-cover h2{font-size:clamp(65px,12vw,100px)!important}#experience#experience .xp-cover-art{width:80vw;right:-22vw;top:20%}#experience#experience .xp-cover-number{font-size:70px;top:65px}#experience#experience .xp-index{top:72px;gap:15px;padding:19px 5vw}#experience#experience .xp-index>span:first-child{display:none}#experience#experience .xp-index-items{gap:20px}#experience#experience .xp-index-item{font-size:9px}#experience#experience .xp-chapter{gap:5vw;padding-top:55px}#experience#experience .xp-specimen{top:155px}#experience#experience .xp-record-head h3{font-size:28px!important}#experience#experience .xp-work li{font-size:13px!important;padding-left:25px!important}}
 @media(max-width:600px){#experience#experience .xp-cover{min-height:580px;padding-top:25px}#experience#experience .xp-cover-top{font-size:8px}#experience#experience .xp-cover h2{padding:70px 0!important}#experience#experience .xp-cover h2 em{padding-left:0}#experience#experience .xp-cover-bottom{align-items:start;flex-direction:column;gap:28px}#experience#experience .xp-cover-art{width:100vw;top:14%;right:-35vw;opacity:.38}#experience#experience .xp-cover-number{font-size:55px}#experience#experience .xp-index-count{display:none}#experience#experience .xp-index-items{width:100%;justify-content:space-between;gap:8px}#experience#experience .xp-index-item{font-size:8px;letter-spacing:0}#experience#experience .xp-chapter{display:block;padding:45px 6vw 55px}#experience#experience .xp-specimen{position:relative;top:auto;margin-bottom:45px}#experience#experience .xp-specimen-art{max-width:280px;margin:0 auto}#experience#experience .xp-concept{font-size:38px!important}#experience#experience .xp-specimen-top{padding-top:12px}#experience#experience .xp-work li{font-size:14px!important}#experience#experience .xp-record-head h3{font-size:34px!important}}
 @media(prefers-reduced-motion:reduce){#experience#experience .xp-atlas *{transition:none!important;animation:none!important}#experience#experience .xp-organism,#experience#experience .xp-orbit{transform:none!important}}
+
+/* Marginal notes and restrained motion respond to reading, rather than requiring clicks. */
+#experience#experience .xp-work mark.xp-keyword{font:inherit!important;color:#715982!important;background:#9b80ac22;padding:.08em .23em;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .35s,color .35s}
+#experience#experience .xp-work li:hover mark.xp-keyword{background:#9b80ac38;color:#59416a!important}
+#experience#experience .xp-specimen-caption{display:flex;gap:14px;align-items:baseline;margin-top:21px;padding:15px 0;border-top:1px solid var(--xp-line);font-size:10px;letter-spacing:.055em;min-height:44px;color:#786582}
+#experience#experience .xp-caption-index{font:300 27px/1 Recoleta,Georgia,serif!important;min-width:30px;color:#9c87a9}
+#experience#experience .xp-caption-copy{max-width:85%;line-height:1.7;text-transform:none;transition:color .3s}
+#experience#experience .xp-cover h2>span{transform:translateY(calc(var(--cover-progress,0)*-34px));display:block}
+#experience#experience .xp-cover h2>em{transform:translateX(calc(var(--cover-progress,0)*45px))}
+#experience#experience .xp-cover-art{transform:translate(calc(var(--pointer-x,0)*22px),calc(var(--pointer-y,0)*22px)) rotate(calc(-18deg + var(--cover-progress,0)*24deg))}
+#experience#experience .xp-orbit ellipse:first-child{stroke-dasharray:1345;stroke-dashoffset:calc(1345 - var(--chapter-progress,0)*1345);stroke-width:1.1;opacity:.8}
+#experience#experience .xp-atlas :is(.xp-spot,.xp-organelle,.xp-bead){pointer-events:auto;transition:fill .35s,opacity .35s,stroke-width .35s;cursor:crosshair}
+#experience#experience .xp-atlas :is(.xp-spot,.xp-organelle,.xp-bead):hover{fill:#c99ba9;opacity:1;stroke:#796187;stroke-width:2}
+#experience#experience .xp-specimen-art{transition:transform .8s cubic-bezier(.19,1,.22,1)}
+#experience#experience .xp-work li{border-top-color:transparent}
+#experience#experience .xp-work li:after{content:''!important;display:block!important;position:absolute;left:0;right:0;top:0;height:1px;background:var(--xp-line);transform:scaleX(.1);transform-origin:left;transition:transform 1s cubic-bezier(.19,1,.22,1)}
+#experience#experience .xp-work li.xp-in-view:after{transform:scaleX(1)}
+#experience#experience .xp-chapter:nth-child(2){grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}
+#experience#experience .xp-chapter:nth-child(2)>.xp-specimen{grid-column:2;grid-row:1}
+#experience#experience .xp-chapter:nth-child(2)>.xp-record{grid-column:1;grid-row:1}
+#experience#experience .xp-record-head h3{max-width:11em!important}
+@media(max-width:600px){#experience#experience .xp-specimen-caption{margin-top:14px}#experience#experience .xp-cover h2>span,#experience#experience .xp-cover h2>em{transform:none}}
+@media(prefers-reduced-motion:reduce){#experience#experience .xp-cover h2>span,#experience#experience .xp-cover h2>em{transform:none}}

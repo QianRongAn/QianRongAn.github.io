@@ -18,4 +18,12 @@
 
 .activity-accordion-panel{flex:1 1 0!important;min-width:28px!important}.activity-accordion-panel.is-active{flex:0 0 var(--expanded-width,55%)!important}.activity-accordion-panel.is-active .activity-accordion-photo{object-fit:cover!important;background:transparent!important}.activity-accordion-panel{background:transparent!important}
 
-.activity-accordion-photo{filter:grayscale(1) brightness(.48)!important;transition:filter 850ms cubic-bezier(.2,.75,.2,1)!important}.activity-accordion-panel.is-active .activity-accordion-photo{filter:grayscale(0) brightness(1)!important}
+
+
+/* Collapsed photographs retain color under a low-saturation blue-violet veil. */
+.activity-accordion-photo{filter:saturate(.58) brightness(.82) contrast(.96)!important;transition:filter 850ms cubic-bezier(.2,.75,.2,1)!important}
+.activity-accordion-panel:before{content:'';position:absolute;inset:0;z-index:1;background:#62548e;mix-blend-mode:color;opacity:.38;pointer-events:none;transition:opacity 850ms cubic-bezier(.2,.75,.2,1)}
+.activity-accordion-panel.is-active:before{opacity:0}
+.activity-accordion-panel.is-active .activity-accordion-photo{filter:none!important}
+.activity-accordion-controls{display:none!important}
+@media(prefers-reduced-motion:reduce){.activity-accordion-photo,.activity-accordion-panel:before{transition:none!important}}

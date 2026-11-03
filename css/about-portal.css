@@ -1,0 +1,16 @@
+.about-portal{position:fixed;inset:0;z-index:205000;isolation:isolate;pointer-events:auto;overflow:hidden;opacity:1;transition:opacity .65s ease}
+.about-portal[hidden]{display:none!important}.about-portal.is-complete{opacity:0;pointer-events:none}
+.about-portal-reveal{position:absolute;inset:0;background:#f2eee6;color:#4a3a55;will-change:clip-path;--portal-p:0;overflow:hidden}
+.about-portal-reveal:before{content:'';position:absolute;inset:0;background:radial-gradient(circle var(--portal-radius,120px) at 45% var(--portal-y,70vh),#fff2c9 0%,#dfc4c7 68%,#aa8db5 100%);opacity:calc(1 - var(--portal-p));pointer-events:none}
+.about-portal-grain{position:absolute;inset:0;opacity:.42;pointer-events:none;mix-blend-mode:multiply}
+.about-portal-preview{position:relative;max-width:1000px;margin:0 auto;padding:10vh 7vw;box-sizing:border-box;transform-origin:50% 60%;will-change:transform,opacity}
+.about-portal-preview>small{font:10px/1.5 'Open Sans',Arial,sans-serif;letter-spacing:.15em;color:#84728b}
+.about-portal-preview h2{font:300 clamp(65px,10vw,155px)/1 Recoleta,Georgia,serif;letter-spacing:-.065em;margin:35px 0;color:#584261}.about-portal-preview h2 em{font-weight:300;color:#a38aac}
+.about-portal-copy{max-width:720px;font:400 15px/1.9 'Open Sans',Arial,sans-serif;color:#66576d;text-align:justify}
+.about-portal-copy p{margin:0 0 20px;text-align:justify}.about-portal-copy a{color:inherit;pointer-events:none}
+.about-portal-hint{position:absolute;left:0;right:0;bottom:5vh;text-align:center;color:#f7efff;font:10px/1.6 'Open Sans',Arial,sans-serif;letter-spacing:.16em;pointer-events:none}
+html.about-portal-active{overflow:hidden!important}
+html.footer-compact #footer .footer-image{width:48%!important;height:auto!important;max-width:720px!important}
+@media(max-width:900px){html.footer-compact #footer .footer-image{width:65%!important}}
+@media(max-width:600px){html.footer-compact #footer .footer-image{width:74%!important}.about-portal-preview{padding:12vh 8vw}.about-portal-preview h2{font-size:65px}.about-portal-copy{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.about-portal{transition:none}.about-portal-preview{transform:none!important}}

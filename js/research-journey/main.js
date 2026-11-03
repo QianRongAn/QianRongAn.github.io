@@ -1,3 +1,66 @@
+// Keeps approved planting, camera paths and foliage pigments. Only local additions and surfaces.
+function polishCurrentGarden(c){
+ const T=c.THREE,extraTrees=new T.Group(),billboards=[],extraMaterials=[];c.forest.add(extraTrees);
+ const smoothSphere=new T.SphereGeometry(1,48,32);
+ c.world.traverse(o=>{if(o.isMesh&&o.geometry===c.atomGeometry&&Math.max(o.scale.x,o.scale.y,o.scale.z)>.28)o.geometry=smoothSphere;});
+ // Hide the artificial four-spoke root decorations and round the model's basal flare.
+ c.rootBases.visible=false;c.treeRoots.visible=false;
+ for(const batch of c.detailedForest.children){
+  if(!batch.material?.color||batch.material.vertexColors)continue;
+  const geometry=batch.geometry,p=geometry.attributes.position;geometry.computeBoundingBox();const h=geometry.boundingBox.max.y-geometry.boundingBox.min.y,min=geometry.boundingBox.min.y;
+  for(let i=0;i<p.count;i++){const y=p.getY(i)-min,r=Math.hypot(p.getX(i),p.getZ(i));if(y<h*.075){const limit=h*(.012+.006*(1-y/(h*.075)));if(r>limit){const blend=1-Math.min(1,y/(h*.075));const f=1+(limit/r-1)*blend;p.setX(i,p.getX(i)*f);p.setZ(i,p.getZ(i)*f);}}}p.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingSphere();
+ }
+ // Replace solid faceted cloud hulls with layered, softly feathered white density fields.
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const ctx=canvas.getContext('2d'),image=ctx.createImageData(256,256);
+ const lobes=[[-.28,.03,.44],[.08,-.12,.44],[.32,.06,.34],[-.06,.17,.39],[.05,-.28,.27],[-.4,.17,.22]];
+ for(let y=0;y<256;y++)for(let x=0;x<256;x++){const u=x/128-1,v=y/128-1;let density=0;for(const [a,b,r]of lobes){const d=Math.hypot(u-a,v-b)/r;density=Math.max(density,Math.exp(-d*d*2.6));}const hash=Math.sin(x*.47+y*.61)*Math.sin(x*.19-y*.27);density*=.86+hash*.12;const edge=Math.max(0,1-Math.max(Math.abs(u),Math.abs(v)));const alpha=Math.max(0,(density-.018)/.982)*Math.min(1,edge*8);const k=(y*256+x)*4;image.data[k]=image.data[k+1]=image.data[k+2]=255;image.data[k+3]=Math.min(225,Math.pow(alpha,.8)*225);}
+ ctx.putImageData(image,0,0);const texture=new T.CanvasTexture(canvas);
+ for(const bank of c.cloudBanks){const old=[...bank.children];bank.clear();for(let i=0;i<old.length;i++){const lobe=old[i],mat=c.cloudMaterial.clone();mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=> 'soft-cloud-density-118';mat.map=texture;mat.depthWrite=false;mat.opacity=.78;mat.color.set('#ffffff');mat.toneMapped=false;mat.userData.cloud=true;mat.userData.baseOpacity=.78;c.materials.push(mat);const mesh=new T.Mesh(new T.PlaneGeometry(1,1),mat);mesh.position.copy(lobe.position);mesh.scale.set(lobe.scale.x*3.1,lobe.scale.y*2.8,1);bank.add(mesh);billboards.push(mesh);}}
+ // Fill only right-hand screen gaps in the Evidence views, leaving the approved opening forest alone.
+ const placed=[],view=new T.PerspectiveCamera(47,c.camera.aspect,.1,360),point=new T.Vector3();
+ const scenes=[.375,.425];
+ for(const t of scenes){view.position.copy(c.cameraCurve.getPoint(t));view.lookAt(c.gazeCurve.getPoint(t));view.updateMatrixWorld();
+  for(let slot=0;slot<12;slot++){let best=null,bestScore=Infinity;
+   for(let z=-65;z<-15;z+=1.7)for(let x=-24;x<=24;x+=1.6){if(Math.abs(x)<7||Math.hypot(x-3.4,z+66)<5)continue;if(c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<3)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<3.4))continue;
+    const floor=c.floor(x,z),h=5.4+(slot%4)*.43;point.set(x,floor+h*.55,z).project(view);if(point.z<0||point.z>1||point.y<-.48||point.y>.75||point.x<.30||point.x>1.07)continue;
+    const distance=view.position.distanceTo(new T.Vector3(x,floor+h*.5,z));if(distance<6||distance>29)continue;const targetX=.40+(slot%3)*.23,targetY=.53-Math.floor(slot/3)*.26,score=(point.x-targetX)**2+(point.y-targetY)**2+distance*.0008;
+    if(score<bestScore){bestScore=score;best={x,z,floor,height:h};}}
+   if(best)placed.push(best);
+  }
+ }
+ const dummy=new T.Object3D(),color=new T.Color();
+ for(const original of c.detailedForest.children){if(!original.isInstancedMesh||!placed.length)continue;original.geometry.computeBoundingBox();const h=original.geometry.boundingBox.max.y-original.geometry.boundingBox.min.y;
+  // Bark and foliage have different own bounds; normalize with the original instance transform instead.
+  original.getMatrixAt(0,dummy.matrix);dummy.matrix.decompose(dummy.position,dummy.quaternion,dummy.scale);const baseScale=dummy.scale.clone();const local=original.material.clone();local.onBeforeCompile=original.material.onBeforeCompile;local.customProgramCacheKey=original.material.customProgramCacheKey.bind(original.material);extraMaterials.push([local,original.material]);const copy=new T.InstancedMesh(original.geometry,local,placed.length);
+  placed.forEach((p,i)=>{dummy.position.set(p.x,p.floor-.06,p.z);dummy.rotation.set(Math.sin(i)*.025,i*2.39996,.02*Math.cos(i));const f=p.height/6;dummy.scale.copy(baseScale).multiplyScalar(f);dummy.updateMatrix();copy.setMatrixAt(i,dummy.matrix);if(original.instanceColor){original.getColorAt(i%original.count,color);copy.setColorAt(i,color);}});copy.computeBoundingSphere();extraTrees.add(copy);
+ }
+ c.host.dataset.visibleForestFill=String(placed.length);
+ // Local soft contact darkness anchors existing trunks without recoloring their foliage.
+ const ac=document.createElement('canvas');ac.width=ac.height=128;const ax=ac.getContext('2d'),ai=ax.createImageData(128,128);
+ for(let y=0;y<128;y++)for(let x=0;x<128;x++){const r=Math.hypot((x-64)/64,(y-64)/64),k=(y*128+x)*4;ai.data[k+3]=Math.max(0,Math.pow(Math.max(0,1-r),2)*180);}
+ ax.putImageData(ai,0,0);const am=c.cloudMaterial.clone();am.onBeforeCompile=()=>{};am.customProgramCacheKey=()=> 'trunk-contact-118';am.map=new T.CanvasTexture(ac);am.color.set('#171226');am.fog=false;am.depthWrite=false;am.polygonOffset=true;am.polygonOffsetFactor=-1;am.opacity=.2;am.userData={baseOpacity:.2};c.materials.push(am);
+ const contacts=new T.InstancedMesh(new T.PlaneGeometry(1.7,1.7),am,c.treePlacements.length);c.treePlacements.forEach((p,i)=>{dummy.position.set(p.x,p.floor+.025,p.z);dummy.rotation.set(-Math.PI/2,0,0);dummy.scale.setScalar(.8+(i%5)*.08);dummy.updateMatrix();contacts.setMatrixAt(i,dummy.matrix);});contacts.computeBoundingSphere();c.forest.add(contacts);
+ // Gloriosa: six recurved, wavy tepals, yellow bases and scarlet tips, with long spreading stamens.
+ const positions=[],colors=[],normals=[];const yellow=new T.Color('#e1bd66'),red=new T.Color('#ce625a'),stemColor=new T.Color('#737896');
+ function piece(g,col,position=new T.Vector3(),rotation=new T.Vector3(),scale=new T.Vector3(1,1,1)){
+  g=g.clone();const d=new T.Object3D();d.position.copy(position);d.rotation.set(rotation.x,rotation.y,rotation.z);d.scale.copy(scale);d.updateMatrix();g.applyMatrix4(d.matrix);if(g.index)g=g.toNonIndexed();if(!g.attributes.normal)g.computeVertexNormals();const p=g.attributes.position,n=g.attributes.normal,cl=g.attributes.color;
+  for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));if(cl)colors.push(cl.getX(i),cl.getY(i),cl.getZ(i));else colors.push(col.r,col.g,col.b);}g.dispose();
+ }
+ piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(),new T.Vector3(.03,.6,0),new T.Vector3(.08,1.1,.02)]),20,.012,6,false),stemColor);
+ for(let j=0;j<6;j++){const a=j*Math.PI/3,ps=[],cs=[],ix=[],rows=18,cols=8;
+  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){const t=u/rows,w=v/cols*2-1,r=.06+.29*Math.sin(t*Math.PI*.88),width=.065*Math.pow(Math.sin(Math.PI*t),.65),wave=Math.sin(t*27)*Math.abs(w)*.018;ps.push(Math.cos(a)*r-Math.sin(a)*w*width,1.02+.58*t+wave,Math.sin(a)*r+Math.cos(a)*w*width);const col=yellow.clone().lerp(red,Math.min(1,t*1.7));cs.push(col.r,col.g,col.b);if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,red);
+  const tip=new T.Vector3(Math.cos(a)*.31,.96,Math.sin(a)*.31);piece(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(.08,1.03,.02),tip]),8,.005,5,false),yellow);piece(new T.SphereGeometry(.025,12,8),yellow,tip,new T.Vector3(),new T.Vector3(1.6,.45,.5));
+ }
+ for(let j=0;j<4;j++)piece(c.flowerPetalGeometry,stemColor,new T.Vector3(.03,.2+j*.17,0),new T.Vector3(-.35,j*2.4,0),new T.Vector3(.22,.30,.24));
+ const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
+ const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.66;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
+ const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
+ for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<1)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
+ lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
+ return {update(t){const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);}}};
+}
+
 
 // Foreground stays a silhouette; the soft light follows the luminous butterfly behind it.
 function followOpeningLight(camera,butterfly,glow,point){
@@ -29253,11 +29316,13 @@ function xb(s, e, t) {
     N = It.clamp(H, 0, v + 1), Ee();
   }
   i.addEventListener("wheel", (H) => {
+    if(r.classList.contains("experience-atlas"))return;
     if (!i.classList.contains("active") || !r.classList.contains("journey-skipped") || H.ctrlKey) return;
     H.preventDefault();
     const ve = performance.now(), Te = ve - Z;
     Z = ve, !(ve < F || Te < 180) && (F = ve + 750, gt(N + Math.sign(H.deltaY)));
   }, { passive: !1 }), i.addEventListener("keydown", (H) => {
+    if(r.classList.contains("experience-atlas"))return;
     ["ArrowDown", "PageDown", "ArrowUp", "PageUp"].includes(H.key) && (H.preventDefault(), gt(N + (["ArrowDown", "PageDown"].includes(H.key) ? 1 : -1)));
   }), i.tabIndex = 0;
   function dt() {
@@ -29478,7 +29543,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     p.setAttribute("uv", new _n(K, 2));
   }, pt = function(p, E, P, I) {
     const O = (I ? _t : st).getPoint(E), B = I ? -0.05 : 0.25;
-    return new w(P * (0.12 + (O.x - 0.12) * p), B + (O.y - B) * p, Math.sin(p * Math.PI) * 0.32 + Math.pow(p, 3) * (0.18 + Math.sin(E * 7) * 0.1) + Math.pow(p, 9) * Math.sin(E * 48) * 0.025 + (I ? -0.12 : 0));
+    return new w(P * (0.12 + (O.x - 0.12) * p), B + (O.y - B) * p, Math.sin(p * Math.PI) * 0.075 + Math.pow(p, 3) * (0.035 + Math.sin(E * 7) * 0.018) + Math.pow(p, 9) * Math.sin(E * 48) * 0.004 + (I ? -0.10 : 0.015));
   }, Ts = function(p, E = !1) {
     var K;
     const P = document.createElement("canvas");
@@ -29790,12 +29855,12 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     var Re;
     M && (M.domElement.parentNode !== y && y.append(M.domElement), M.toneMapping = Wn), ke.uniforms.opacity.value = 0.98 * zt(0.26, 0.55, p) * (1 - zt(0.97, 1, p)), Ue.visible = ke.uniforms.opacity.value > 1e-3, le.clock.value = E, zu.value = E, Wu.value = 0.7 * zt(0.35, 0.6, p), Xu.value = 1 - 0.82 * zt(0.35, 0.65, p), Xe.visible = p > 0.17 && p < 0.44, fn.visible = p > 0.29 && p < 0.52, Ii.visible = p > 0.38 && p < 0.49, Cn.visible = p > 0.37 && p < 0.6, R.visible = !1, Q.visible = !1, De.visible = p > 0.48 && p < 0.821, Ye.visible = !0, pi.visible = p > 0.845, Y.visible = p > 0.115 && p < 0.27, ec.visible = !1;
     const P = er < 0 ? 0 : zt(0, 3, E - er), I = zt(0.065, 0.12, p), O = zt(0.075, 0.12, p);
-    y.style.setProperty("--scene-focus", "0px"), y.style.setProperty("--scene-light", "1"), v.visible = p < 0.2;
+    y.style.setProperty("--scene-focus", "0px"), y.style.setProperty("--scene-light", "1"), v.visible = p < 0.12;
     const B = Math.tan(It.degToRad(A.fov / 2)) * 3 * A.aspect, K = innerHeight / (2 * Math.tan(It.degToRad(A.fov / 2)) * 3);
     U.forEach((ae, de) => {
       const He = It.lerp(de ? -0.42 : 0.42, de ? B - 0.18 : -B + 0.18, I);
-      ae.style.display = p < 0.2 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.14, 0.2, p));
-    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .24*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*3.4+phase)*.63);});Mt.forEach((ae, de) => {
+      ae.style.display = p < 0.12 ? "block" : "none", ae.style.transform = `translate3d(${innerWidth / 2 + He * K}px,${innerHeight - 2.8 * 0.62 * K / 2 + (de ? 11 : 16) / 1024 * (2.8 * 0.62 * K) + 2}px,0) translate(-50%,-50%)`, ae.style.opacity = String(1 - zt(0.09, 0.12, p));
+    }), s.style.setProperty("--intro-reveal",String(er>=0&&E>=er?P:0)), T.material.uniforms.opacity.value = er>=0&&E>=er ? .24*P*(1-I):0, Me.visible=p>=.12||(er>=0&&E>=er), s.classList.contains("orchid-butterfly-active")!==(er>=0&&E>=er)&&s.classList.toggle("orchid-butterfly-active",er>=0&&E>=er), Pd(p), x.background.multiplyScalar(O), le.horizon.value.multiplyScalar(O), x.fog.color.copy(x.background), tt.visible = O > 0 && p < 0.975, Ne.visible = O > 0 && p < 0.975, Ni.visible = O > 0, nc.visible = O > 0, birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((E*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(E*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(E*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(E*(32+phase*.5)+phase)*.63);});Mt.forEach((ae, de) => {
       ae.position.x += (de % 2 ? 1 : -1) * Math.sin(E * 0.025 + de) * 12e-5, ae.visible = ae.position.distanceTo(A.position) < 150;
     }), Te.position.set(3.4, Math.sin(E * 0.55) * 0.09, 0), Te.rotation.z = Math.sin(E * 0.32) * 0.045, x.fog.density = 0;
     const q = p < 0.12 ? 0.065 * I : It.lerp(0.065, p, zt(0.12, 0.17, p));
@@ -29806,9 +29871,9 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const ee = 1 - zt(0.95, 0.998, p);
     Z.visible = ee > 0 && p >= 0.075, me.userData.opacity.value = ee * O * (1 - zt(0.57, 0.67, p)), me.visible = me.userData.opacity.value > 1e-3, W.forEach((ae) => {
       ae.opacity = ae.userData.baseOpacity * ee * O * (ae.userData.cloud ? zt(0.2, 0.32, p) : 1) * (ae.userData.dna ? zt(0.115, 0.14, p) * (1 - zt(0.24, 0.27, p)) : 1) * (ae.userData.molecular ? zt(0.34, 0.41, p) : 1) * (ae.userData.careerTimeline ? 1 - zt(0.805, 0.82, p) : 1);
-    }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * It.lerp(13, 1, P) * (1 - I), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2, 1, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
-      const de = Ad - (ae.userData.hind ? 0.24 : 0);
-      ae.rotation.y = ae.userData.side * (0.24 + Math.sin(de) * 0.75 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
+    }), Ad += Math.min(0.06, Math.max(0, E - Rd)) * (Math.PI*2*(9.5+.5*Math.sin(E*.65))), Rd = E, Me.scale.setScalar((1 - zt(0.1, 0.24, p)) * (p < 0.12 ? It.lerp(2.25, 1.2, P) : 1)), Me.rotation.set(-0.12, -0.35, 0.12), Ge.forEach((ae) => {
+      const de = Ad;
+      ae.rotation.y = ae.userData.side * (0.55 + Math.sin(de) * 0.65 * (1 - I)), ae.rotation.x = Math.sin(de - 0.25) * 0.025 * (1 - I);
     }), Me.position.y = Math.sin(E * 0.9) * 0.09, p<.12&&followOpeningLight(A,Me,T,openingLightPoint), Y.rotation.set(0.08, E * 0.055, -0.12), y.dataset.dnaVisible = String(Y.visible), Xe.rotation.y = Math.sin(E * 0.19) * 0.2, fn.rotation.y = Math.sin(E * 0.14) * 0.12, Pi.z += (Ks.x * Math.PI * 1.1 - Pi.z) * 0.17, Pi.y += (Ks.y * 0.45 - Pi.y) * 0.17, Ys.rotation.set(0, Pi.y, Pi.z + Math.sin(E * 0.18) * 0.06), Kn.rotation.y = 0.12 + Math.sin(E * 0.11) * 0.1, Q.position.x = j.x - 14 * zt(0.835, 0.87, p), Q.children.forEach((ae) => {
       ae.rotation.y = -0.4 + Math.sin(E * 0.2) * 0.12;
     }), R.children.forEach((ae, de) => {
@@ -29840,11 +29905,11 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const qe = zt(0.74, 0.82, p);
     Td.lerpColors(Am, Rm, qe), l.style.setProperty("--journey-ink", "#" + Td.getHexString());
     const Ze = !Sn && p < 0.85;
-    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", M && (M.domElement.style.filter = p < .12 ? `blur(${22*(1-P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
+    s.classList.contains("journey-dark") !== Ze && s.classList.toggle("journey-dark", Ze), S.style.transform = `scaleX(${p})`, g.textContent = p < 0.25 ? "01 / 04" : p < 0.55 ? "02 / 04" : p < 0.85 ? "03 / 04" : "04 / 04", l.querySelector(".journey-progress").style.opacity = String(0.65 * (1 - zt(0.96, 1, p))), Sn || c.style.setProperty("opacity", String(zt(0.975, 1, p)), "important"), l.querySelector(".journey-scroll").style.opacity = String(1 - zt(0.01, 0.06, p)), y.dataset.progress = p.toFixed(3), y.dataset.background = "#" + x.background.getHexString(), y.style.backgroundColor = y.dataset.background, y.dataset.camera = "CatmullRomCurve3", gardenPolishState?.update(p,E), M && (M.domElement.style.filter = p < .12 ? `blur(${22*(1-P)}px)` : "", p < 0.12 && Me.traverse((ae) => {
       if(ae.material){ae.material.opacity=(ae.material.userData.baseOpacity??1)*ee*(er>=0&&E>=er?P:0);if(ae.userData.wingSurface){ae.material.emissive.set("#7f72b8");ae.material.emissiveIntensity=.22*(er>=0&&E>=er?P:0)*(1-I);}}
     }), M.render(x, A));
     const we = document.getElementById("heroScreen");
-    we && s.classList.contains("intro-text-active") && (we.style.opacity = String(1 - I), we.style.display = p < 0.12 ? "block" : "none"), y.dataset.butterflyClarity = P.toFixed(3), y.dataset.flapping = String(I < 1), y.dataset.introStage = p < 0.065 ? "butterfly-flight" : p < 0.12 ? "orchids-opening" : "journey";
+    we && s.classList.contains("intro-text-active") && (we.style.opacity = String(1 - I), we.style.display = p < 0.12 ? "block" : "none"), y.dataset.butterflyClarity = P.toFixed(3), y.dataset.wingbeatHz=(9.5+.5*Math.sin(E*.65)).toFixed(2), y.dataset.flapping = String(I < 1), y.dataset.introStage = p < 0.065 ? "butterfly-flight" : p < 0.12 ? "orchids-opening" : "journey";
   }, ga = function() {
     return y.dataset.state !== "context-lost" && !document.hidden && (!Sn || Is()) && !t.matches && !s.classList.contains("hero-locked");
   }, _a = function(p) {
@@ -29880,6 +29945,7 @@ if (!document.body.hasAttribute("data-structure-preview") && !(/Android|webOS|iP
     const p = () => {
       lo(), window.switchPage && window.switchPage(0), requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
     };
+    if(window.AboutPortal?.open(p,()=>{ir=false;os=performance.now()+500;}))return;
     window.gsap ? window.gsap.to(f, { opacity: 0, duration: 0.35, overwrite: !0, onComplete: () => {
       p(), window.gsap.set(f, { clearProps: "opacity" });
     } }) : p();
@@ -29965,6 +30031,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
   A.add(v);
   const T = new Qe(new Mi(5, 4), new vn({ transparent: !0, depthWrite: !1, uniforms: { opacity: { value: 0 } }, vertexShader: "varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", fragmentShader: "varying vec2 vUv;uniform float opacity;void main(){float a=exp(-dot((vUv-.5)*4.,(vUv-.5)*4.));gl_FragColor=vec4(vec3(.28,.38,.70),a*opacity);}" }));
   T.position.set(0, -0.1, -3.2), v.add(T);T.material.blending=2;T.material.depthTest=false;T.renderOrder=-1;T.scale.set(1,.68,1);const openingLightPoint=new w();
+  let gardenPolishState=null;
   const N = [], U = [0, 1].map((p) => {
     const E = document.createElement("div");
     E.className = "journey-orchid-screen";
@@ -30002,7 +30069,7 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
     const I = [], O = [], B = [], K = [], q = 32, ee = 44, te = (q + 1) * (ee + 1), Ae = new _e(h.blue), qe = new _e(h.dusk);
     for (let de = 0; de < 2; de++) for (let He = 0; He <= ee; He++) for (let Je = 0; Je <= q; Je++) {
       const at = Je / q, lt = He / ee, Ot = pt(at, lt, p, E);
-      Ot.z += de ? -0.012 : 0.012, I.push(Ot.x, Ot.y, Ot.z), O.push(at, lt);
+      Ot.z += de ? -0.001 : 0.001, I.push(Ot.x, Ot.y, Ot.z), O.push(at, lt);
       const Gt = Ae.clone().lerp(qe, 0.18 + at * 0.58 + Math.sin(lt * 8) * 0.08);
       if (K.push(Gt.r, Gt.g, Gt.b), Je < q && He < ee) {
         const Wt = de * te + He * (q + 1) + Je;
@@ -30020,25 +30087,25 @@ J Hematol Oncol, 2024`, "SARS-CoV-2 特异性 T 细胞及其受体 · J Hematol 
     }
     const we = new Lt();
     we.setAttribute("position", new ut(I, 3)), we.setAttribute("normal", new ut(new Float32Array(I.length), 3)), we.setAttribute("uv", new ut(O, 2)), we.setAttribute("color", new ut(K, 3)), we.setIndex(B), we.computeVertexNormals();
-    const Re = new tn({ color: h.white, vertexColors: !0, roughness: 0.34, metalness: 0, iridescence: 0.52, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 440], transmission: 0.13, thickness: 0.024, ior: 1.35, clearcoat: 0.35, clearcoatRoughness: 0.25, bumpMap: fe, bumpScale: 0.018, side: nn, transparent: !0, opacity: 1 });
+    const Re = new tn({ color: h.white, vertexColors: !0, roughness: 0.34, metalness: 0, iridescence: 0.52, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 440], transmission: 0, thickness: 0.002, ior: 1.35, clearcoat: 0.35, clearcoatRoughness: 0.25, bumpMap: fe, bumpScale: 0.002, side: nn, transparent: !0, opacity: 1 });
     W.push(Re);
     const ae = new Qe(we, Re);
     ae.userData.wingSurface = !0, P.add(ae);
     for (let de = 1; de < 11; de++) {
       const He = de / 11, Je = Array.from({ length: 33 }, (at, lt) => {
         const Ot = lt / 32, Gt = pt(Ot, He + Math.sin(Ot * Math.PI) * 0.022, p, E);
-        return Gt.z += 0.019, Gt;
+        return Gt.z += 0.004, Gt;
       });
-      ie(P, Je, 7e-3, xe, 42);
+      ie(P, Je, .002, xe, 42);
       for (const at of [-1, 1]) {
         const lt = Array.from({ length: 18 }, (Ot, Gt) => {
           const Wt = 0.5 + Gt / 17 * 0.48, ls = pt(Wt, He + at * (Wt - 0.5) * 0.12, p, E);
-          return ls.z += 0.02, ls;
+          return ls.z += 0.004, ls;
         });
-        ie(P, lt, 35e-4, Se, 24);
+        ie(P, lt, .0012, Se, 24);
       }
     }
-    ie(P, Array.from({ length: 81 }, (de, He) => pt(1, He / 80, p, E)), 0.012, Se, 96);
+    ie(P, Array.from({ length: 81 }, (de, He) => pt(1, He / 80, p, E)), .0025, Se, 96);
   }
   dt(Me, 0, 0.15, 0.12, 0.23, re).scale.multiply(new w(0.7, 1.8, 0.8));
   for (let p = 0; p < 10; p++) {
@@ -30286,7 +30353,7 @@ const rt = new Ei({color:"#ffffff",vertexColors:false,fog:false,transparent:true
   const Rt = [[1.76, 2.91], [1.89, 2.96], [1.89, 3.06], [2, 3.1], [2.04, 3.16], [2.04, 3.22], [1.96, 3.26], [1.99, 3.33], [2.11, 3.38], [2.11, 3.46], [2.02, 3.52]].map(([p, E]) => new he(p, E));
   Ye.add(new Qe(new ys(Rt, 72), ot)), Yt(1.79, 0.08, 2.95, Pt);
   const Mn = new Qe(new gn(2.02, 64, 28, 0, Math.PI * 2, 0, Math.PI / 2), ot);
-  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);const pavilionRib=new Ei({color:"#b9a0d4",transparent:true});W.push(pavilionRib);
+  Mn.scale.y = 0.71, Mn.position.y = 3.48, Ye.add(Mn);const pavilionRib=new Ei({color:"#ccc1c6",transparent:true});W.push(pavilionRib);
   for (let p = 0; p < 12; p++) {
     const E = p / 12 * Math.PI * 2, P = Array.from({ length: 28 }, (I, O) => {
       const B = O / 27 * Math.PI / 2, K = 2.04 * Math.sin(B);
@@ -30530,21 +30597,6 @@ float forestFog=1.-exp(-fogDensity*fogDensity*vFogDepth*vFogDepth);gl_FragColor.
       Ae.getMatrixAt(P * qe + Ze, te), te.premultiply(ee), Ae.setMatrixAt(P * qe + Ze, te);
   }
   y.dataset.meadowBeds = String(Fl.length), y.dataset.meadowFlowers = String(ns), y.dataset.foregroundFlowers = String(Ku), y.dataset.featuredBlooms = String(Zl.size), Qr.add(Yl, ql, Ps, jo, Qo);
-  const Zu = new tn({ color: "#d7b1d7", roughness: 0.18, metalness: 0.08, transparent: !0, opacity: 0.64, depthWrite: !1, clearcoat: 0.9, clearcoatRoughness: 0.12, iridescence: 1, iridescenceIOR: 1.36, iridescenceThicknessRange: [190, 430], side: nn });
-  W.push(Zu);
-  const Jl = new $t(Gl, Zu, Math.ceil(ts / 12) * si), Ju = [], $l = new ft(), bm = new ft().makeScale(0, 0, 0);
-  let $u = 0;
-  for (let p = 0; p < ns; p += 12) for (let E = 0; E < si; E++) {
-    Ps.getMatrixAt(p * si + E, $l), Jl.setMatrixAt($u++, $l), Ps.setMatrixAt(p * si + E, bm);
-    for (let P = 0; P < 10; P++)
-      for (const I of [P / 10, (P + 1) / 10]) {
-        const O = new w(0, 0.14 * Math.sin(I * Math.PI) + 0.28 * I * I + 0.012, 0.07 + I * 0.75).applyMatrix4($l);
-        Ju.push(O);
-      }
-  }
-  Jl.count = $u;
-  const ju = new _s({ color: h.mist, transparent: !0, opacity: 0.38 });
-  W.push(ju), Qr.add(Jl, new Sr(new Lt().setFromPoints(Ju), ju));
   const jl = new gn(1, 48, 36), eo = jl.attributes.position;
   for (let p = 0; p < eo.count; p++) {
     const E = eo.getX(p), P = eo.getY(p), I = eo.getZ(p), O = 1 + 0.065 * Math.sin(P * 19 + E * 9) + 0.045 * Math.cos(I * 23 - P * 7);
@@ -30708,7 +30760,7 @@ const Qu = Vl(8, 16);
   const xn = new xt();
   xn.position.set(-0.75, 0.4, 0), Zn.add(xn);
   const rc = new tn({ color: "#c5c4d2", metalness: 1, roughness: 0.18, transmission: 0, clearcoat: 1, clearcoatRoughness: 0.1, iridescence: 1, iridescenceIOR: 1.46, iridescenceThicknessRange: [160, 480], envMapIntensity: 1.45, bumpMap: fe, bumpScale: 2e-3 }), Tm = new tn({ color: h.mist, roughness: 0.42, transmission: 0.36, thickness: 0.04, ior: 1.38, transparent: !0, opacity: 0.78 }), ld = new xt();
-  xn.add(ld), y.dataset.anatomy = "loading", new ll(n).load("models/bodyparts3d-spine.glb", (p) => {
+  xn.add(ld), y.dataset.anatomy = "loading", new ll().load("models/bodyparts3d-spine.glb", (p) => {
     p.scene.traverse((E) => {
       E.isMesh && (E.material = E.name.startsWith("Intervertebral") ? Tm : rc);
     }), ld.add(p.scene), y.dataset.anatomy = "BodyParts3D-4.3", y.dataset.anatomyParts = "24 vertebrae, 1 sacrum, 23 intervertebral discs";
@@ -30744,13 +30796,13 @@ const Qu = Vl(8, 16);
   let fa, vd = -1, yd = 0, Md = 0, Sd = 0, bd = 16;
   M && (M.setPixelRatio(Math.min(devicePixelRatio || 1, 2)), M.outputColorSpace = jt, y.appendChild(M.domElement));
   const wd = new w(), Qs = It.clamp, Am = new _e(h.white), Rm = new _e(h.ink), Td = new _e();
-  let Oi = 0, pa = 0, mi = 0, Ds = 0, rs = 0, Sn = new URLSearchParams(location.search).get("enter") === "about", er = -1, Ad = 0, Rd = 0, tr = 0, oo = 1, nr = -1, Cd = 0, hc = -1, uc = 0, ma = 0, os = 0, as = 0, ir = !1, zn;
+  let Oi = 0, pa = 0, mi = 0, Ds = 0, rs = 0, Sn = new URLSearchParams(location.search).get("enter") === "about" || s.classList.contains("skip-hero"), er = -1, Ad = 0, Rd = 0, tr = 0, oo = 1, nr = -1, Cd = 0, hc = -1, uc = 0, ma = 0, os = 0, as = 0, ir = !1, zn;
   const dc = { y: 0 };
   M && (M.domElement.addEventListener("webglcontextlost", () => {
     y.dataset.state = "context-lost", cancelAnimationFrame(Oi), Oi = 0;
   }), M.domElement.addEventListener("webglcontextrestored", () => {
     y.dataset.state = "ready", M.shadowMap.needsUpdate = !0, ac(), ao(), gi();
-  }), y.dataset.state = "ready"), window.SiteJourney = { start: pc, skip: lo, ready: F }, new MutationObserver(gi).observe(document.getElementById("publications"), { attributes: !0, attributeFilter: ["class"] });
+  }), y.dataset.state = "ready"), window.SiteJourney = { start: pc, skip: lo, enterHome:xa, ready: F }, new MutationObserver(gi).observe(document.getElementById("publications"), { attributes: !0, attributeFilter: ["class"] });
   const sr = [0, 0.065, 0.12, ...u.slice(1).map((p) => (p[0] + p[1]) * 0.5)];
   addEventListener("wheel", (p) => {
     if (Sn || t.matches || s.classList.contains("hero-locked") || p.ctrlKey || Math.abs(p.deltaX) > Math.abs(p.deltaY)) return;
@@ -30805,7 +30857,7 @@ const Qu = Vl(8, 16);
       return;
     }
     try {
-      Ns(0.12, 0), await M.compileAsync(x, A), M.shadowMap.needsUpdate = !0, M.render(x, A), Ns(0, 0), y.dataset.openingWarmup = "ready";
+      gardenPolishState=polishCurrentGarden({THREE:{Vector3:w,Color:_e,Group:xt,Mesh:Qe,SphereGeometry:gn,PlaneGeometry:Mi,CanvasTexture:xs,PerspectiveCamera:Zt,Object3D:At,InstancedMesh:$t,TubeGeometry:li,CatmullRomCurve3:Ln,BufferGeometry:Lt,Float32BufferAttribute:ut},world:Z,camera:A,cameraCurve:C,gazeCurve:L,forest:Kr,detailedForest:Gu,treePlacements:Jo,rootBases:Vu,treeRoots:Hu,cloudBanks:Mt,cloudMaterial:rt,materials:W,atomGeometry:gt,flowerPetalGeometry:Gl,petalMaterial:Wl,flowerPositions:ea,meadow:Qr,host:y,floor:On});Ns(0.12, 0), await M.compileAsync(x, A), M.shadowMap.needsUpdate = !0, M.render(x, A), Ns(0, 0), y.dataset.openingWarmup = "ready";
     } catch (p) {
       console.error("Opening preparation failed", p);
     } finally {

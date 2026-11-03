@@ -1,4 +1,4 @@
-#journeyCanvas .journey-orchid-screen img{filter:brightness(0) drop-shadow(1px -1px 1px rgb(171 191 240 / calc(var(--intro-reveal,0)*.20)))!important}
+#journeyCanvas .journey-orchid-screen img{filter:brightness(0)!important}
 #journeyCanvas .journey-orchid-screen:after{display:none!important}
 html:not(.orchid-butterfly-active) #heroScreen .hero-focus,html.orchid-butterfly-active #heroScreen .hero-focus{clip-path:inset(0 calc(100% - var(--intro-reveal,0)*100%) 0 0)!important;opacity:var(--intro-reveal,0)!important;transition:none!important;transform:none!important}
 html:not(.orchid-butterfly-active) .signature path{animation-play-state:paused!important}
