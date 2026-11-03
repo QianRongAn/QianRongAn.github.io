@@ -1,0 +1,129 @@
+name: Import and verify project figures
+on:
+  push:
+    branches: ["codex/project-figures-local-af5f1ce"]
+    paths: [".github/workflows/import-project-figures.yml"]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: "codex/project-figures-local-af5f1ce"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install figure inspection and browser tools
+        run: |
+          pip install pillow playwright
+          python -m playwright install --with-deps chromium
+      - name: Download original figures and verify display
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.parse import urlsplit
+          from PIL import Image
+          import io, re, json, subprocess, threading, http.server, socketserver, time
+          repo = Path.cwd()
+          page = repo / "projects/index.html"
+          html = page.read_text()
+          assets = repo / "projects/assets/figures"
+          assets.mkdir(parents=True, exist_ok=True)
+          manifest = []
+          for match in list(re.finditer(r'<article class="project" id="([^"]+)">([\s\S]*?)</article>', html)):
+              key, article = match.groups()
+              im = re.search(r'<img class="project-image paper-figure"[^>]*src="([^"]+)"[^>]*>', article)
+              if not im:
+                  continue
+              source = im.group(1)
+              candidates = [source]
+              if "frontiersin.org" in source:
+                  candidates.append(source.replace(".webp", ".jpg"))
+                  candidates.append(source.replace("www.frontiersin.org", "public-pages-files-2025.frontiersin.org").replace("/files/Articles/", "/articles/"))
+              if "springernature.com" in source:
+                  candidates.append(source.replace("/lw685/", "/full/"))
+              last = None
+              for url in candidates:
+                  try:
+                      req = Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "image/avif,image/webp,image/png,image/jpeg,*/*"})
+                      with urlopen(req, timeout=45) as response:
+                          data = response.read()
+                      image = Image.open(io.BytesIO(data))
+                      image.verify()
+                      image = Image.open(io.BytesIO(data))
+                      assert image.width >= 250 and image.height >= 150
+                      ext = {"WEBP": "webp", "JPEG": "jpg", "PNG": "png"}.get(image.format)
+                      assert ext, image.format
+                      dest = assets / (key + "." + ext)
+                      dest.write_bytes(data)
+                      relative = "assets/figures/" + dest.name
+                      tag = im.group(0).replace(source, relative).replace(' loading="lazy"', ' loading="eager"')
+                      tag = tag.replace(' referrerpolicy="no-referrer"', "")
+                      tag = tag.replace(' decoding="async"', ' decoding="async" width="' + str(image.width) + '" height="' + str(image.height) + '"')
+                      html = html.replace(im.group(0), tag, 1)
+                      manifest.append({"project": key, "file": relative, "source": url, "width": image.width, "height": image.height, "bytes": len(data)})
+                      print("Downloaded", key, image.width, image.height, len(data), flush=True)
+                      break
+                  except Exception as error:
+                      last = error
+                      print("Image attempt failed:", key, type(error).__name__, str(error)[:150], flush=True)
+              else:
+                  raise RuntimeError("Cannot retrieve original figure for " + key + ": " + str(last))
+          assert len(manifest) == 5, len(manifest)
+          assert not re.search(r'class="project-image paper-figure"[^>]*src="https:', html)
+          version = "20261103-localfigures-v2"
+          html = re.sub(r'style.css\?v=[^"]+', "style.css?v=" + version, html)
+          html = re.sub(r'demo.js\?v=[^"]+', "demo.js?v=" + version, html)
+          html = html.replace('Hover to explore · Click to keep open', 'Click a project to view its summary and figure')
+          page.write_text(html)
+          main = repo / "index.html"
+          root = main.read_text()
+          root, changed = re.subn(r'(id="projectsFrame"[^>]*src="projects/index.html\?embedded=1&amp;v=)[^"]+', lambda m: m.group(1) + version, root)
+          assert changed == 1, changed
+          main.write_text(root)
+          (assets / "sources.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          (assets / "README.md").write_text("# Published project figures\n\nOriginal image files are stored unchanged. Captions on the Projects page identify authors, journal, figure number, and license. Sources and dimensions are recorded in sources.json. Frontiers figures use CC BY 4.0; the World Journal of Surgical Oncology figure uses CC BY-NC-ND 4.0.\n")
+          from playwright.sync_api import sync_playwright
+          server = subprocess.Popen(["python", "-m", "http.server", "8765"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+          time.sleep(1)
+          review = repo / ".figure-review"
+          review.mkdir(exist_ok=True)
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              for label, viewport in [("desktop", {"width": 1440, "height": 1000}), ("mobile", {"width": 390, "height": 844})]:
+                  context = browser.new_context(viewport=viewport, reduced_motion="reduce", is_mobile=(label == "mobile"), has_touch=(label == "mobile"))
+                  tab = context.new_page()
+                  errors = []
+                  tab.on("pageerror", lambda error: errors.append(str(error)))
+                  tab.goto("http://127.0.0.1:8765/projects/index.html?embedded=1&v=" + version)
+                  assert tab.locator("article.project").count() == 8
+                  for entry in manifest:
+                      card = tab.locator("#" + entry["project"])
+                      card.locator(".project-trigger").click(force=True)
+                      tab.wait_for_function("(id) => { const im=document.querySelector('#'+id+' .paper-figure'); return im.complete && im.naturalWidth>200; }", arg=entry["project"], timeout=15000)
+                      assert card.locator(".project-trigger").get_attribute("aria-expanded") == "true"
+                      assert card.locator(".paper-figure").evaluate("(im) => new URL(im.currentSrc).origin === location.origin")
+                      card.locator(".image-button").click(force=True)
+                      assert tab.locator(".lightbox").evaluate("(d) => d.open")
+                      tab.wait_for_function("document.querySelector('#large-image').complete && document.querySelector('#large-image').naturalWidth>200")
+                      tab.locator(".lightbox-close").click()
+                      card.locator(".project-trigger").click(force=True)
+                  assert not errors, errors
+                  tab.locator("#prostate-aurka .project-trigger").click(force=True)
+                  tab.locator("#prostate-aurka .visual-column").scroll_into_view_if_needed()
+                  tab.screenshot(path=str(review / (label + ".png")), full_page=True)
+                  print("PASS browser:", label, "five local originals, expanded details and lightboxes", flush=True)
+                  context.close()
+              browser.close()
+          server.terminate()
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", "index.html", "projects/index.html", "projects/assets/figures", ".figure-review"], check=True)
+          subprocess.run(["git", "commit", "-m", "Store original project figures locally and verify desktop and mobile display"], check=True)
+          subprocess.run(["git", "push", "origin", "HEAD"], check=True)
+          
+          PY
