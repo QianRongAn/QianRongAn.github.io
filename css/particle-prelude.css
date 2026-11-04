@@ -28,3 +28,11 @@
 
 /* Keep loading state accessible without printing status copy over the film. */
 .particle-prelude-status{display:none!important}
+
+/* Prepare the whole 3D scene and decode the 4K film before playback begins. */
+html.intro-boot body>.intro-loader{visibility:visible!important}
+html.journey-preloading{overflow:hidden!important}
+.intro-loader{position:fixed;inset:0;z-index:220000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;background:#120848;color:#f8f4ff;font:12px/1.5 'Open Sans',Arial,sans-serif;letter-spacing:.2em}
+.intro-loader-mark{width:30px;height:30px;border:1px solid #d0ba9833;border-top-color:#d0ba98;border-radius:50%;animation:prelude-spin 1.2s linear infinite}
+.intro-loader button{position:absolute;right:5vw;bottom:6vh;color:#f8f4ff;background:transparent;border:0;border-bottom:1px solid #a8a9bd;padding:12px 0;font:italic 16px Georgia,serif;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.intro-loader-mark{animation:none}}

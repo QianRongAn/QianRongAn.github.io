@@ -24,7 +24,7 @@ function render(now){if(!active)return;const duration=video.duration,time=video.
  frame=requestAnimationFrame(render);
 }
 overlay.querySelector('button').addEventListener('click',skip);video.addEventListener('ended',handoff);video.addEventListener('error',()=>{failedAt=performance.now();});
-window.ParticlePrelude={play(done){if(active)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches){done();return;}continuation=done;transition=null;transitionAt=fadeAt=failedAt=lastTime=lastAdvance=0;active=true;overlay.hidden=false;overlay.style.setProperty('--prelude-fade','1');root.classList.add('particle-prelude-active');overlay.classList.add('is-loading');status.textContent='正在完整加载 4K 动画…';
+window.ParticlePrelude={prepare,play(done){if(active)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches){done();return;}continuation=done;transition=null;transitionAt=fadeAt=failedAt=lastTime=lastAdvance=0;active=true;overlay.hidden=false;overlay.style.setProperty('--prelude-fade','1');root.classList.add('particle-prelude-active');overlay.classList.add('is-loading');status.textContent='正在完整加载 4K 动画…';
  prepare().then(()=>{if(!active)return;overlay.classList.remove('is-loading');status.textContent='';video.currentTime=0;return video.play();}).then(()=>{if(active)prefetchScenery();}).catch(()=>{failedAt=performance.now();status.textContent='动画播放异常，正在进入主页…';});addEventListener('wheel',guard,{capture:true,passive:false});addEventListener('keydown',keys,true);frame=requestAnimationFrame(render);
 }};
 })();

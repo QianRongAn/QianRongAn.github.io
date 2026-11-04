@@ -113,6 +113,7 @@ import { initCrystalPages } from './crystal-pages.js';
 
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon } from './celestial-bodies.js';
+import { createBanyanClearing } from './banyan-clearing.js';
 
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -542,6 +543,7 @@ for(const angle of [Math.PI*2/3,Math.PI*4/3]){const x=Math.cos(angle)*1.62,z=Mat
 for(let j=0;j<120;j++){const a=2.1+j*.018,theta=.5+(j%17)/17*.85,r=2.045*Math.sin(theta);ivyDummy.position.set(Math.cos(a)*r,3.48+1.46*Math.cos(theta),Math.sin(a)*r);ivyDummy.rotation.set(-theta,a,j*.7);ivyDummy.scale.setScalar(.8+(j%4)*.15);ivyDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyCount++,ivyDummy.matrix);}pavilion.add(ivyLeaves);
 
 // Six paper-like leaves gradually resolve into a light, abstract constellation.
+const banyanClearing=createBanyanClearing(camera,sceneryManager);camera.add(banyanClearing.group);
 const publications = new THREE.Group(); publications.position.set(2.7, .7, -107); world.add(publications);
 const paperLeaves = [],paperBreeze={x:0,y:0},paperWind={x:0,y:0};
 addEventListener('pointermove',event=>{paperBreeze.x=(event.clientX/innerWidth-.5)*2;paperBreeze.y=(event.clientY/innerHeight-.5)*2;},{passive:true});
@@ -551,7 +553,7 @@ for(let i=0;i<6;i++) {
     const pinMaterial=gold.clone();materials.push(pinMaterial);orb(publications,mesh.position.x,mesh.position.y,mesh.position.z,.085,pinMaterial);
 }
 
-publications.traverse(part=>{if(part.material)part.material.userData.publicationPaper=true;});
+publications.traverse(part=>{part.renderOrder=901;if(part.material)part.material.userData.publicationPaper=true;});
 
 // An inhabited, continuous biomorphic canyon: near surfaces occlude distant ones.
 const habitat = new THREE.Group(); world.add(habitat);
@@ -991,6 +993,7 @@ function paint(t,time){
     if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
     moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.97,1,t));
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
+    banyanClearing.update(t,time);
     skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
@@ -1088,7 +1091,7 @@ addEventListener('keydown',event=>{
  wheelLock=performance.now()+350;
  if(requestedBeat===beatStops.length-1&&direction>0)enterHome();else moveToBeat(clamp(requestedBeat+direction,0,beatStops.length-1));
 });
-addEventListener('scroll',()=>{updateTarget();if(!skipped&&target===1&&scrollY>sectionTop+travel+80){enterHome();}resume();},{passive:true});addEventListener('resize',()=>{measure();if(motion.matches)finishReduced();else if(!skipped)paint(current,elapsed);},{passive:true});
+addEventListener('scroll',()=>{if(root.classList.contains('hero-locked')||root.classList.contains('journey-preloading'))return;updateTarget();if(!skipped&&requestedBeat===beatStops.length-1&&current>.98&&target===1&&scrollY>sectionTop+travel+80){enterHome();}resume();},{passive:true});addEventListener('resize',()=>{measure();if(motion.matches)finishReduced();else if(!skipped)paint(current,elapsed);},{passive:true});
 document.addEventListener('visibilitychange',resume);
 new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,attributeFilter:['class','lang']});
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
@@ -1104,7 +1107,7 @@ if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};
  if(!renderer||skipped||motion.matches){resolveOpening();return;}
  await sceneryReady;
  if(skipped||motion.matches){resolveOpening();return;}
- try{gardenPolishState=polishCurrentGarden({THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,flowerPetalGeometry,petalMaterial,flowerPositions,botanicalOccupied,meadow,host,floor:meadowFloor});paint(.12,0);await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
+ try{gardenPolishState=polishCurrentGarden({THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,flowerPetalGeometry,petalMaterial,flowerPositions,botanicalOccupied,meadow,host,floor:meadowFloor});paint(.12,0);banyanClearing.group.visible=true;await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
  catch(error){console.error('Opening preparation failed',error);}
  finally{resolveOpening();}
 })();
