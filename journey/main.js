@@ -374,7 +374,7 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
   float fold=.35+.65*pow(.5+.5*sin(uv.x*56.-clock*2.2+sin(uv.x*15.+flow)*2.+k),2.);
   float rays=.55+.45*noise(vec2(uv.x*290.-clock*.5,k*19.));
   float extent=pow(.5+.5*cos((uv.x-.23)*6.28318),1.5);
-  vec3 tint=mix(vec3(.035,.32,.18),vec3(.50,.08,.29),smoothstep(.015,.070,rise));
+  vec3 tint=mix(vec3(.035,.32,.18),vec3(.65,.14,.41),smoothstep(.005,.055,rise));
   tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.7225);
   auroraLight+=tint*(curtain*fold*rays+edge*.32)*extent*.64;
  }
