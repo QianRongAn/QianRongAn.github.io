@@ -12,7 +12,7 @@
 .particle-prelude-track span{display:block;width:100%;height:100%;background:#d0ba98;transform:scaleX(0);transform-origin:left}
 .particle-prelude.is-bursting video{opacity:0}
 
-.particle-prelude.is-loading{background:#000}.particle-prelude.is-loading video{visibility:visible}.particle-prelude.is-loading .particle-prelude-label,.particle-prelude.is-loading .particle-prelude-caption{visibility:visible}.particle-prelude.is-loading .particle-prelude-track span{transform:scaleX(.15)!important;animation:prelude-loading 1.2s ease-in-out infinite alternate}@keyframes prelude-loading{to{transform:scaleX(.85)}}
+.particle-prelude.is-loading{background:rgba(18,8,72,var(--prelude-fade))}.particle-prelude.is-loading video{visibility:visible}.particle-prelude.is-loading .particle-prelude-label,.particle-prelude.is-loading .particle-prelude-caption{visibility:visible}.particle-prelude.is-loading .particle-prelude-track span{transform:scaleX(.15)!important;animation:prelude-loading 1.2s ease-in-out infinite alternate}@keyframes prelude-loading{to{transform:scaleX(.85)}}
 
 /* Keep playback on the native video compositor instead of screen blending. */
 .particle-prelude video{mix-blend-mode:normal;mask-image:none;-webkit-mask-image:none;opacity:var(--prelude-fade);background:#120848;transform:translate(-50%,-50%) translateZ(0)}
