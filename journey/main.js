@@ -328,9 +328,9 @@ dna.traverse(part=>{if(part.material){part.material=part.material.clone();part.m
 
 // A curved sky dome gives the chambers a horizon and a directional colour field.
 const gloriosaTexture=new THREE.TextureLoader(sceneryManager).load('assets/worlds/gloriosa-variants146.webp');gloriosaTexture.colorSpace=THREE.SRGBColorSpace;gloriosaTexture.anisotropy=8;
-const skyStarted=performance.now();const galaxyMap=new THREE.TextureLoader(sceneryManager).load('assets/worlds/starmap-galactic-4k.jpg');galaxyMap.colorSpace=THREE.SRGBColorSpace;galaxyMap.wrapS=THREE.RepeatWrapping;galaxyMap.anisotropy=8;
-const skyUniforms={galaxyMap:{value:galaxyMap},reveal:{value:0},zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
-const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;uniform float reveal;uniform sampler2D galaxyMap;
+const skyStarted=performance.now();
+const skyUniforms={reveal:{value:0},zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
+const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;uniform float reveal;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
 // Random offsets avoid a visible star grid; each scale has a different density.
@@ -347,7 +347,7 @@ vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
  return tint*present*point*brightness;
 }
 void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
- float path=.545+.025*sin((uv.x-.12)*9.);
+ float path=.52+.105*sin(uv.x*6.28318-1.6);
  float across=uv.y-path;
  float band=exp(-pow(across/.026,2.));
  float halo=exp(-pow(across/.075,2.));
@@ -357,11 +357,14 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float rift=exp(-pow((across+.006+.009*sin(uv.x*47.))/.008,2.));
  float galaxy=band*pow(n,1.7)*(1.-rift*(.78+.19*dust));
  float skyVisibility=smoothstep(-.13,.18,d.y)*(1.-daylight);
- // NASA star catalogue image: one resolved galactic belt with real dark lanes.
- vec2 galUv=vec2(fract(uv.x+.18),clamp(.5+across*7.,0.,1.));
- vec3 galactic=texture2D(galaxyMap,galUv).rgb;
- color+=pow(galactic,vec3(.68))*2.2*(.08+.92*exp(-pow(across/.018,2.)))*skyVisibility*reveal;
- color+=starLayer(uv,vec2(1500.,750.),exp(-pow(across/.012,2.))*.8,19.)*1.35*skyVisibility*reveal;
+ // Resolved stellar knots and dark rifts, rather than a uniform cloudy glow.
+ float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
+ color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
+ color*=1.-band*rift*.38;
+ vec3 stars=starLayer(uv,vec2(640.,320.),.002,3.);
+ stars+=starLayer(uv,vec2(1250.,625.),.0002+band*.82*(.22+.78*n)*(1.-rift*.94),19.)*1.05;
+ stars+=starLayer(uv,vec2(2100.,1050.),band*.96*(.20+.80*n)*(1.-rift*.97),73.)*.95;
+ color+=stars*skyVisibility*(1.35+.04*sin(clock*.28));
  // Aurora australis: slow folded curtains with vertical rays and a pink upper fringe.
  // Folded ribbons advect continuously instead of remaining a static luminous mist.
  vec3 auroraLight=vec3(0.);
