@@ -55,11 +55,11 @@ function polishCurrentGarden(c){
  line([[0,0,0],[.025,.42,.008],[.045,.82,0]],.011,stemColor);
  line([[.045,.78,0],[-.10,1.12,.015],[-.06,1.25,.012],[.015,1.19,0],[0,1.075,0]],.008,stemColor);
  piece(new T.SphereGeometry(1,16,10),stemColor,new T.Vector3(0,1.055,0),new T.Vector3(),new T.Vector3(.022,.060,.022));
- const profile=new T.CatmullRomCurve3([[.025,1.075,0],[.16,1.01,0],[.30,1.17,0],[.22,1.43,0],[.28,1.57,0],[.36,1.58,0],[.405,1.52,0]].map(p=>new T.Vector3(...p)),false,'catmullrom',.35);
+ const profile=new T.CatmullRomCurve3([[.025,1.075,0],[.16,1.005,0],[.35,1.14,0],[.34,1.32,0],[.19,1.43,0],[.25,1.59,0],[.405,1.50,0]].map(p=>new T.Vector3(...p)),false,'catmullrom',.35);
  for(let j=0;j<6;j++){
-  const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=36,cols=10;
+  const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=64,cols=14;
   for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){
-   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.019*Math.sin(t*23+j*.62)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.026*(1-w*w)*Math.sin(Math.PI*t),twist=.044*Math.sin(t*Math.PI*1.3+j*.42)*w;
+   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.007*Math.sin(t*24+j*.62)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.037*(1-w*w)*Math.sin(Math.PI*t),twist=.020*Math.sin(t*Math.PI*1.3+j*.42)*w;
    const radial=center.x*.83+cup,side=w*width;ps.push(Math.cos(a)*radial-Math.sin(a)*side,center.y+edgeWave+twist-.045*(j%3)*t,Math.sin(a)*radial+Math.cos(a)*side);
    const col=ivory.clone().lerp(white,.35+.65*t);cs.push(col.r,col.g,col.b);
    if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
@@ -87,7 +87,7 @@ function polishCurrentGarden(c){
  }
 
  const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
- const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.56;flowerMaterial.sheen=.42;flowerMaterial.transmission=.06;flowerMaterial.thickness=.012;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
+ const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.56;flowerMaterial.sheen=.42;flowerMaterial.transmission=.06;flowerMaterial.thickness=.012;flowerMaterial.iridescence=0;flowerMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','outgoingLight=vec3(1.)-exp(-outgoingLight*.9);\n#include <opaque_fragment>');};flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
  for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
  lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
