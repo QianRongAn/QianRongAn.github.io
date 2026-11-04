@@ -26,8 +26,11 @@ export function createSaturn(){
  const planetMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:true,uniforms:{opacity},vertexShader:vertex,fragmentShader:`
  uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
-  float latitude=vUv.y;float bands=.5+.5*sin(latitude*58.+.22*sin(latitude*17.));
-  vec3 color=mix(vec3(.065,.030,.016),vec3(.20,.11,.060),.40+.24*bands);
+  float latitude=vUv.y+.003*sin(vUv.x*36.+vUv.y*24.);
+  float bands=.5+.5*sin(latitude*58.+.38*sin(latitude*17.));
+  float fine=.5+.5*sin(latitude*174.+.25*sin(vUv.x*43.));
+  vec3 color=mix(vec3(.38,.20,.105),vec3(.88,.76,.57),smoothstep(.16,.84,bands));
+  color=mix(color,vec3(.95,.88,.72),.16*fine);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
   gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>
@@ -42,11 +45,20 @@ export function createSaturn(){
   float edge=smoothstep(0.,.025,t)*(1.-smoothstep(.975,1.,t));
   vec3 p=vec3(ring.x,0.,-ring.y),light=normalize(vec3(-.65,.45,.8));float along=dot(p,light);
   float shadow=along<0.?smoothstep(8.5,10.5,dot(p,p)-along*along):1.;
-  vec3 color=mix(vec3(.48,.46,.40),vec3(.77,.75,.67),t)*mix(.35,1.,shadow);
+  vec3 color=mix(vec3(.47,.30,.16),vec3(.88,.75,.53),t)*mix(.35,1.,shadow);
   gl_FragColor=vec4(color,opacity*bands*division*edge);
   #include <colorspace_fragment>
  }`});
  const rings=new THREE.Mesh(new THREE.RingGeometry(3.85,7.1,384,6),ringMaterial);rings.rotation.x=-Math.PI/2;rings.name='Saturn rings';rings.renderOrder=1;saturn.add(rings);
+ const haloMaterial=new THREE.ShaderMaterial({side:THREE.DoubleSide,transparent:true,depthWrite:false,uniforms:{opacity},vertexShader:`varying vec2 ring;void main(){ring=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`
+ uniform float opacity;varying vec2 ring;
+ void main(){
+  float radius=length(ring);
+  float glow=exp(-pow((radius-7.22)/.105,2.));
+  gl_FragColor=vec4(vec3(.93,.76,.48),opacity*.38*glow);
+  #include <colorspace_fragment>
+ }`});
+ const halo=new THREE.Mesh(new THREE.RingGeometry(7.1,7.55,384,1),haloMaterial);halo.rotation.x=-Math.PI/2;halo.name='Saturn warm halo';halo.renderOrder=2;saturn.add(halo);
  saturn.userData.opacity=opacity;
  return saturn;
 }
