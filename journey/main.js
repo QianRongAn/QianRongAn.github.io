@@ -112,7 +112,7 @@ import './style.css';
 import { initCrystalPages } from './crystal-pages.js';
 
 import { createMermaidTail } from './mermaid-tail.js';
-import { createSupermoon, createSaturn } from './celestial-bodies.js';
+import { createSupermoon } from './celestial-bodies.js';
 
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -326,10 +326,35 @@ const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:
 const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
+// Random offsets avoid a visible star grid; each scale has a different density.
+vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
+ vec2 grid=uv*cells,id=floor(grid),f=fract(grid);
+ vec2 jitter=vec2(hash(id+seed),hash(id+seed+37.));
+ float present=step(1.-density,hash(id+seed+91.));
+ vec2 delta=f-(.12+.76*jitter);
+ float radius=mix(.025,.10,pow(hash(id+seed+15.),6.));
+ float footprint=max(fwidth(grid.x),fwidth(grid.y));
+ float point=exp(-dot(delta,delta)/(radius*radius+footprint*footprint*.17));
+ float brightness=mix(.15,1.25,pow(hash(id+seed+63.),4.));
+ vec3 tint=mix(vec3(.66,.76,1.),vec3(1.,.85,.68),hash(id+seed+9.));
+ return tint*present*point*brightness;
+}
 void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
- float path=.64+.11*sin(uv.x*6.28318+1.1);float band=exp(-pow((uv.y-path)/.075,2.));float n=noise(uv*vec2(55.,35.))*.6+noise(uv*vec2(120.,75.))*.28+noise(uv*vec2(240.,150.))*.12;float lane=smoothstep(.25,.75,noise(uv*vec2(80.,30.)+6.));float galaxy=band*(.16+.65*n)*(.42+.58*lane);
- color+=mix(vec3(.12,.10,.15),vec3(.23,.20,.26),n)*galaxy*.62;
- vec2 grid=uv*vec2(680.,340.),id=floor(grid),f=fract(grid)-.5;float stars=step(.952,hash(id))*exp(-dot(f,f)*155.);vec2 g2=uv*vec2(1200.,600.),id2=floor(g2),f2=fract(g2)-.5;float fine=step(.978-band*.045,hash(id2+25.))*exp(-dot(f2,f2)*210.);float twinkle=.87+.13*sin(clock*.35+hash(id)*26.);color+=(vec3(.78,.80,.90)*stars*.55+vec3(.61,.64,.75)*fine*.38)*twinkle*smoothstep(.43,.65,uv.y);
+ float path=.56+.16*sin(uv.x*6.28318+1.1);
+ float across=uv.y-path;
+ float band=exp(-pow(across/.062,2.));
+ float halo=exp(-pow(across/.13,2.));
+ vec2 cloudUv=uv*vec2(85.,45.);
+ float n=.53*noise(cloudUv)+.29*noise(cloudUv*2.13)+.18*noise(cloudUv*4.57);
+ float dust=noise(vec2(uv.x*57.,across*145.)+vec2(0.,noise(uv*32.)*3.));
+ float rift=exp(-pow((across+.014+.014*sin(uv.x*47.))/.014,2.));
+ float galaxy=(band*(.30+.95*n)+halo*.10)*(1.-rift*(.45+.45*dust));
+ float skyVisibility=smoothstep(-.13,.18,d.y);
+ color+=mix(vec3(.095,.12,.19),vec3(.23,.19,.26),n)*galaxy*.70*skyVisibility;
+ vec3 stars=starLayer(uv,vec2(640.,320.),.035,3.);
+ stars+=starLayer(uv,vec2(1250.,625.),.018+band*.24,19.)*.73;
+ stars+=starLayer(uv,vec2(2100.,1050.),band*.32,73.)*.44;
+ color+=stars*skyVisibility*(.94+.06*sin(clock*.28));
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -338,7 +363,7 @@ const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(145,48,32),new THREE.Sh
 // Distant painted cloud banks: broad flat bases and unequal rising lobes.
 const skyObjects=new THREE.Group();world.add(skyObjects);
 const birdFlock=[];const birdMaterial=new THREE.MeshBasicMaterial({color:'#d5d2de',transparent:true,opacity:.86});
-for(let i=0;i<16;i++){const bird=new THREE.Group(),body=new THREE.Mesh(new THREE.SphereGeometry(1,8,5),birdMaterial);body.scale.set(.075,.055,.19);bird.add(body);const wings=[];for(const side of [-1,1]){const pivot=new THREE.Group(),wing=new THREE.Mesh(new THREE.SphereGeometry(1,8,4),birdMaterial);wing.position.x=side*.20;wing.scale.set(.27,.018,.095);pivot.add(wing);bird.add(pivot);wings.push({pivot,side});}bird.position.set(Math.sin(i*2.4)*22,9+(i%5)*1.8,-37-i*5.4);skyObjects.add(bird);birdFlock.push({bird,wings,phase:i*1.7,baseY:bird.position.y,baseZ:bird.position.z});}
+for(let i=0;i<80;i++){const bird=new THREE.Group(),body=new THREE.Mesh(new THREE.SphereGeometry(1,8,5),birdMaterial);body.scale.set(.075,.055,.19);bird.add(body);const wings=[];for(const side of [-1,1]){const pivot=new THREE.Group(),wing=new THREE.Mesh(new THREE.SphereGeometry(1,8,4),birdMaterial);wing.position.x=side*.20;wing.scale.set(.27,.018,.095);pivot.add(wing);bird.add(pivot);wings.push({pivot,side});}bird.position.set(Math.sin(i*2.4)*22,9+(i%5)*1.8+Math.sin(i*2.1)*1.2,-37-(i%16)*5.4-Math.floor(i/16)*.8);skyObjects.add(bird);birdFlock.push({bird,wings,phase:i*1.7,baseY:bird.position.y,baseZ:bird.position.z});}
 const cloudRamp=new THREE.DataTexture(new Uint8Array([105,155,205,245]),4,1,THREE.RedFormat);cloudRamp.minFilter=cloudRamp.magFilter=THREE.NearestFilter;cloudRamp.needsUpdate=true;
 function softenCloud(material){material.onBeforeCompile=shader=>{
  shader.vertexShader='varying vec3 cloudNormal;varying vec3 cloudView;varying vec3 cloudPoint;\n'.replace('\n',String.fromCharCode(10))+shader.vertexShader;
@@ -355,7 +380,7 @@ for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*
 // Lunar detail stays on a complete disc; foreground terrain supplies natural occlusion.
 const lunarTexture=new THREE.TextureLoader(sceneryManager).load('assets/space/lroc-color-2k.jpg');lunarTexture.colorSpace=THREE.SRGBColorSpace;
 const moon=createSupermoon(lunarTexture),moonMaterial=moon.material;skyObjects.add(moon);
-const saturn=createSaturn();skyObjects.add(saturn);
+// Ringed Jupiter removed at the user's request.
 
 // Meta-ACDC: side-chain contact graph with a peptide ribbon and one risk core.
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
@@ -968,7 +993,7 @@ function paint(t,time){
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
-    const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;saturn.userData.opacity.value=fade*emergence*(1-smooth(.57,.67,t));saturn.visible=saturn.userData.opacity.value>.001;
+    const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
     wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
@@ -985,7 +1010,7 @@ function paint(t,time){
         let opacity=0,entry=0,exit=0;
         if(i===copyIndex){entry=smooth(0,.72,time-copyStarted);opacity=entry;}
         else if(i===oldCopy){entry=1;exit=smooth(0,.36,time-oldCopyStarted);opacity=1-exit;}
-        panel.style.color=[2,11].includes(i)?'#000000':[8,9].includes(i)?palette.white:i>=9&&i<=15?'#000000':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
+        const blackCopy=[2,4,5,6,7,9,10,11,12,13,14,15,16].includes(i);panel.style.color=blackCopy?'#000000':i>=17?palette.ink:palette.white;panel.querySelector('.journey-kicker').style.opacity=blackCopy?'1':'';panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
         panel.querySelectorAll('.journey-title-line > span').forEach((line,j)=>{const lift=clamp((entry-j*.12)/(1-j*.12),0,1);line.style.transform=`translateY(${(1-lift)*112}%)`;});
         const subtitle=panel.querySelector('p');subtitle.style.transform='none';subtitle.style.opacity='1';
     });
