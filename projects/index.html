@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nan Wang — Selected Research Projects</title><link rel="preload" href="assets/inter.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="style.css?v=20261103-localfigures-v3"><link rel="stylesheet" href="../css/floral-ornaments.css?v=20261026-refine81">
-<link rel="preload" href="../font/Solare-FineIntense.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../font/SolareItalic-Fine.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="solare-titles.css?v=20261104-solare133"></head>
+<link rel="preload" href="../font/Solare-FineIntense.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../font/SolareItalic-Fine.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="solare-titles.css?v=20261104-solare134"></head>
 <body>
 <script>if(new URLSearchParams(location.search).has('embedded'))document.documentElement.classList.add('embedded');</script>
   <div class="dna-background is-on" id="pageCurtain" aria-hidden="true"><canvas id="curtain-dna"></canvas></div>
@@ -207,14 +207,4 @@
   <div class="concept-label">Project interaction / concept preview</div>
   <dialog class="lightbox" aria-label="Project image preview"><button class="lightbox-close" aria-label="Close image preview">×</button><img id="large-image" alt=""></dialog>
   <script src="assets/curtain-dna.js"></script><script src="demo.js?v=20261103-localfigures-v3"></script>
-<script>
-if(document.documentElement.classList.contains('embedded')){
-  var dna=document.querySelector('.dna-background');
-  dna.classList.remove('is-on');
-  addEventListener('message',function(event){
-    if(event.source!==parent||event.origin!==location.origin||!event.data||event.data.type!=='projects-visibility')return;
-    dna.classList.toggle('is-on',!!event.data.active);
-  });
-  parent.postMessage({type:'projects-ready'},location.origin);
-}
-</script></body></html>
+<script src="readiness.js?v=20261104-ready135"></script></body></html>

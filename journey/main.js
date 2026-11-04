@@ -331,7 +331,7 @@ vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
  vec2 grid=uv*cells,id=floor(grid),f=fract(grid);
  vec2 jitter=vec2(hash(id+seed),hash(id+seed+37.));
  float present=step(1.-density,hash(id+seed+91.));
- vec2 delta=f-(.12+.76*jitter);
+ vec2 delta=f-(.04+.92*jitter);
  float radius=mix(.025,.10,pow(hash(id+seed+15.),6.));
  float footprint=max(fwidth(grid.x),fwidth(grid.y));
  float point=exp(-dot(delta,delta)/(radius*radius+footprint*footprint*.17));
@@ -342,7 +342,7 @@ vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
 void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
  float path=.56+.16*sin(uv.x*6.28318+1.1);
  float across=uv.y-path;
- float band=exp(-pow(across/.062,2.));
+ float band=exp(-pow(across/.045,2.));
  float halo=exp(-pow(across/.13,2.));
  vec2 cloudUv=uv*vec2(85.,45.);
  float n=.53*noise(cloudUv)+.29*noise(cloudUv*2.13)+.18*noise(cloudUv*4.57);
@@ -354,9 +354,9 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
  color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
  color*=1.-band*rift*.16;
- vec3 stars=starLayer(uv,vec2(640.,320.),.035,3.);
- stars+=starLayer(uv,vec2(1250.,625.),.018+band*.43*(1.-rift*.91),19.)*1.05;
- stars+=starLayer(uv,vec2(2100.,1050.),band*.65*(1.-rift*.94),73.)*.95;
+ vec3 stars=starLayer(uv,vec2(640.,320.),.007,3.);
+ stars+=starLayer(uv,vec2(1250.,625.),.0015+band*.55*(.22+.78*n)*(1.-rift*.94),19.)*1.05;
+ stars+=starLayer(uv,vec2(2100.,1050.),band*.76*(.20+.80*n)*(1.-rift*.97),73.)*.95;
  color+=stars*skyVisibility*(.94+.06*sin(clock*.28));
  // Aurora australis: slow folded curtains with vertical rays and a pink upper fringe.
  float auroraBase=.54+.055*sin(uv.x*12.566+clock*.025)+.018*sin(uv.x*47.+clock*.06);
@@ -367,7 +367,7 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float strands=.55+.45*noise(vec2(uv.x*470.+rise*3.,clock*.025));
  float extent=pow(.5+.5*cos((uv.x-.25)*6.28318),3.);
  vec3 aurora=mix(vec3(.055,.14,.105),vec3(.58,.025,.32),smoothstep(.03,.28,rise));
- color+=aurora*curtain*rays*strands*extent*1.65*skyVisibility;
+ color+=aurora*curtain*rays*strands*extent*1.32*skyVisibility;
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -400,7 +400,7 @@ const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.
 const atoms = [];
 for (let i = 0; i < 64; i++) { const a = random() * Math.PI * 2, h = random() * 2 - 1, r = 1.3 + random() * 1.1; atoms.push(new THREE.Vector3(Math.cos(a) * r, h * 2.6, Math.sin(a) * r)); }
 // Match the phospholipid bilayer's pearl heads and subdued physical finish.
-const contactHeadMaterial=matte('#b86b36',.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
+const contactHeadMaterial=matte(palette.gold,.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
 const contactRibbonMaterial=matte(palette.gold,.02);contactRibbonMaterial.roughness=.62;contactRibbonMaterial.clearcoat=0;
 const contactCoreMaterial=matte(palette.red,.025);contactCoreMaterial.roughness=.48;contactCoreMaterial.clearcoat=.12;
 const contactHeads=instanceSpheres(molecule, atoms.length, contactHeadMaterial, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
