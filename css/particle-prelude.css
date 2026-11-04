@@ -25,3 +25,6 @@
 @supports(height:100dvh){.particle-prelude video{width:min(100vw,177.777778dvh)}}
 .particle-prelude-status{position:absolute;left:7vw;bottom:8vh;font:12px/1.7 'Open Sans',Arial,sans-serif;color:#bcb2d3;opacity:var(--prelude-fade)}
 .particle-prelude.is-loading .particle-prelude-status:before{content:'';display:inline-block;width:9px;height:9px;margin-right:10px;border:1px solid #bcb2d344;border-top-color:#bcb2d3;border-radius:50%;animation:prelude-spin .8s linear infinite}@keyframes prelude-spin{to{transform:rotate(360deg)}}
+
+/* Keep loading state accessible without printing status copy over the film. */
+.particle-prelude-status{display:none!important}

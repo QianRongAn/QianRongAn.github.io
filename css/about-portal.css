@@ -14,3 +14,7 @@ html.footer-compact #footer .footer-image{width:48%!important;height:auto!import
 @media(prefers-reduced-motion:reduce){.about-portal{transition:none}}
 
 .about-portal-reveal:after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(circle calc(var(--portal-size,200px)/2) at 50% var(--portal-cy,100vh),transparent 45%,#7b8dbb48 100%);opacity:calc(1 - var(--portal-morph,0))}
+
+/* Keep the scroll-end footer covered until About has laid out at the top. */
+html:is(.about-portal-active,.about-portal-settling) #footer{display:none!important}
+html.about-portal-settling #container{visibility:hidden!important}

@@ -1,0 +1,10 @@
+/* Exact Solare family and typographic hierarchy from the supplied reference. */
+@font-face{font-family:'Solare Intense';src:url('../font/Solare-FineIntense.woff2') format('woff2');font-weight:200;font-style:normal;font-display:swap}
+@font-face{font-family:'Solare Italic';src:url('../font/SolareItalic-Fine.woff2') format('woff2');font-weight:200;font-style:italic;font-display:swap}
+.project-trigger h2{font-family:'Solare Intense',serif;font-weight:200;font-synthesis:none;font-size:clamp(42px,5.8vw,96px);line-height:1;letter-spacing:-.065em;text-transform:uppercase}
+.project-trigger h2 em{font-family:'Solare Italic';font-weight:200;font-size:.62em;line-height:1;font-style:italic;text-transform:lowercase;letter-spacing:-.04em;vertical-align:baseline;padding:0 .025em}
+#meta-acdc .project-trigger h2 em,#prostate-aurka .project-trigger h2 em{text-transform:uppercase}
+.project.is-open .project-trigger h2{font-size:clamp(36px,4.5vw,68px)}
+.projects:has(.is-open) .project:not(.is-open) .project-trigger h2{font-size:clamp(34px,3.6vw,56px)}
+
+.project-trigger h2{color:var(--ink)}.project-trigger h2 em{font-family:"Solare Italic",serif!important}

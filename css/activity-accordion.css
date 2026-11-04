@@ -27,3 +27,8 @@
 .activity-accordion-panel.is-active .activity-accordion-photo{filter:none!important}
 .activity-accordion-controls{display:none!important}
 @media(prefers-reduced-motion:reduce){.activity-accordion-photo,.activity-accordion-panel:before{transition:none!important}}
+
+/* Fine silk-like displacement overlays the established accordion/color treatment. */
+#extracurricular .activity-accordion-photo{filter:url("#activity-silk") saturate(.58) brightness(.82) contrast(.96)!important}
+#extracurricular .activity-accordion-panel.is-active .activity-accordion-photo{filter:url("#activity-silk")!important}
+@media(prefers-reduced-motion:reduce){#extracurricular .activity-accordion-photo{filter:saturate(.58) brightness(.82) contrast(.96)!important}#extracurricular .activity-accordion-panel.is-active .activity-accordion-photo{filter:none!important}}

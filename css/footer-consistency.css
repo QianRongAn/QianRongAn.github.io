@@ -16,3 +16,6 @@ html.projects-view #footer { display: none !important; }
 #top-header .nav-links li, #top-header .nav-link, #top-header .nav-link span { position: relative; transform: translateZ(0); backface-visibility: hidden; }
 
 html.publication-view #footer{display:none!important}
+
+/* Enlarge the existing footer artwork uniformly on every page using it. */
+#footer .footer-image{scale:1.1;transform-origin:center top}

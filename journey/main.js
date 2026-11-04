@@ -348,13 +348,26 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float n=.53*noise(cloudUv)+.29*noise(cloudUv*2.13)+.18*noise(cloudUv*4.57);
  float dust=noise(vec2(uv.x*57.,across*145.)+vec2(0.,noise(uv*32.)*3.));
  float rift=exp(-pow((across+.014+.014*sin(uv.x*47.))/.014,2.));
- float galaxy=(band*(.30+.95*n)+halo*.10)*(1.-rift*(.45+.45*dust));
+ float galaxy=band*pow(n,1.7)*(1.-rift*(.78+.19*dust));
  float skyVisibility=smoothstep(-.13,.18,d.y);
- color+=mix(vec3(.095,.12,.19),vec3(.23,.19,.26),n)*galaxy*.70*skyVisibility;
+ // Resolved stellar knots and dark rifts, rather than a uniform cloudy glow.
+ float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
+ color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
+ color*=1.-band*rift*.16;
  vec3 stars=starLayer(uv,vec2(640.,320.),.035,3.);
- stars+=starLayer(uv,vec2(1250.,625.),.018+band*.24,19.)*.73;
- stars+=starLayer(uv,vec2(2100.,1050.),band*.32,73.)*.44;
+ stars+=starLayer(uv,vec2(1250.,625.),.018+band*.43*(1.-rift*.91),19.)*1.05;
+ stars+=starLayer(uv,vec2(2100.,1050.),band*.65*(1.-rift*.94),73.)*.95;
  color+=stars*skyVisibility*(.94+.06*sin(clock*.28));
+ // Aurora australis: slow folded curtains with vertical rays and a pink upper fringe.
+ float auroraBase=.54+.055*sin(uv.x*12.566+clock*.025)+.018*sin(uv.x*47.+clock*.06);
+ float rise=(uv.y-auroraBase)/.145;
+ float curtain=smoothstep(0.,.09,rise)*(1.-smoothstep(.25,1.,rise));
+ float fold=uv.x*145.+sin(uv.x*31.+clock*.07)*4.+rise*.8;
+ float rays=.25+.75*pow(.5+.5*sin(fold),3.);
+ float strands=.55+.45*noise(vec2(uv.x*470.+rise*3.,clock*.025));
+ float extent=pow(.5+.5*cos((uv.x-.25)*6.28318),3.);
+ vec3 aurora=mix(vec3(.055,.14,.105),vec3(.58,.025,.32),smoothstep(.03,.28,rise));
+ color+=aurora*curtain*rays*strands*extent*1.65*skyVisibility;
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -387,7 +400,7 @@ const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.
 const atoms = [];
 for (let i = 0; i < 64; i++) { const a = random() * Math.PI * 2, h = random() * 2 - 1, r = 1.3 + random() * 1.1; atoms.push(new THREE.Vector3(Math.cos(a) * r, h * 2.6, Math.sin(a) * r)); }
 // Match the phospholipid bilayer's pearl heads and subdued physical finish.
-const contactHeadMaterial=matte('#c8cddd',.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
+const contactHeadMaterial=matte('#b86b36',.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
 const contactRibbonMaterial=matte(palette.gold,.02);contactRibbonMaterial.roughness=.62;contactRibbonMaterial.clearcoat=0;
 const contactCoreMaterial=matte(palette.red,.025);contactCoreMaterial.roughness=.48;contactCoreMaterial.clearcoat=.12;
 const contactHeads=instanceSpheres(molecule, atoms.length, contactHeadMaterial, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
@@ -400,6 +413,7 @@ const peptide = Array.from({ length: 30 }, (_, i) => new THREE.Vector3(Math.sin(
 tube(molecule, peptide, .10, contactRibbonMaterial, 120); orb(molecule, .35, .2, .1, .23, contactCoreMaterial);
 
 // MedLit: thin, curled fibre-paper records orbit a fixed evidence core.
+const earlierPaperLeaves=[];
 const evidence = new THREE.Group(); evidence.position.set(3.6, .1, -35); world.add(evidence);
 const evidenceRotor=new THREE.Group();evidence.add(evidenceRotor);
 const evidencePointer={x:0,y:0},evidenceTurn={z:0,y:0};
@@ -420,14 +434,17 @@ function evidencePaper(index,research=false){const canvas=document.createElement
 for (let i = 0; i < 9; i++) {
     const sheet = new THREE.Group(), a = i / 9 * Math.PI * 2;
     sheet.position.set(Math.cos(a) * 2, Math.sin(a) * 1.9, Math.sin(a * 2) * .8); sheet.rotation.set(.12, a * .3, Math.sin(a) * .2);
-    sheet.add(new THREE.Mesh(pageGeometry,evidencePaper(i)));
+    const leaf=new THREE.Mesh(pageGeometry.clone(),evidencePaper(i));leaf.userData.rest=leaf.geometry.attributes.position.array.slice();leaf.userData.ambientBreeze=true;earlierPaperLeaves.push(leaf);sheet.add(leaf);
     evidenceRotor.add(sheet);
     line(evidenceRotor, [sheet.position.clone(), new THREE.Vector3(0, 0, .4)], palette.gold, .24);
 }
 orb(evidence, 0, 0, .4, .48, gold);
 // The second MedLit beat follows a visible record → assessment → source chain.
 const sourceTrail=new THREE.Group();sourceTrail.position.set(2.5,-1.5,-43);world.add(sourceTrail);
-for(let i=0;i<3;i++){const record=new THREE.Mesh(pageGeometry,evidencePaper(i));record.position.set((i-1)*1.65,Math.sin(i*1.4)*.55,-i*.75);record.scale.setScalar(.72);record.rotation.set(-.12,(i-1)*-.20,.06);sourceTrail.add(record);if(i){const previous=new THREE.Vector3((i-2)*1.65,Math.sin((i-1)*1.4)*.55,-(i-1)*.75);line(sourceTrail,[previous,record.position.clone()],palette.gold,.48);}orb(sourceTrail,record.position.x,record.position.y-.95,record.position.z,.055,gold);}
+for(let i=0;i<3;i++){const record=new THREE.Mesh(pageGeometry.clone(),evidencePaper(i));record.userData.rest=record.geometry.attributes.position.array.slice();record.userData.ambientBreeze=true;earlierPaperLeaves.push(record);record.position.set((i-1)*1.65,Math.sin(i*1.4)*.55,-i*.75);record.scale.setScalar(.72);record.rotation.set(-.12,(i-1)*-.20,.06);sourceTrail.add(record);if(i){const previous=new THREE.Vector3((i-2)*1.65,Math.sin((i-1)*1.4)*.55,-(i-1)*.75);line(sourceTrail,[previous,record.position.clone()],palette.gold,.48);}orb(sourceTrail,record.position.x,record.position.y-.95,record.position.z,.055,gold);}
+
+function fadeEvidenceGroup(group,tag){let localGold;group.traverse(part=>{if(!part.material)return;if(part.material===gold){if(!localGold){localGold=gold.clone();materials.push(localGold);}part.material=localGold;}part.material.userData[tag]=true;});}
+fadeEvidenceGroup(evidence,'evidenceSheet');fadeEvidenceGroup(sourceTrail,'sourceSheet');
 
 // A curved phospholipid bilayer with outward heads, paired inward tails and
 // a generic receptor–linker–ligand schematic (not an atomistic protein model).
@@ -531,8 +548,10 @@ addEventListener('pointermove',event=>{paperBreeze.x=(event.clientX/innerWidth-.
 for(let i=0;i<6;i++) {
     const a=i/6*Math.PI*2, mesh=new THREE.Mesh(pageGeometry.clone(),evidencePaper(i,true));mesh.userData.rest=mesh.geometry.attributes.position.array.slice();
     mesh.position.set(Math.cos(a)*2.3,Math.sin(a)*2,.2*Math.cos(a)); mesh.rotation.set(-.15,a*.2,Math.sin(a)*.15);publications.add(mesh);paperLeaves.push(mesh);
-    orb(publications,mesh.position.x,mesh.position.y,mesh.position.z,.085,gold);
+    const pinMaterial=gold.clone();materials.push(pinMaterial);orb(publications,mesh.position.x,mesh.position.y,mesh.position.z,.085,pinMaterial);
 }
+
+publications.traverse(part=>{if(part.material)part.material.userData.publicationPaper=true;});
 
 // An inhabited, continuous biomorphic canyon: near surfaces occlude distant ones.
 const habitat = new THREE.Group(); world.add(habitat);
@@ -973,7 +992,7 @@ function paint(t,time){
     moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.97,1,t));
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
     skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
-    molecule.visible=t>.17&&t<.44;evidence.visible=t>.29&&t<.52;sourceTrail.visible=t>.38&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.845;dna.visible=t>.115&&t<.27;membrane.visible=false;
+    molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
     host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');
     foreground.visible=t<.12;
@@ -989,12 +1008,12 @@ function paint(t,time){
     birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*4.2+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
-    const cameraProgress=t<.12?.065*opening:THREE.MathUtils.lerp(.065,t,smooth(.12,.17,t));
+    const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
-    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1);});
+    materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1)*(mat.userData.publicationPaper?smooth(.775,.842,t):1)*(mat.userData.evidenceSheet?smooth(.255,.32,t):1)*(mat.userData.sourceSheet?smooth(.34,.395,t):1);});
     wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
     dna.rotation.set(.08,time*.055,-.12);
@@ -1003,14 +1022,16 @@ function paint(t,time){
     crisprStudy.position.x=crisprOrigin.x-14*smooth(.835,.87,t);crisprStudy.children.forEach(model=>{model.rotation.y=-.4+Math.sin(time*.20)*.12;});structureStudies.children.forEach((model,i)=>{model.rotation.y=-.4+Math.sin(time*.25+i)*.12;model.visible=model.userData.pdb==='4C2U';});dust.position.y=Math.sin(time*.12)*.15;const paperSide=captions.find(c=>t>=c[0]&&t<c[1])?.[2];publications.position.x+=((paperSide==='right'?-3.2:2.7)-publications.position.x)*.05;publications.rotation.z=Math.sin(time*.13)*.04;
     rising.forEach(mote=>{mote.mesh.position.y=mote.base+((time*.11+mote.phase)%1)*1.3;});
     paperWind.x+=(paperBreeze.x-paperWind.x)*.07;paperWind.y+=(paperBreeze.y-paperWind.y)*.07;
-    if(publications.visible)paperLeaves.forEach((leaf,i)=>{const pos=leaf.geometry.attributes.position,rest=leaf.userData.rest;for(let k=0;k<pos.count;k++){const x=rest[k*3],y=rest[k*3+1];pos.setZ(k,rest[k*3+2]+(paperWind.x*.11+paperWind.y*.05)*Math.sin(x*3+y*1.7+time*1.5+i)*Math.pow(Math.abs(x)/.725,1.4));}pos.needsUpdate=true;leaf.geometry.computeVertexNormals();const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
+    const breeze=(leaf,i)=>{const pos=leaf.geometry.attributes.position,rest=leaf.userData.rest;for(let k=0;k<pos.count;k++){const x=rest[k*3],y=rest[k*3+1];pos.setZ(k,rest[k*3+2]+(paperWind.x*.11+paperWind.y*.05+(leaf.userData.ambientBreeze?.09*Math.sin(time*.9+i*.8)+.035*Math.sin(time*1.6-i):0))*Math.sin(x*3+y*1.7+time*1.5+i)*Math.pow(Math.abs(x)/.725,1.4));}pos.needsUpdate=true;leaf.geometry.computeVertexNormals();};
+    if(evidence.visible||sourceTrail.visible)earlierPaperLeaves.forEach(breeze);
+    if(publications.visible)paperLeaves.forEach((leaf,i)=>{breeze(leaf,i);const a=i/6*Math.PI*2;leaf.position.z=THREE.MathUtils.lerp(.2*Math.cos(a),0,smooth(.90,.97,t));});
     const active=captions.findIndex(c=>t>=c[0]&&t<c[1]);
     if(active!==copyIndex){oldCopy=copyIndex;oldCopyStarted=time;copyIndex=active;copyStarted=time;}
     panels.forEach((panel,i)=>{
         let opacity=0,entry=0,exit=0;
         if(i===copyIndex){entry=smooth(0,.72,time-copyStarted);opacity=entry;}
         else if(i===oldCopy){entry=1;exit=smooth(0,.36,time-oldCopyStarted);opacity=1-exit;}
-        const blackCopy=[2,4,5,6,7,9,10,11,12,13,14,15,16].includes(i);panel.style.color=blackCopy?'#000000':i>=17?palette.ink:palette.white;panel.querySelector('.journey-kicker').style.opacity=blackCopy?'1':'';panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
+        const blackCopy=[2,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21,22].includes(i);panel.style.color=blackCopy?'#000000':i>=17?palette.ink:palette.white;panel.querySelector('.journey-kicker').style.opacity=blackCopy?'1':'';panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
         panel.querySelectorAll('.journey-title-line > span').forEach((line,j)=>{const lift=clamp((entry-j*.12)/(1-j*.12),0,1);line.style.transform=`translateY(${(1-lift)*112}%)`;});
         const subtitle=panel.querySelector('p');subtitle.style.transform='none';subtitle.style.opacity='1';
     });
@@ -1041,12 +1062,12 @@ function moveToBeat(beat){
  if(beat===0)flightStarted=-1;else if(beat===1){flightStarted=elapsed-(current>.065?3:0);wheelLock=performance.now()+900;}
  requestedBeat=beat;scrollTween?.kill();scrollMotion.y=scrollY;
  const destination=sectionTop+travel*beatStops[beat];
- if(window.gsap)scrollTween=window.gsap.to(scrollMotion,{y:destination,duration:beat===1?3:beat===2?1.05:.75,ease:'power2.inOut',overwrite:true,onUpdate:()=>window.scrollTo({top:scrollMotion.y,behavior:'instant'})});
+ if(window.gsap)scrollTween=window.gsap.to(scrollMotion,{y:destination,duration:beat===1?3:beat===2?2.8:beat===3?2.4:Math.min(2.2,1.35+Math.abs(destination-scrollMotion.y)/travel*10),ease:p=>p*p*p*(p*(p*6-15)+10),overwrite:true,onUpdate:()=>window.scrollTo({top:scrollMotion.y,behavior:'instant'})});
  else window.scrollTo({top:destination,behavior:'smooth'});
 }
 function enterHome(){
  if(leavingJourney||skipped)return;leavingJourney=true;scrollTween?.kill();
- const finish=()=>{skip();if(window.switchPage)window.switchPage(0);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'instant'}));};
+ const finish=()=>{skip();if(window.switchPage)window.switchPage(0);window.scrollTo({top:0,behavior:'instant'});};
  if(window.AboutPortal?.open(finish,()=>{leavingJourney=false;wheelLock=performance.now()+500;}))return;
  if(window.gsap)window.gsap.to(copyLayer,{opacity:0,duration:.35,overwrite:true,onComplete:()=>{finish();window.gsap.set(copyLayer,{clearProps:'opacity'});}});else finish();
 }

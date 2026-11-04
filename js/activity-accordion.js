@@ -7,6 +7,14 @@
   gallery.dataset.accordionReady='true';gallery.classList.remove('activity-wave');gallery.classList.add('activity-accordion');
   const rail=document.createElement('div');rail.className='activity-accordion-rail';rail.setAttribute('aria-label','Academic activity photographs');
   const originals=document.createElement('div');originals.hidden=true;
+  const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.setAttribute('aria-hidden','true');svg.style.position='absolute';
+  svg.innerHTML='<defs><filter id="activity-silk" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".008 .035" numOctaves="1" seed="7" result="folds"/><feDisplacementMap in="SourceGraphic" in2="folds" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';document.body.append(svg);
+  const displacement=svg.querySelector('feDisplacementMap'),activityPage=document.getElementById('extracurricular');let silkTween,lastSilk=0;
+  function silkMotion(strength=1){if(reduceMotion.matches||!activityPage.classList.contains('active')||!window.gsap)return;silkTween?.kill();silkTween=window.gsap.timeline().to(displacement,{attr:{scale:6*strength},duration:.26,ease:'sine.out',overwrite:'auto'}).to(displacement,{attr:{scale:0},duration:1.25,ease:'sine.inOut'});}
+  addEventListener('scroll',()=>{const now=performance.now();if(now-lastSilk<100)return;lastSilk=now;silkMotion(.75);},{passive:true});
+  new MutationObserver(()=>{if(activityPage.classList.contains('active'))silkMotion(.85);else{silkTween?.kill();displacement.setAttribute('scale','0');}}).observe(activityPage,{attributes:true,attributeFilter:['class']});
+  reduceMotion.addEventListener('change',()=>{silkTween?.kill();displacement.setAttribute('scale','0');});
   const labels=['Academic activities'];
   let active=0;
   const panels=images.map((original,i)=>{
@@ -17,7 +25,7 @@
    panel.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?panels.length-1:(active+(e.key==='ArrowRight'?1:-1)+panels.length)%panels.length;select(next);panels[next].focus();}});
    originals.append(original);rail.append(panel);return panel;
   });
-  function resizeCards(){const h=rail.clientHeight-24;panels.forEach((p,j)=>{const img=p.querySelector("img"),ratio=(img.naturalWidth||4)/(img.naturalHeight||3);const space=Math.max(120,rail.clientWidth-(panels.length-1)*48-(panels.length-1)*14);p.style.setProperty("--expanded-width",Math.min(space,h*ratio)+"px");});}new ResizeObserver(resizeCards).observe(rail);rail.querySelectorAll("img").forEach(img=>img.addEventListener("load",resizeCards));resizeCards();function select(i){active=i;panels.forEach((panel,j)=>{panel.classList.toggle('is-active',i===j);panel.setAttribute('aria-expanded',String(i===j));});}
+  function resizeCards(){const h=rail.clientHeight-24;panels.forEach((p,j)=>{const img=p.querySelector("img"),ratio=(img.naturalWidth||4)/(img.naturalHeight||3);const space=Math.max(120,rail.clientWidth-(panels.length-1)*48-(panels.length-1)*14);p.style.setProperty("--expanded-width",Math.min(space,h*ratio)+"px");});}new ResizeObserver(resizeCards).observe(rail);rail.querySelectorAll("img").forEach(img=>img.addEventListener("load",resizeCards));resizeCards();function select(i){const changed=active!==i;active=i;if(changed)silkMotion(1);panels.forEach((panel,j)=>{panel.classList.toggle('is-active',i===j);panel.setAttribute('aria-expanded',String(i===j));});}
   const controls=document.createElement('div');controls.className='activity-accordion-controls';for(const [label,direction]of [['Previous photograph',-1],['Next photograph',1]]){const b=document.createElement('button');b.type='button';b.textContent=direction<0?'←':'→';b.setAttribute('aria-label',label);b.addEventListener('click',()=>select((active+direction+panels.length)%panels.length));controls.append(b);}
   gallery.replaceChildren(rail,controls,originals);select(0);
  }
