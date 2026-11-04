@@ -361,13 +361,18 @@ const saturn=createSaturn();skyObjects.add(saturn);
 const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.add(molecule);
 const atoms = [];
 for (let i = 0; i < 64; i++) { const a = random() * Math.PI * 2, h = random() * 2 - 1, r = 1.3 + random() * 1.1; atoms.push(new THREE.Vector3(Math.cos(a) * r, h * 2.6, Math.sin(a) * r)); }
-instanceSpheres(molecule, atoms.length, blue, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
+// Match the phospholipid bilayer's pearl heads and subdued physical finish.
+const contactHeadMaterial=matte('#c8cddd',.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
+const contactRibbonMaterial=matte(palette.gold,.02);contactRibbonMaterial.roughness=.62;contactRibbonMaterial.clearcoat=0;
+const contactCoreMaterial=matte(palette.red,.025);contactCoreMaterial.roughness=.48;contactCoreMaterial.clearcoat=.12;
+const contactHeads=instanceSpheres(molecule, atoms.length, contactHeadMaterial, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
+contactHeads.geometry=new THREE.SphereGeometry(1,24,16);
 const bonds = [];
 atoms.forEach((p, i) => { for (let j = i + 1; j < atoms.length; j++) if (p.distanceTo(atoms[j]) < 1.25) bonds.push(p, atoms[j]); });
 const bondMaterial = new THREE.LineBasicMaterial({ color: palette.blue, transparent: true, opacity: .48 }); materials.push(bondMaterial);
 molecule.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(bonds), bondMaterial));
 const peptide = Array.from({ length: 30 }, (_, i) => new THREE.Vector3(Math.sin(i * .45) * .62, (i - 14.5) * .19, Math.cos(i * .45) * .62));
-tube(molecule, peptide, .10, gold, 120); orb(molecule, .35, .2, .1, .23, matte(palette.red, .2));
+tube(molecule, peptide, .10, contactRibbonMaterial, 120); orb(molecule, .35, .2, .1, .23, contactCoreMaterial);
 
 // MedLit: thin, curled fibre-paper records orbit a fixed evidence core.
 const evidence = new THREE.Group(); evidence.position.set(3.6, .1, -35); world.add(evidence);
@@ -980,7 +985,7 @@ function paint(t,time){
         let opacity=0,entry=0,exit=0;
         if(i===copyIndex){entry=smooth(0,.72,time-copyStarted);opacity=entry;}
         else if(i===oldCopy){entry=1;exit=smooth(0,.36,time-oldCopyStarted);opacity=1-exit;}
-        panel.style.color=[8,9,11].includes(i)?palette.white:i>=9&&i<=15?'#000000':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
+        panel.style.color=[2,11].includes(i)?'#000000':[8,9].includes(i)?palette.white:i>=9&&i<=15?'#000000':i>=16?palette.ink:palette.white;panel.style.textShadow='none';panel.style.opacity=String((i===copyIndex?1:Math.min(1,opacity*1.7))*smooth(.085,.12,t));panel.style.transform=`translateY(${-exit*32}px)`;panel.style.visibility=opacity>.001?'visible':'hidden';panel.inert=opacity<.5;
         panel.querySelectorAll('.journey-title-line > span').forEach((line,j)=>{const lift=clamp((entry-j*.12)/(1-j*.12),0,1);line.style.transform=`translateY(${(1-lift)*112}%)`;});
         const subtitle=panel.querySelector('p');subtitle.style.transform='none';subtitle.style.opacity='1';
     });
