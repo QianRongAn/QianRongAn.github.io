@@ -59,7 +59,7 @@ function polishCurrentGarden(c){
  for(let j=0;j<6;j++){
   const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=36,cols=10;
   for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){
-   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.011*Math.sin(t*29+j*.35)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.008*(1-w*w)*Math.sin(Math.PI*t),twist=.018*Math.sin(t*Math.PI)*w;
+   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.019*Math.sin(t*23+j*.62)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.026*(1-w*w)*Math.sin(Math.PI*t),twist=.044*Math.sin(t*Math.PI*1.3+j*.42)*w;
    const radial=center.x*.83+cup,side=w*width;ps.push(Math.cos(a)*radial-Math.sin(a)*side,center.y+edgeWave+twist-.045*(j%3)*t,Math.sin(a)*radial+Math.cos(a)*side);
    const col=ivory.clone().lerp(white,.35+.65*t);cs.push(col.r,col.g,col.b);
    if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
@@ -87,7 +87,7 @@ function polishCurrentGarden(c){
  }
 
  const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
- const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.66;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
+ const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.56;flowerMaterial.sheen=.42;flowerMaterial.transmission=.06;flowerMaterial.thickness=.012;flowerMaterial.iridescence=0;flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
  for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
  lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
@@ -151,7 +151,7 @@ const section = document.getElementById('researchJourney');
 const container = document.getElementById('container');
 const intro = document.getElementById('intro');
 const palette = { night: '#120848', violet: '#4a3a7a', dusk: '#b892b8', mist: '#a8a9bd', wall: '#979eb7', gold: '#D0BA98', blue: '#516DB0', red: '#91040C', white: '#ffffff', ink: '#242320' };
-const stops = [[0, palette.night], [.35, '#343079'], [.6, '#5264a2'], [.85, '#8c9ed0'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
+const stops = [[0, palette.night], [.35, '#343079'], [.6, '#5264a2'], [.72, '#aab4ce'], [.82, '#d9e4dc'], [.94, '#e6eee5'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
 const captions = [
     [0, .13, 'left', '01 / RESEARCH', 'Nan Wang', 'Computational Biology · Biomedical AI', '计算生物学 · 生物医学 AI'],
     [.13, .25, 'left', 'LIFE, IN PATTERNS', 'From sequence<br>to <em>insight.</em>', 'Immune repertoires · molecular structure · interpretable models', '免疫组库 · 分子结构 · 可解释模型'],
@@ -218,7 +218,7 @@ const openingReady=Promise.all([openingWarmup,...orchidImages.map(image=>image.d
 
 let gardenPolishState=null;
 const world = new THREE.Group();scene.add(world);
-scene.add(new THREE.HemisphereLight(palette.mist,palette.violet,.62));
+const gardenAmbient=new THREE.HemisphereLight(palette.mist,palette.violet,.62);scene.add(gardenAmbient);
 const warm = new THREE.DirectionalLight(palette.gold, 2.7); warm.position.set(-7, 12, 8); scene.add(warm);
 const blueLight = new THREE.DirectionalLight(palette.blue, 3.4); blueLight.position.set(7, 5, -7); scene.add(blueLight);
 const materials = [];
@@ -323,8 +323,8 @@ instanceSpheres(dna, 56, pearl, i => { const p = i % 2 ? strandA[i] : strandB[i]
 dna.traverse(part=>{if(part.material){part.material=part.material.clone();part.material.userData.dna=true;materials.push(part.material);}});
 
 // A curved sky dome gives the chambers a horizon and a directional colour field.
-const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0}};
-const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;
+const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
+const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
 // Random offsets avoid a visible star grid; each scale has a different density.
@@ -350,7 +350,7 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float dust=noise(vec2(uv.x*57.,across*145.)+vec2(0.,noise(uv*32.)*3.));
  float rift=exp(-pow((across+.014+.014*sin(uv.x*47.))/.014,2.));
  float galaxy=band*pow(n,1.7)*(1.-rift*(.78+.19*dust));
- float skyVisibility=smoothstep(-.13,.18,d.y);
+ float skyVisibility=smoothstep(-.13,.18,d.y)*(1.-daylight);
  // Resolved stellar knots and dark rifts, rather than a uniform cloudy glow.
  float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
  color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
@@ -368,6 +368,7 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float strands=.55+.45*noise(vec2(uv.x*470.+rise*3.,clock*.025));
  float extent=pow(.5+.5*cos((uv.x-.25)*6.28318),3.);
  vec3 aurora=mix(vec3(.055,.14,.105),vec3(.58,.025,.32),smoothstep(.03,.28,rise));
+ aurora=mix(vec3(dot(aurora,vec3(.2126,.7152,.0722))),aurora,.85);
  color+=aurora*curtain*rays*strands*extent*1.32*skyVisibility;
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
@@ -401,14 +402,14 @@ const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.
 const atoms = [];
 for (let i = 0; i < 64; i++) { const a = random() * Math.PI * 2, h = random() * 2 - 1, r = 1.3 + random() * 1.1; atoms.push(new THREE.Vector3(Math.cos(a) * r, h * 2.6, Math.sin(a) * r)); }
 // Match the phospholipid bilayer's pearl heads and subdued physical finish.
-const contactHeadMaterial=matte(palette.gold,.025);contactHeadMaterial.roughness=.48;contactHeadMaterial.clearcoat=.12;
-const contactRibbonMaterial=matte(palette.gold,.02);contactRibbonMaterial.roughness=.62;contactRibbonMaterial.clearcoat=0;
-const contactCoreMaterial=matte(palette.red,.025);contactCoreMaterial.roughness=.48;contactCoreMaterial.clearcoat=.12;
+const contactHeadMaterial=matte('#9e8ab8',.025);contactHeadMaterial.roughness=.34;contactHeadMaterial.clearcoat=.22;contactHeadMaterial.sheen=1;contactHeadMaterial.sheenColor.set('#d2bfe8');contactHeadMaterial.sheenRoughness=.42;
+const contactRibbonMaterial=contactHeadMaterial.clone();contactRibbonMaterial.color.set('#b2a0cb');contactRibbonMaterial.userData.baseOpacity=1;materials.push(contactRibbonMaterial);
+const contactCoreMaterial=contactHeadMaterial.clone();contactCoreMaterial.color.set('#8e75a7');contactCoreMaterial.userData.baseOpacity=1;materials.push(contactCoreMaterial);
 const contactHeads=instanceSpheres(molecule, atoms.length, contactHeadMaterial, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
 contactHeads.geometry=new THREE.SphereGeometry(1,24,16);
 const bonds = [];
 atoms.forEach((p, i) => { for (let j = i + 1; j < atoms.length; j++) if (p.distanceTo(atoms[j]) < 1.25) bonds.push(p, atoms[j]); });
-const bondMaterial = new THREE.LineBasicMaterial({ color: palette.blue, transparent: true, opacity: .48 }); materials.push(bondMaterial);
+const bondMaterial = new THREE.LineBasicMaterial({ color: '#927ba8', transparent: true, opacity: .6 }); materials.push(bondMaterial);
 molecule.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(bonds), bondMaterial));
 const peptide = Array.from({ length: 30 }, (_, i) => new THREE.Vector3(Math.sin(i * .45) * .62, (i - 14.5) * .19, Math.cos(i * .45) * .62));
 tube(molecule, peptide, .10, contactRibbonMaterial, 120); orb(molecule, .35, .2, .1, .23, contactCoreMaterial);
@@ -519,7 +520,7 @@ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.cos(a)*1.62,z=Math.sin(a)*1.62
 const corniceProfile=[[1.76,2.91],[1.89,2.96],[1.89,3.06],[2.00,3.10],[2.04,3.16],[2.04,3.22],[1.96,3.26],[1.99,3.33],[2.11,3.38],[2.11,3.46],[2.02,3.52]].map(([r,y])=>new THREE.Vector2(r,y));pavilion.add(new THREE.Mesh(new THREE.LatheGeometry(corniceProfile,72),stone));
 pavilionCylinder(1.79,.08,2.95,stoneShade);
 const dome=new THREE.Mesh(new THREE.SphereGeometry(2.02,64,28,0,Math.PI*2,0,Math.PI/2),stone);dome.scale.y=.71;dome.position.y=3.48;pavilion.add(dome);
-const pavilionRib=new THREE.MeshBasicMaterial({color:'#ccc1c6',transparent:true});materials.push(pavilionRib);
+const pavilionRib=new THREE.MeshBasicMaterial({color:'#b4adb8',transparent:true});materials.push(pavilionRib);
 for(let i=0;i<12;i++){const a=i/12*Math.PI*2,points=Array.from({length:28},(_,k)=>{const theta=k/27*Math.PI/2,r=2.04*Math.sin(theta);return new THREE.Vector3(Math.cos(a)*r,3.48+1.45*Math.cos(theta),Math.sin(a)*r);});tube(pavilion,points,.043,pavilionRib,40);}
 const dentils=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.12,.10),stoneShade,48),pavilionDummy=new THREE.Object3D();for(let i=0;i<48;i++){const a=i/48*Math.PI*2;pavilionDummy.position.set(Math.cos(a)*1.92,3.09,Math.sin(a)*1.92);pavilionDummy.rotation.y=-a;pavilionDummy.updateMatrix();dentils.setMatrixAt(i,pavilionDummy.matrix);}pavilion.add(dentils);
 
@@ -991,8 +992,9 @@ function updateTarget(){target=clamp((scrollY-sectionTop)/travel,0,1);}
 function backgroundAt(t){let i=0;while(i<stops.length-2&&t>stops[i+1].t)i++;scene.background.lerpColors(stops[i].color,stops[i+1].color,clamp((t-stops[i].t)/(stops[i+1].t-stops[i].t),0,1));scene.fog.color.copy(scene.background);skyUniforms.zenith.value.copy(scene.background).multiplyScalar(.72);skyUniforms.horizon.value.copy(scene.background).lerp(new THREE.Color('#a99ad6'),.24);}
 function paint(t,time){
     if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
-    moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.97,1,t));
+    moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.68,.82,t));
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
+    const daylight=smooth(.68,.84,t);skyUniforms.daylight.value=daylight;gardenAmbient.color.lerpColors(new THREE.Color(palette.mist),new THREE.Color('#fffaf1'),daylight);gardenAmbient.intensity=.62+daylight*.6;warm.color.lerpColors(new THREE.Color(palette.gold),new THREE.Color('#fffaf1'),daylight);blueLight.intensity=3.4*(1-.75*daylight);
     banyanClearing.update(t,time);
     skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
@@ -1010,14 +1012,14 @@ function paint(t,time){
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
     birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*4.2+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
-    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
+    life.position.set(3.4,0,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1)*(mat.userData.publicationPaper?smooth(.775,.842,t):1)*(mat.userData.evidenceSheet?smooth(.255,.32,t):1)*(mat.userData.sourceSheet?smooth(.34,.395,t):1);});
-    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
+    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);const restingBreath=Math.sin(time*.8-(pivot.userData.hind?.24:0));pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening)+restingBreath*.065*opening);pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening)+restingBreath*.008*opening;});wings.position.y=t<.12?Math.sin(time*.9)*.09*(1-opening):0;
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
     dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;

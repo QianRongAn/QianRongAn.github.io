@@ -19,3 +19,6 @@ html.publication-view #footer{display:none!important}
 
 /* Enlarge the existing footer artwork uniformly on every page using it. */
 #footer .footer-image{scale:1.1;transform-origin:center top}
+
+/* Experience ends with its editorial colophon; omit only the artwork. */
+body:has(#experience.active) #footer .footer-image{display:none!important}

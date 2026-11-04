@@ -28,7 +28,10 @@
 .activity-accordion-controls{display:none!important}
 @media(prefers-reduced-motion:reduce){.activity-accordion-photo,.activity-accordion-panel:before{transition:none!important}}
 
-/* Fine silk-like displacement overlays the established accordion/color treatment. */
-#extracurricular .activity-accordion-photo{filter:url("#activity-silk") saturate(.58) brightness(.82) contrast(.96)!important}
-#extracurricular .activity-accordion-panel.is-active .activity-accordion-photo{filter:url("#activity-silk")!important}
-@media(prefers-reduced-motion:reduce){#extracurricular .activity-accordion-photo{filter:saturate(.58) brightness(.82) contrast(.96)!important}#extracurricular .activity-accordion-panel.is-active .activity-accordion-photo{filter:none!important}}
+/* Broad travelling silk folds: directional sheen and restrained perspective,
+   with no noisy displacement or pixel distortion in the photographs. */
+#extracurricular .activity-accordion-photo{filter:saturate(.58) brightness(.82) contrast(.96)!important;transform:perspective(1000px) rotateY(calc(var(--silk-fold,0)*var(--silk-phase,0)*-3deg)) scale(calc(1 + var(--silk-fold,0)*.018));transform-origin:50% 60%;will-change:transform}
+#extracurricular .activity-accordion-panel.is-active .activity-accordion-photo{filter:none!important}
+.activity-silk-sheen{position:absolute;inset:-25% -70%;z-index:1;pointer-events:none;opacity:calc(var(--silk-fold,0)*.82);transform:translateX(calc(var(--silk-phase,0)*35%)) rotate(-13deg);background:linear-gradient(100deg,transparent 24%,#160d2940 34%,#fff2d980 43%,#ffffffa6 46%,#ffffff12 52%,#160d2959 60%,transparent 70%);mix-blend-mode:soft-light}
+.activity-accordion-panel.is-active .activity-silk-sheen{mix-blend-mode:overlay;opacity:calc(var(--silk-fold,0)*.68)}
+@media(prefers-reduced-motion:reduce){.activity-silk-sheen{display:none}.activity-accordion-photo{transform:none!important;will-change:auto}}
