@@ -11,12 +11,12 @@ function polishCurrentGarden(c){
   for(let i=0;i<p.count;i++){const y=p.getY(i)-min,r=Math.hypot(p.getX(i),p.getZ(i));if(y<h*.075){const limit=h*(.012+.006*(1-y/(h*.075)));if(r>limit){const blend=1-Math.min(1,y/(h*.075));const f=1+(limit/r-1)*blend;p.setX(i,p.getX(i)*f);p.setZ(i,p.getZ(i)*f);}}}p.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingSphere();
  }
  // Replace solid faceted cloud hulls with layered, softly feathered white density fields.
- const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const ctx=canvas.getContext('2d'),image=ctx.createImageData(256,256);
- function cloudNoise(x,y){const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy,s=t=>t*t*t*(t*(t*6-15)+10),hash=(a,b)=>{const n=Math.sin(a*127.1+b*311.7)*43758.5453;return n-Math.floor(n);},u=s(fx),v=s(fy);return (hash(ix,iy)*(1-u)+hash(ix+1,iy)*u)*(1-v)+(hash(ix,iy+1)*(1-u)+hash(ix+1,iy+1)*u)*v;}
- const lobes=[[-.28,.03,.44],[.08,-.12,.44],[.32,.06,.34],[-.06,.17,.39],[.05,-.28,.27],[-.4,.17,.22]];
- for(let y=0;y<256;y++)for(let x=0;x<256;x++){const u=x/128-1,v=y/128-1;let density=0;for(const [a,b,r]of lobes){const d=Math.hypot(u-a,v-b)/r;density=Math.max(density,Math.exp(-d*d*2.6));}density*=.82+.12*cloudNoise(u*3.1+9,v*3.1+7)+.06*cloudNoise(u*6.3+19,v*6.3+23);const edge=Math.max(0,1-Math.max(Math.abs(u),Math.abs(v)));const alpha=Math.max(0,(density-.018)/.982)*Math.min(1,edge*8);const k=(y*256+x)*4;image.data[k]=image.data[k+1]=image.data[k+2]=255;image.data[k+3]=Math.min(225,Math.pow(alpha,.8)*225);}
- ctx.putImageData(image,0,0);const texture=new T.CanvasTexture(canvas);
- for(const bank of c.cloudBanks){const old=[...bank.children];bank.clear();for(let i=0;i<old.length;i++){const lobe=old[i],mat=c.cloudMaterial.clone();mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=> 'soft-cloud-density-118';mat.map=texture;mat.depthWrite=false;mat.opacity=.78;mat.color.set('#ffffff');mat.toneMapped=false;mat.userData.cloud=true;mat.userData.baseOpacity=.78;c.materials.push(mat);const mesh=new T.Mesh(new T.PlaneGeometry(1,1),mat);mesh.position.copy(lobe.position);mesh.scale.set(lobe.scale.x*3.1,lobe.scale.y*2.8,1);bank.add(mesh);billboards.push(mesh);}}
+ const cloudHash=(i,seed=0)=>{const n=Math.sin(i*127.1+seed*311.7)*43758.5453;return n-Math.floor(n);};
+ function cloudNoise(x,y){const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy,u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy),h=(a,b)=>cloudHash(a+b*113);return(h(ix,iy)*(1-u)+h(ix+1,iy)*u)*(1-v)+(h(ix,iy+1)*(1-u)+h(ix+1,iy+1)*u)*v;}
+ function uniqueCloud(seed){const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const ctx=canvas.getContext('2d'),image=ctx.createImageData(256,256),lobes=Array.from({length:4+seed%5},(_,i)=>[(cloudHash(i,seed+1)-.5)*1.12,(cloudHash(i,seed+7)-.5)*.7,.22+cloudHash(i,seed+13)*.34,.6+cloudHash(i,seed+19)*.8]);
+  for(let y=0;y<256;y++)for(let x=0;x<256;x++){const u=x/128-1,v=y/128-1;let density=0;for(const [a,b,r,w]of lobes){const d=Math.hypot((u-a)/w,v-b)/r;density=Math.max(density,Math.exp(-d*d*2.6));}density*=.77+.16*cloudNoise(u*3.1+seed,v*3.1+7)+.07*cloudNoise(u*6.3+19,v*6.3+seed);const edge=Math.max(0,1-Math.max(Math.abs(u),Math.abs(v))),alpha=Math.max(0,(density-.018)/.982)*Math.min(1,edge*8),k=(y*256+x)*4;image.data[k]=image.data[k+1]=image.data[k+2]=255;image.data[k+3]=Math.min(225,Math.pow(alpha,.8)*225);}ctx.putImageData(image,0,0);return new T.CanvasTexture(canvas);}
+ const cloudTextures=Array.from({length:12},(_,i)=>uniqueCloud(i+1));
+ c.cloudBanks.forEach((bank,seed)=>{const old=[...bank.children];bank.clear();for(let i=0;i<old.length;i++){const lobe=old[i],mat=c.cloudMaterial.clone();mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=> 'varied-cloud-density-139';mat.map=cloudTextures[(seed*5+i*7)%12];mat.depthWrite=false;mat.opacity=.66+.17*cloudHash(i,seed+2);mat.color.set('#ffffff');mat.toneMapped=false;mat.userData.cloud=true;mat.userData.baseOpacity=mat.opacity;c.materials.push(mat);const mesh=new T.Mesh(new T.PlaneGeometry(1,1),mat);mesh.position.copy(lobe.position);mesh.position.y+=(cloudHash(i,seed+8)-.5)*.6;mesh.scale.set(lobe.scale.x*(2.5+cloudHash(i,seed+3)*1.1),lobe.scale.y*(1.8+cloudHash(i,seed+4)),1);mesh.userData.cloudTwist=(cloudHash(i,seed+5)-.5)*.45;bank.add(mesh);billboards.push(mesh);}});
  // Fill only right-hand screen gaps in the Evidence views, leaving the approved opening forest alone.
  const flowerCells=new Map();for(const f of (c.botanicalOccupied?[...c.botanicalOccupied.values()].flat():[])){const key=Math.floor(f.x/3)+','+Math.floor(f.z/3);if(!flowerCells.has(key))flowerCells.set(key,[]);flowerCells.get(key).push(f);}
  function clearFlowerFootprint(x,z){const ix=Math.floor(x/3),iz=Math.floor(z/3);for(let a=ix-2;a<=ix+2;a++)for(let b=iz-2;b<=iz+2;b++)for(const f of flowerCells.get(a+','+b)||[])if(Math.hypot(x-f.x,z-f.z)<2.0+f.radius)return false;return true;}
@@ -91,7 +91,7 @@ function polishCurrentGarden(c){
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
  for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
  lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
- return {update(t){const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);}}};
+ return {update(t){const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);mesh.rotateZ(mesh.userData.cloudTwist||0);}}};
 }
 
 
@@ -323,6 +323,7 @@ instanceSpheres(dna, 56, pearl, i => { const p = i % 2 ? strandA[i] : strandB[i]
 dna.traverse(part=>{if(part.material){part.material=part.material.clone();part.material.userData.dna=true;materials.push(part.material);}});
 
 // A curved sky dome gives the chambers a horizon and a directional colour field.
+const skyStarted=performance.now();
 const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
 const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
@@ -341,35 +342,40 @@ vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
  return tint*present*point*brightness;
 }
 void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
- float path=.56+.16*sin(uv.x*6.28318+1.1);
+ float path=.52+.105*sin(uv.x*6.28318-1.6);
  float across=uv.y-path;
- float band=exp(-pow(across/.045,2.));
- float halo=exp(-pow(across/.13,2.));
+ float band=exp(-pow(across/.026,2.));
+ float halo=exp(-pow(across/.075,2.));
  vec2 cloudUv=uv*vec2(85.,45.);
  float n=.53*noise(cloudUv)+.29*noise(cloudUv*2.13)+.18*noise(cloudUv*4.57);
  float dust=noise(vec2(uv.x*57.,across*145.)+vec2(0.,noise(uv*32.)*3.));
- float rift=exp(-pow((across+.014+.014*sin(uv.x*47.))/.014,2.));
+ float rift=exp(-pow((across+.006+.009*sin(uv.x*47.))/.008,2.));
  float galaxy=band*pow(n,1.7)*(1.-rift*(.78+.19*dust));
  float skyVisibility=smoothstep(-.13,.18,d.y)*(1.-daylight);
  // Resolved stellar knots and dark rifts, rather than a uniform cloudy glow.
  float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
  color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
- color*=1.-band*rift*.16;
- vec3 stars=starLayer(uv,vec2(640.,320.),.007,3.);
- stars+=starLayer(uv,vec2(1250.,625.),.0015+band*.55*(.22+.78*n)*(1.-rift*.94),19.)*1.05;
- stars+=starLayer(uv,vec2(2100.,1050.),band*.76*(.20+.80*n)*(1.-rift*.97),73.)*.95;
- color+=stars*skyVisibility*(.94+.06*sin(clock*.28));
+ color*=1.-band*rift*.38;
+ vec3 stars=starLayer(uv,vec2(640.,320.),.002,3.);
+ stars+=starLayer(uv,vec2(1250.,625.),.0002+band*.82*(.22+.78*n)*(1.-rift*.94),19.)*1.05;
+ stars+=starLayer(uv,vec2(2100.,1050.),band*.96*(.20+.80*n)*(1.-rift*.97),73.)*.95;
+ color+=stars*skyVisibility*(1.35+.04*sin(clock*.28));
  // Aurora australis: slow folded curtains with vertical rays and a pink upper fringe.
- float auroraBase=.54+.055*sin(uv.x*12.566+clock*.025)+.018*sin(uv.x*47.+clock*.06);
- float rise=(uv.y-auroraBase)/.145;
- float curtain=smoothstep(0.,.09,rise)*(1.-smoothstep(.25,1.,rise));
- float fold=uv.x*145.+sin(uv.x*31.+clock*.07)*4.+rise*.8;
- float rays=.25+.75*pow(.5+.5*sin(fold),3.);
- float strands=.55+.45*noise(vec2(uv.x*470.+rise*3.,clock*.025));
- float extent=pow(.5+.5*cos((uv.x-.25)*6.28318),3.);
- vec3 aurora=mix(vec3(.055,.14,.105),vec3(.58,.025,.32),smoothstep(.03,.28,rise));
- aurora=mix(vec3(dot(aurora,vec3(.2126,.7152,.0722))),aurora,.85);
- color+=aurora*curtain*rays*strands*extent*1.32*skyVisibility;
+ // Folded ribbons advect continuously instead of remaining a static luminous mist.
+ vec3 auroraLight=vec3(0.);
+ for(int layer=0;layer<3;layer++){
+  float k=float(layer),flow=clock*.35;
+  float base=.50+k*.029+.045*sin(uv.x*12.566+flow+k*.8)+.025*sin(uv.x*32.-clock*.42+k);
+  float rise=uv.y-base;
+  float curtain=exp(-pow((rise-.065)/.10,2.))*smoothstep(-.015,.025,rise)*(1.-smoothstep(.20,.38,rise));
+  float fold=.52+.48*sin(uv.x*41.+sin(uv.x*13.-flow)*2.4-clock*.72+k*1.8);
+  float rays=.30+.70*noise(vec2(uv.x*460.+clock*.45+rise*9.,rise*34.-clock*.35+k*7.));
+  float extent=pow(.5+.5*cos((uv.x-.27)*6.28318),2.);
+  vec3 tint=mix(vec3(.035,.32,.29),vec3(.63,.075,.35),clamp(.38+.4*sin(uv.x*11.+k*.6)+smoothstep(.03,.25,rise)*.3,0.,1.));
+  tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.85);
+  auroraLight+=tint*curtain*mix(.25,1.,fold)*rays*extent*.58;
+ }
+ color+=auroraLight*1.32*skyVisibility;
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -402,7 +408,7 @@ const molecule = new THREE.Group(); molecule.position.set(-3.8, .2, -21); world.
 const atoms = [];
 for (let i = 0; i < 64; i++) { const a = random() * Math.PI * 2, h = random() * 2 - 1, r = 1.3 + random() * 1.1; atoms.push(new THREE.Vector3(Math.cos(a) * r, h * 2.6, Math.sin(a) * r)); }
 // Match the phospholipid bilayer's pearl heads and subdued physical finish.
-const contactHeadMaterial=matte('#9e8ab8',.025);contactHeadMaterial.roughness=.34;contactHeadMaterial.clearcoat=.22;contactHeadMaterial.sheen=1;contactHeadMaterial.sheenColor.set('#d2bfe8');contactHeadMaterial.sheenRoughness=.42;
+const contactHeadMaterial=matte('#9e8ab8',.025);contactHeadMaterial.roughness=.34;contactHeadMaterial.clearcoat=.22;contactHeadMaterial.sheen=1;contactHeadMaterial.sheenColor.set('#d2bfe8');contactHeadMaterial.sheenRoughness=.28;contactHeadMaterial.anisotropy=.65;contactHeadMaterial.anisotropyRotation=-.4;contactHeadMaterial.bumpScale=.002;
 const contactRibbonMaterial=contactHeadMaterial.clone();contactRibbonMaterial.color.set('#b2a0cb');contactRibbonMaterial.userData.baseOpacity=1;materials.push(contactRibbonMaterial);
 const contactCoreMaterial=contactHeadMaterial.clone();contactCoreMaterial.color.set('#8e75a7');contactCoreMaterial.userData.baseOpacity=1;materials.push(contactCoreMaterial);
 const contactHeads=instanceSpheres(molecule, atoms.length, contactHeadMaterial, i => [atoms[i].x, atoms[i].y, atoms[i].z, .09 + random() * .1]);
@@ -829,7 +835,7 @@ function grassHeightAroundFlowers(x,z,height){
 // Restore the earlier tuft heights and keep grass independent of flower placement.
 let grassSeed=18421;const grassRandom=()=>{grassSeed=grassSeed*16807%2147483647;return(grassSeed-1)/2147483646;};
 for(let i=0;i<grass.count;i++){const cluster=Math.floor(i/8),r=()=>{const v=Math.sin(cluster*127.1+19.7)*43758.5453;return v-Math.floor(v);},cx=(cluster%2?1:-1)*(.15+r()*11),cz=14-((cluster*.61803398875)%1)*119,x=cx+(grassRandom()-.5)*.6,z=cz+(grassRandom()-.5)*.6;treeDummy.position.set(x,meadowFloor(x,z)+.055,z);treeDummy.rotation.set((grassRandom()-.5)*.18,grassRandom()*6.28,(grassRandom()-.5)*.4);treeDummy.scale.set(.7+grassRandom()*1.3,grassHeightAroundFlowers(x,z,(Math.abs(x)<2?.15:.35)+grassRandom()*(Math.abs(x)<2?.25:.85)),1);if(Math.hypot(x-3.4,z+66)<3)treeDummy.scale.setScalar(0);treeDummy.updateMatrix();grass.setMatrixAt(i,treeDummy.matrix);grass.setColorAt(i,new THREE.Color(palette.blue).lerp(new THREE.Color(palette.mist),.30+grassRandom()*.42));}meadow.add(grass);
-[molecule,career,crisprStudy].forEach(group=>group.traverse(part=>{if(!part.isMesh)return;for(const material of (Array.isArray(part.material)?part.material:[part.material])){material.roughness=.84;material.clearcoat=0;material.bumpMap=microTexture;material.bumpScale=.025;}}));
+[molecule,career,crisprStudy].forEach(group=>group.traverse(part=>{if(!part.isMesh)return;for(const material of (Array.isArray(part.material)?part.material:[part.material])){if([contactHeadMaterial,contactRibbonMaterial,contactCoreMaterial].includes(material))continue;material.roughness=.84;material.clearcoat=0;material.bumpMap=microTexture;material.bumpScale=.025;}}));
 // A high, open chamber transitions into a submerged molecular garden.
 for(let j=0;j<10;j++){
  const island=new THREE.Mesh(boulderGeometry,terrainMaterial);island.position.set((j%2?1:-1)*(5+random()*7),8+random()*9,7-j*6);island.scale.set(1.2+random()*2,1.5+random()*3,1+random()*2);island.rotation.z=random();island.visible=false;habitat.add(island);
@@ -996,7 +1002,7 @@ function paint(t,time){
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
     const daylight=smooth(.68,.84,t);skyUniforms.daylight.value=daylight;gardenAmbient.color.lerpColors(new THREE.Color(palette.mist),new THREE.Color('#fffaf1'),daylight);gardenAmbient.intensity=.62+daylight*.6;warm.color.lerpColors(new THREE.Color(palette.gold),new THREE.Color('#fffaf1'),daylight);blueLight.intensity=3.4*(1-.75*daylight);
     banyanClearing.update(t,time);
-    skyUniforms.clock.value=time;groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
+    skyUniforms.clock.value=(performance.now()-skyStarted)/1000;host.dataset.skyTime=skyUniforms.clock.value.toFixed(3);groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
     host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');
@@ -1012,14 +1018,14 @@ function paint(t,time){
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
     birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*4.2+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
-    life.position.set(3.4,0,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
+    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
-    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1)*(mat.userData.publicationPaper?smooth(.775,.842,t):1)*(mat.userData.evidenceSheet?smooth(.255,.32,t):1)*(mat.userData.sourceSheet?smooth(.34,.395,t):1);});
-    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);const restingBreath=Math.sin(time*.8-(pivot.userData.hind?.24:0));pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening)+restingBreath*.065*opening);pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening)+restingBreath*.008*opening;});wings.position.y=t<.12?Math.sin(time*.9)*.09*(1-opening):0;
+    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
     dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
@@ -1073,6 +1079,7 @@ function moveToBeat(beat){
 function enterHome(){
  if(leavingJourney||skipped)return;leavingJourney=true;scrollTween?.kill();
  const finish=()=>{skip();if(window.switchPage)window.switchPage(0);window.scrollTo({top:0,behavior:'instant'});};
+ try{if(renderer){renderer.render(scene,camera);root.style.setProperty('--portal-world-snapshot','url("'+renderer.domElement.toDataURL('image/jpeg',.96)+'")');}}catch(error){console.warn('Arrival snapshot unavailable',error);}
  if(window.AboutPortal?.open(finish,()=>{leavingJourney=false;wheelLock=performance.now()+500;}))return;
  if(window.gsap)window.gsap.to(copyLayer,{opacity:0,duration:.35,overwrite:true,onComplete:()=>{finish();window.gsap.set(copyLayer,{clearProps:'opacity'});}});else finish();
 }
@@ -1099,7 +1106,7 @@ new MutationObserver(()=>{localize();resume();}).observe(root,{attributes:true,a
 motion.addEventListener('change',()=>{if(motion.matches)finishReduced();else{root.classList.remove('journey-reduced');skip();}});
 root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
-const previewScenes={orchids:0,sky:2,premeadow:8,signals:9,engineering:16,meadow:10,bilayer:8,meta:4,immune:11,clinic:12,ncc:13,crispr:17,papers:18};
+const previewScenes={orchids:0,sky:2,premeadow:8,signals:9,engineering:16,meadow:10,bilayer:8,meta:4,immune:11,clinic:12,ncc:13,crispr:17,papers:18,banyan:beatStops.length-1};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};document.addEventListener('journey:reveal',()=>openingReady.then(showScene),{once:true});}
 initCrystalPages(renderer,()=>scene.environment);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}

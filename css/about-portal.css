@@ -18,3 +18,12 @@ html.footer-compact #footer .footer-image{width:48%!important;height:auto!import
 /* Keep the scroll-end footer covered until About has laid out at the top. */
 html:is(.about-portal-active,.about-portal-settling) #footer{display:none!important}
 html.about-portal-settling #container{visibility:hidden!important}
+
+/* Freeze the rendered world beneath the growing ball so the shared WebGL
+   canvas can move into it without exposing a blue/purple empty stage. */
+.about-portal{background-image:var(--portal-world-snapshot,url('../assets/worlds/banyan-daylight.webp'));background-size:cover;background-position:center}
+.about-portal-reveal{background:radial-gradient(ellipse at center,color-mix(in srgb,#c4ddbe,#cddcff var(--portal-color-progress,0%)),color-mix(in srgb,#d5e6cf,#dee6ff var(--portal-color-progress,0%)) 35%,color-mix(in srgb,#e5efdd,#fafbff var(--portal-color-progress,0%)))}
+html.about-arrival #footer{visibility:hidden!important}
+
+/* Match About's existing steady state immediately, before the WebGL class observer runs. */
+body:has(#about.active) #footer .footer-image{visibility:hidden!important}
