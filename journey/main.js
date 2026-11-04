@@ -117,7 +117,7 @@ import { initCrystalPages } from './crystal-pages.js';
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon } from './celestial-bodies.js';
 import {createRealisticWoodland} from './realistic-woodland.js';
-import { createBanyanClearing } from './banyan-world.js';
+import { createBanyanClearing } from './banyan-clearing.js';
 
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -553,7 +553,7 @@ for(const angle of [Math.PI*2/3,Math.PI*4/3]){const x=Math.cos(angle)*1.62,z=Mat
 for(let j=0;j<120;j++){const a=2.1+j*.018,theta=.5+(j%17)/17*.85,r=2.045*Math.sin(theta);ivyDummy.position.set(Math.cos(a)*r,3.48+1.46*Math.cos(theta),Math.sin(a)*r);ivyDummy.rotation.set(-theta,a,j*.7);ivyDummy.scale.setScalar(.8+(j%4)*.15);ivyDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyCount++,ivyDummy.matrix);}pavilion.add(ivyLeaves);
 
 // Six paper-like leaves gradually resolve into a light, abstract constellation.
-const banyanClearing=createBanyanClearing(camera,sceneryManager);scene.add(banyanClearing.group);
+const banyanClearing=createBanyanClearing(camera,sceneryManager);camera.add(banyanClearing.group);
 const publications = new THREE.Group(); publications.position.set(2.7, .7, -107); world.add(publications);
 const paperLeaves = [],paperBreeze={x:0,y:0},paperWind={x:0,y:0};
 addEventListener('pointermove',event=>{paperBreeze.x=(event.clientX/innerWidth-.5)*2;paperBreeze.y=(event.clientY/innerHeight-.5)*2;},{passive:true});
@@ -1024,7 +1024,7 @@ function paint(t,time){
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
-    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;banyanClearing.cameraAt(t,camera.position,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
