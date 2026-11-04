@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import jupiterMap from './jupiter-texture.js';
 
 const vertex=`varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;void main(){vUv=uv;vec3 world=(modelMatrix*vec4(position,1.)).xyz;vNormal=normalize(mat3(modelMatrix)*normal);vView=normalize(cameraPosition-world);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
 
@@ -23,14 +24,16 @@ export function createSupermoon(texture){
 export function createSaturn(){
  const saturn=new THREE.Group();saturn.name='Saturn';saturn.position.set(-5,11.5,-130);saturn.rotation.set(.48,0,-.38);
  const opacity={value:1};
- const planetMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:true,uniforms:{opacity},vertexShader:vertex,fragmentShader:`
- uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
+ const surface=typeof document==='undefined'?new THREE.Texture():new THREE.TextureLoader().load(jupiterMap);
+ surface.colorSpace=THREE.SRGBColorSpace;surface.wrapS=THREE.RepeatWrapping;
+ const planetMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:true,uniforms:{opacity,surface:{value:surface}},vertexShader:vertex,fragmentShader:`
+ uniform sampler2D surface;uniform float opacity;varying vec2 vUv;varying vec3 vNormal;varying vec3 vView;
  void main(){
-  float latitude=vUv.y+.003*sin(vUv.x*36.+vUv.y*24.);
-  float bands=.5+.5*sin(latitude*58.+.38*sin(latitude*17.));
-  float fine=.5+.5*sin(latitude*174.+.25*sin(vUv.x*43.));
-  vec3 color=mix(vec3(.38,.20,.105),vec3(.88,.76,.57),smoothstep(.16,.84,bands));
-  color=mix(color,vec3(.95,.88,.72),.16*fine);
+  // Cassini map covers 60 S to 60 N; retain its latitude scale and soften polar extensions.
+  vec2 mapUv=vec2(fract(vUv.x+.65),clamp((vUv.y-.5)*1.5+.5,.012,.988));
+  vec3 color=texture2D(surface,mapUv).rgb;
+  float polar=smoothstep(.65,.96,abs(vUv.y-.5)*2.);
+  color=mix(color,vec3(.22,.21,.18),polar);
   float sun=max(dot(normalize(vNormal),normalize(vec3(-.65,.45,.8))),0.);
   gl_FragColor=vec4(color*(.42+.58*sqrt(sun)),opacity);
   #include <colorspace_fragment>
