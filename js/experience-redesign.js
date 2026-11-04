@@ -8,31 +8,13 @@
   let boundAtlas = null;
   const circle = (x,y,r,extra='') => `<circle cx="${x}" cy="${y}" r="${r}" ${extra}/>`;
   function specimen(kind) {
-    let art = '';
-    if (kind === 0) {
-      for (let i=0;i<72;i++) {
-        const a=i*Math.PI*2/72, r=137+8*Math.sin(i*1.7);
-        art+=circle(240+Math.cos(a)*r,240+Math.sin(a)*r,4.3,'class="xp-bead"');
-      }
-      art+='<path class="xp-membrane" d="M240 100C320 100 394 154 383 244S320 385 239 379 98 326 101 239 154 95 240 100Z"/>';
-      for(let i=0;i<13;i++){const a=i*2.4,r=28+Math.sqrt(i)*22;art+=circle(240+Math.cos(a)*r,240+Math.sin(a)*r,9+i%3*3,'class="xp-organelle"');}
-      art+='<path class="xp-probe" d="M407 52L300 205L317 157Z"/><path class="xp-fine" d="M339 146L425 146M151 343H58"/>';
-    } else if (kind === 1) {
-      for(let y=0;y<13;y++)for(let x=0;x<13;x++){
-        const px=81+x*26+(y%2)*13,py=82+y*26;
-        if(Math.hypot(px-240,py-240)>169)continue;
-        const z=(x*7+y*11)%9;
-        art+=circle(px,py,7+z*.65,`class="xp-spot xp-spot-${z%3}"`);
-      }
-      art+='<ellipse class="xp-fine" cx="240" cy="240" rx="174" ry="174"/><path class="xp-fine" d="M240 39V441M39 240H441"/>';
-    } else {
-      for(let i=0;i<32;i++){
-        const y=71+i*11, a=i*.31, x=240+Math.sin(a)*93, b=240-Math.sin(a)*93;
-        art+=`<path class="xp-rung" d="M${x} ${y}H${b}"/>`+circle(x,y,5.6,'class="xp-bead"')+circle(b,y,5.6,'class="xp-organelle"');
-      }
-      art+='<path class="xp-fine" d="M87 113H160M320 367H414"/>';
-    }
-    return `<svg viewBox="0 0 480 480" fill="none" aria-hidden="true"><g class="xp-orbit"><ellipse cx="240" cy="240" rx="214" ry="214"/><ellipse cx="240" cy="240" rx="226" ry="226" stroke-dasharray="1 12"/></g><g class="xp-organism">${art}</g><path class="xp-fine" d="M28 60V28H60M420 28H452V60M452 420V452H420M60 452H28V420"/></svg>`;
+    const images=['immune-delivery','cell-dialogue','clinical-research'];
+    const descriptions=[
+      ['Nanoinjection into an immune cell','Needle–membrane interface → cargo delivery → cell engineering'],
+      ['Tumor cell and macrophage communication','Epithelial cell → receptor signals → macrophage and matrix'],
+      ['Histology slide and molecular interpretation','Tissue section → molecular interaction → clinical evidence']
+    ];
+    return `<figure class="xp-research-figure"><img src="assets/research/${images[kind]}.webp" alt="${descriptions[kind][0]}" loading="lazy" decoding="async"><figcaption>${descriptions[kind][1]}</figcaption></figure>`;
   }
 
   function emphasize(element){
@@ -61,8 +43,8 @@
     dispose();
     const zh=root.lang.startsWith('zh');
     const words=zh?{
-      title:'研究',italic:'实践',eyebrow:'研究经历 / NAN WANG',intro:'从临床问题出发，穿越细胞与数据，走向新的发现。',scroll:'向下滚动，探索研究经历',index:'研究档案',roles:['免疫工程','多组学整合','临床研究'],places:['瓯江实验室','北京亦兴博瑞','国家癌症中心'],themes:[['纳米递送','CAR-T','CRISPR'],['单细胞','空间组学','肿瘤异质性'],['肺癌','抗原预测','病理学']],note:'概念科学图形 · 非实验数据',end:'让问题引领下一次发现。'
-    }:{title:'Research',italic:'in practice.',eyebrow:'EXPERIENCE / NAN WANG',intro:'From clinical questions to cells, data, and new discoveries.',scroll:'SCROLL TO EXPLORE THE WORK',index:'FIELD NOTES',roles:['Engineering immunity','Decoding complexity','Closer to the clinic'],places:['Oujiang Laboratory','Yixing Borui','National Cancer Center'],themes:[['Nanoinjection','CAR-T','CRISPR'],['Single-cell','Spatial omics','Heterogeneity'],['Lung cancer','Antigen prediction','Pathology']],note:'Conceptual illustration · not experimental data',end:'Following the next question.'};
+      title:'研究',italic:'实践',eyebrow:'研究经历 / NAN WANG',intro:'从临床问题出发，穿越细胞与数据，走向新的发现。',scroll:'向下滚动，探索研究经历',index:'研究档案',roles:['免疫工程','多组学整合','临床研究'],places:['瓯江实验室','北京亦兴博瑞','国家癌症中心'],themes:[['纳米递送','CAR-T','CRISPR'],['单细胞','空间组学','肿瘤异质性'],['肺癌','抗原预测','病理学']],note:'研究示意',end:'让问题引领下一次发现。'
+    }:{title:'Research',italic:'in practice.',eyebrow:'EXPERIENCE / NAN WANG',intro:'From clinical questions to cells, data, and new discoveries.',scroll:'SCROLL TO EXPLORE THE WORK',index:'FIELD NOTES',roles:['Engineering immunity','Decoding complexity','Closer to the clinic'],places:['Oujiang Laboratory','Yixing Borui','National Cancer Center'],themes:[['Nanoinjection','CAR-T','CRISPR'],['Single-cell','Spatial omics','Heterogeneity'],['Lung cancer','Antigen prediction','Pathology']],note:'RESEARCH ILLUSTRATION',end:'Following the next question.'};
     cards.sort((a,b)=>{
       const date=c=>{const m=c.querySelector('.date-location')?.textContent.match(/(\d{2})\/(20\d{2})/);return m?Number(m[2])*12+Number(m[1]):0;};
       return date(b)-date(a);

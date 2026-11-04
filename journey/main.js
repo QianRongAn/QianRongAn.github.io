@@ -1,6 +1,6 @@
 // Keeps approved planting, camera paths and foliage pigments. Only local additions and surfaces.
 function polishCurrentGarden(c){
- const T=c.THREE,extraTrees=new T.Group(),billboards=[],extraMaterials=[];c.forest.add(extraTrees);
+ const T=c.THREE,extraTrees=new T.Group(),billboards=[],flowerSprites=[],extraMaterials=[];c.forest.add(extraTrees);
  const smoothSphere=new T.SphereGeometry(1,48,32);
  c.world.traverse(o=>{if(o.isMesh&&o.geometry===c.atomGeometry&&Math.max(o.scale.x,o.scale.y,o.scale.z)>.28)o.geometry=smoothSphere;});
  // Hide the artificial four-spoke root decorations and round the model's basal flare.
@@ -90,8 +90,11 @@ function polishCurrentGarden(c){
  const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.56;flowerMaterial.sheen=.42;flowerMaterial.transmission=.06;flowerMaterial.thickness=.012;flowerMaterial.iridescence=0;flowerMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','outgoingLight=vec3(1.)-exp(-outgoingLight*.9);\n#include <opaque_fragment>');};flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
  const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
  for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
- lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
- return {update(t){const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);mesh.rotateZ(mesh.userData.cloudTwist||0);}}};
+ lilies.count=count;lilies.computeBoundingSphere();lilies.visible=false;c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);c.host.dataset.gloriosaAsset='imagegen-white144';
+ const photoMaterial=new T.MeshBasicMaterial({map:c.gloriosaTexture,alphaTest:.45,side:T.DoubleSide,toneMapped:false}),photoGeometry=new T.PlaneGeometry(1.22,1.6);photoGeometry.translate(0,.8,0);
+ for(let i=0;i<count;i++){lilies.getMatrixAt(i,dummy.matrix);dummy.matrix.decompose(dummy.position,dummy.quaternion,dummy.scale);const photo=new T.Mesh(photoGeometry,photoMaterial);photo.position.copy(dummy.position);photo.scale.copy(dummy.scale);c.meadow.add(photo);flowerSprites.push(photo);}
+
+ return {update(t){flowerSprites.forEach(photo=>{photo.rotation.y=Math.atan2(c.camera.position.x-photo.position.x,c.camera.position.z-photo.position.z);});const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);mesh.rotateZ(mesh.userData.cloudTwist||0);}}};
 }
 
 
@@ -113,7 +116,8 @@ import { initCrystalPages } from './crystal-pages.js';
 
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon } from './celestial-bodies.js';
-import { createBanyanClearing } from './banyan-clearing.js';
+import {createRealisticWoodland} from './realistic-woodland.js';
+import { createBanyanClearing } from './banyan-world.js';
 
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -151,7 +155,7 @@ const section = document.getElementById('researchJourney');
 const container = document.getElementById('container');
 const intro = document.getElementById('intro');
 const palette = { night: '#120848', violet: '#4a3a7a', dusk: '#b892b8', mist: '#a8a9bd', wall: '#979eb7', gold: '#D0BA98', blue: '#516DB0', red: '#91040C', white: '#ffffff', ink: '#242320' };
-const stops = [[0, palette.night], [.35, '#343079'], [.6, '#5264a2'], [.72, '#aab4ce'], [.82, '#d9e4dc'], [.94, '#e6eee5'], [1, palette.wall]].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
+const stops = [[0, palette.night], [.35, '#343079'], [.6, '#5264a2'], [.72, '#aab4ce'], [.82, '#d9e4dc'], [.94, '#e6eee5'], [1, '#e6eee5']].map(([t, hex]) => ({ t, color: new THREE.Color(hex) }));
 const captions = [
     [0, .13, 'left', '01 / RESEARCH', 'Nan Wang', 'Computational Biology · Biomedical AI', '计算生物学 · 生物医学 AI'],
     [.13, .25, 'left', 'LIFE, IN PATTERNS', 'From sequence<br>to <em>insight.</em>', 'Immune repertoires · molecular structure · interpretable models', '免疫组库 · 分子结构 · 可解释模型'],
@@ -316,16 +320,17 @@ for (let i = 0; i < 56; i++) {
     const p = new THREE.Vector3(Math.cos(a) * 1.1, y, Math.sin(a) * 1.1), q = new THREE.Vector3(-p.x, y, -p.z);
     strandA.push(p); strandB.push(q); if (i % 2 === 0) rungPoints.push(p, q);
 }
-tube(dna, strandA, .085, blue); tube(dna, strandB, .085, rose);
+const dnaA=blue.clone(),dnaB=rose.clone();for(const mat of [dnaA,dnaB]){mat.roughness=.22;mat.clearcoat=.65;mat.clearcoatRoughness=.13;}dnaA.color.set('#8499bc');dnaB.color.set('#b19ebc');tube(dna, strandA, .038, dnaA); tube(dna, strandB, .038, dnaB);
 const rungMaterial = new THREE.LineBasicMaterial({ color: palette.gold, transparent: true, opacity: .55 }); materials.push(rungMaterial);
 dna.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(rungPoints), rungMaterial));
-instanceSpheres(dna, 56, pearl, i => { const p = i % 2 ? strandA[i] : strandB[i]; return [p.x, p.y, p.z, .115]; });
+// Continuous fine backbone; no toy-like bead joints.
 dna.traverse(part=>{if(part.material){part.material=part.material.clone();part.material.userData.dna=true;materials.push(part.material);}});
 
 // A curved sky dome gives the chambers a horizon and a directional colour field.
-const skyStarted=performance.now();
-const skyUniforms={zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
-const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;
+const gloriosaTexture=new THREE.TextureLoader(sceneryManager).load('assets/worlds/gloriosa-white144.webp');gloriosaTexture.colorSpace=THREE.SRGBColorSpace;gloriosaTexture.anisotropy=8;
+const skyStarted=performance.now();const galaxyMap=new THREE.TextureLoader(sceneryManager).load('assets/worlds/starmap-galactic-4k.jpg');galaxyMap.colorSpace=THREE.SRGBColorSpace;galaxyMap.wrapS=THREE.RepeatWrapping;galaxyMap.anisotropy=8;
+const skyUniforms={galaxyMap:{value:galaxyMap},reveal:{value:0},zenith:{value:new THREE.Color(palette.night)},horizon:{value:new THREE.Color(palette.violet)},clock:{value:0},daylight:{value:0}};
+const skyFragment=`varying vec3 direction;uniform vec3 zenith;uniform vec3 horizon;uniform float clock;uniform float daylight;uniform float reveal;uniform sampler2D galaxyMap;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.)),f.x),f.y);}
 // Random offsets avoid a visible star grid; each scale has a different density.
@@ -342,7 +347,7 @@ vec3 starLayer(vec2 uv,vec2 cells,float density,float seed){
  return tint*present*point*brightness;
 }
 void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,asin(d.y)/3.14159+.5);float h=smoothstep(-.1,.8,d.y);vec3 color=mix(horizon,zenith,h);
- float path=.52+.105*sin(uv.x*6.28318-1.6);
+ float path=.545+.025*sin((uv.x-.12)*9.);
  float across=uv.y-path;
  float band=exp(-pow(across/.026,2.));
  float halo=exp(-pow(across/.075,2.));
@@ -352,30 +357,28 @@ void main(){vec3 d=normalize(direction);vec2 uv=vec2(atan(d.z,d.x)/6.28318+.5,as
  float rift=exp(-pow((across+.006+.009*sin(uv.x*47.))/.008,2.));
  float galaxy=band*pow(n,1.7)*(1.-rift*(.78+.19*dust));
  float skyVisibility=smoothstep(-.13,.18,d.y)*(1.-daylight);
- // Resolved stellar knots and dark rifts, rather than a uniform cloudy glow.
- float knots=noise(uv*vec2(320.,170.))*noise(uv*vec2(720.,390.));
- color+=mix(vec3(.12,.15,.23),vec3(.28,.21,.18),n)*galaxy*(.20+knots*1.6)*skyVisibility;
- color*=1.-band*rift*.38;
- vec3 stars=starLayer(uv,vec2(640.,320.),.002,3.);
- stars+=starLayer(uv,vec2(1250.,625.),.0002+band*.82*(.22+.78*n)*(1.-rift*.94),19.)*1.05;
- stars+=starLayer(uv,vec2(2100.,1050.),band*.96*(.20+.80*n)*(1.-rift*.97),73.)*.95;
- color+=stars*skyVisibility*(1.35+.04*sin(clock*.28));
+ // NASA star catalogue image: one resolved galactic belt with real dark lanes.
+ vec2 galUv=vec2(fract(uv.x+.18),clamp(.5+across*7.,0.,1.));
+ vec3 galactic=texture2D(galaxyMap,galUv).rgb;
+ color+=pow(galactic,vec3(.68))*2.2*(.08+.92*exp(-pow(across/.018,2.)))*skyVisibility*reveal;
+ color+=starLayer(uv,vec2(1500.,750.),exp(-pow(across/.012,2.))*.8,19.)*1.35*skyVisibility*reveal;
  // Aurora australis: slow folded curtains with vertical rays and a pink upper fringe.
  // Folded ribbons advect continuously instead of remaining a static luminous mist.
  vec3 auroraLight=vec3(0.);
- for(int layer=0;layer<3;layer++){
-  float k=float(layer),flow=clock*.35;
-  float base=.50+k*.029+.045*sin(uv.x*12.566+flow+k*.8)+.025*sin(uv.x*32.-clock*.42+k);
+ for(int layer=0;layer<2;layer++){
+  float k=float(layer),flow=clock*.9;
+  float base=.515+k*.016+.020*sin(uv.x*10.+flow*.55+k)+.010*sin(uv.x*35.-flow*1.4+k);
   float rise=uv.y-base;
-  float curtain=exp(-pow((rise-.065)/.10,2.))*smoothstep(-.015,.025,rise)*(1.-smoothstep(.20,.38,rise));
-  float fold=.52+.48*sin(uv.x*41.+sin(uv.x*13.-flow)*2.4-clock*.72+k*1.8);
-  float rays=.30+.70*noise(vec2(uv.x*460.+clock*.45+rise*9.,rise*34.-clock*.35+k*7.));
-  float extent=pow(.5+.5*cos((uv.x-.27)*6.28318),2.);
-  vec3 tint=mix(vec3(.035,.32,.29),vec3(.63,.075,.35),clamp(.38+.4*sin(uv.x*11.+k*.6)+smoothstep(.03,.25,rise)*.3,0.,1.));
-  tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.85);
-  auroraLight+=tint*curtain*mix(.25,1.,fold)*rays*extent*.58;
+  float edge=exp(-pow((rise-.012)/.013,2.));
+  float curtain=exp(-max(rise,0.)*20.)*smoothstep(-.008,.012,rise)*(1.-smoothstep(.15,.22,rise));
+  float fold=.35+.65*pow(.5+.5*sin(uv.x*56.-clock*2.2+sin(uv.x*15.+flow)*2.+k),2.);
+  float rays=.55+.45*noise(vec2(uv.x*290.-clock*.5,k*19.));
+  float extent=pow(.5+.5*cos((uv.x-.23)*6.28318),1.5);
+  vec3 tint=mix(vec3(.035,.32,.18),vec3(.50,.08,.29),smoothstep(.015,.070,rise));
+  tint=mix(vec3(dot(tint,vec3(.2126,.7152,.0722))),tint,.7225);
+  auroraLight+=tint*(curtain*fold*rays+edge*.32)*extent*.64;
  }
- color+=auroraLight*1.32*skyVisibility;
+ color+=auroraLight*1.32*skyVisibility*reveal;
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
@@ -395,8 +398,8 @@ function softenCloud(material){material.onBeforeCompile=shader=>{
 const cloudMaterial=new THREE.MeshBasicMaterial({color:'#ffffff',vertexColors:false,fog:false,transparent:true,depthWrite:false,opacity:.98});softenCloud(cloudMaterial);cloudMaterial.userData.cloud=true;materials.push(cloudMaterial);
 const cloudGeometry=new THREE.SphereGeometry(1,24,16),cloudBanks=[];
 const cloudP=cloudGeometry.attributes.position,cloudColors=[];for(let i=0;i<cloudP.count;i++){const x=cloudP.getX(i),y=cloudP.getY(i),z=cloudP.getZ(i),r=1+.035*Math.sin(x*19+y*11)*Math.cos(z*17);cloudP.setXYZ(i,x*r,y*r,z*r);const tint=new THREE.Color('#e5e8ee').lerp(new THREE.Color('#ffffff'),THREE.MathUtils.smoothstep(y,-.65,.75));cloudColors.push(tint.r,tint.g,tint.b);}cloudGeometry.setAttribute('color',new THREE.Float32BufferAttribute(cloudColors,3));cloudGeometry.computeVertexNormals();
-for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*.6;skyObjects.add(bank);cloudBanks.push(bank);
- for(let j=0;j<9;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/8;const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*11,Math.pow(hump,1.4)*(1.3+random()*1.8),Math.sin(j*2.1)*.9);lobe.scale.set(2+random()*1.9,1.6+hump*2.2,1.1+random());bank.add(lobe);}
+for(let i=0;i<12;i++){const bank=new THREE.Group();bank.position.set((i%2?1:-1)*(15+random()*18),9+random()*8,-50-i*12);bank.rotation.y=random()*2;bank.scale.set(1+(i%3)*.18,.65+(i%4)*.23,1);skyObjects.add(bank);cloudBanks.push(bank);
+ for(let j=0;j<4+(i*7)%7;j++){const lobe=new THREE.Mesh(cloudGeometry,cloudMaterial),a=j/Math.max(1,3+(i*7)%7);const hump=Math.sin(a*Math.PI);lobe.position.set((a-.5)*(6+(i%4)*3),Math.pow(hump,.6+(i%3)*.8)*(1+random()*3)+(random()-.5)*1.3,Math.sin(j*2.1+i)*2);lobe.scale.set(2+random()*1.9,1.6+hump*2.2,1.1+random());bank.add(lobe);}
 }
 // Lunar detail stays on a complete disc; foreground terrain supplies natural occlusion.
 const lunarTexture=new THREE.TextureLoader(sceneryManager).load('assets/space/lroc-color-2k.jpg');lunarTexture.colorSpace=THREE.SRGBColorSpace;
@@ -550,7 +553,7 @@ for(const angle of [Math.PI*2/3,Math.PI*4/3]){const x=Math.cos(angle)*1.62,z=Mat
 for(let j=0;j<120;j++){const a=2.1+j*.018,theta=.5+(j%17)/17*.85,r=2.045*Math.sin(theta);ivyDummy.position.set(Math.cos(a)*r,3.48+1.46*Math.cos(theta),Math.sin(a)*r);ivyDummy.rotation.set(-theta,a,j*.7);ivyDummy.scale.setScalar(.8+(j%4)*.15);ivyDummy.updateMatrix();ivyLeaves.setMatrixAt(ivyCount++,ivyDummy.matrix);}pavilion.add(ivyLeaves);
 
 // Six paper-like leaves gradually resolve into a light, abstract constellation.
-const banyanClearing=createBanyanClearing(camera,sceneryManager);camera.add(banyanClearing.group);
+const banyanClearing=createBanyanClearing(camera,sceneryManager);scene.add(banyanClearing.group);
 const publications = new THREE.Group(); publications.position.set(2.7, .7, -107); world.add(publications);
 const paperLeaves = [],paperBreeze={x:0,y:0},paperWind={x:0,y:0};
 addEventListener('pointermove',event=>{paperBreeze.x=(event.clientX/innerWidth-.5)*2;paperBreeze.y=(event.clientY/innerHeight-.5)*2;},{passive:true});
@@ -651,6 +654,7 @@ new GLTFLoader(sceneryManager).load('models/watercolour-fir.glb',gltf=>{
 
 
 // Independent planting randomness avoids rows and keeps layout separate from flower dimensions.
+const realisticWoodland=createRealisticWoodland(treePlacements,sceneryManager);habitat.add(realisticWoodland);
 let plantingSeed=90283;
 function plantingRandom(){plantingSeed=(plantingSeed*1664525+1013904223)>>>0;return plantingSeed/4294967296;}
 const meadowPatches=[];
@@ -850,7 +854,7 @@ for(let i=0;i<18;i++){const side=i%2?1:-1,z=8-i*6.4,group=new THREE.Group();grou
  for(const sign of [-1,1]){const a=sign*THREE.MathUtils.degToRad(52.25),tip=new THREE.Vector3(Math.sin(a)*.77,Math.cos(a)*.77,0),hydrogen=new THREE.Mesh(waterHydrogenGeometry,skyMoleculeMaterial);hydrogen.position.copy(tip);group.add(hydrogen);tube(group,[new THREE.Vector3(),tip],.115,skyMoleculeMaterial,16);}
 }
 
-const surveyDetails=new THREE.Group();habitat.add(surveyDetails);
+const surveyDetails=new THREE.Group();surveyDetails.visible=false;habitat.add(surveyDetails);
 for(let j=0;j<12;j++){
  const group=new THREE.Group();group.position.set((j%2?1:-1)*(5.5+random()*1.2),-1.5,j* -7+3);group.rotation.set(.3,Math.sin(j)*.4,j*.2);surveyDetails.add(group);
  const ticks=[];for(let k=0;k<48;k++){const a=k/48*Math.PI*2,r=.9;ticks.push(new THREE.Vector3(Math.cos(a)*r,Math.sin(a)*r,0),new THREE.Vector3(Math.cos(a)*(r+(k%4===0?.12:.045)),Math.sin(a)*(r+(k%4===0?.12:.045)),0));}
@@ -1000,9 +1004,9 @@ function paint(t,time){
     if(renderer){if(renderer.domElement.parentNode!==host)host.append(renderer.domElement);renderer.toneMapping=THREE.NoToneMapping;}
     moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.68,.82,t));
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
-    const daylight=smooth(.68,.84,t);skyUniforms.daylight.value=daylight;gardenAmbient.color.lerpColors(new THREE.Color(palette.mist),new THREE.Color('#fffaf1'),daylight);gardenAmbient.intensity=.62+daylight*.6;warm.color.lerpColors(new THREE.Color(palette.gold),new THREE.Color('#fffaf1'),daylight);blueLight.intensity=3.4*(1-.75*daylight);
+    const daylight=smooth(.52,.84,t);skyUniforms.daylight.value=daylight;gardenAmbient.color.lerpColors(new THREE.Color(palette.mist),new THREE.Color('#fffaf1'),daylight);gardenAmbient.intensity=.62+daylight*.6;warm.color.lerpColors(new THREE.Color(palette.gold),new THREE.Color('#fffaf1'),daylight);blueLight.intensity=3.4*(1-.75*daylight);
     banyanClearing.update(t,time);
-    skyUniforms.clock.value=(performance.now()-skyStarted)/1000;host.dataset.skyTime=skyUniforms.clock.value.toFixed(3);groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
+    skyUniforms.reveal.value=smooth(.072,.15,t);skyUniforms.clock.value=(performance.now()-skyStarted)/1000;host.dataset.skyTime=skyUniforms.clock.value.toFixed(3);groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
     host.style.setProperty('--scene-focus','0px');host.style.setProperty('--scene-light','1');
@@ -1020,7 +1024,7 @@ function paint(t,time){
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
     life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
-    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
+    cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;banyanClearing.cameraAt(t,camera.position,gazePoint);camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
@@ -1053,7 +1057,7 @@ function paint(t,time){
     if(!skipped)intro.style.setProperty('opacity','0','important');
     section.querySelector('.journey-scroll').style.opacity=String(1-smooth(.01,.06,t));
     host.dataset.progress=t.toFixed(3);host.dataset.background='#'+scene.background.getHexString();host.style.backgroundColor=host.dataset.background;host.dataset.camera='CatmullRomCurve3';
-    gardenPolishState?.update(t,time);
+    gardenPolishState?.update(t,time);if(gardenPolishState)forest.visible=false;
     if(renderer){renderer.domElement.style.filter=t<.12?`blur(${22*(1-flight)}px)`:'';if(t<.12)wings.traverse(part=>{if(part.material){part.material.opacity=(part.material.userData.baseOpacity??1)*fade*introReveal;if(part.userData.wingSurface){part.material.emissive.set("#7f72b8");part.material.emissiveIntensity=.22*introReveal*(1-opening);}}});renderer.render(scene,camera);}
     const openingText=document.getElementById('heroScreen');if(openingText&&root.classList.contains('intro-text-active')){openingText.style.opacity=String(1-opening);openingText.style.display=t<.12?'block':'none';}
     host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.wingbeatHz=(THREE.MathUtils.lerp(13,1,flight)*(1-opening)/(Math.PI*2)).toFixed(2);host.dataset.flapping=String(opening<1);host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
@@ -1116,7 +1120,7 @@ if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};
  if(!renderer||skipped||motion.matches){resolveOpening();return;}
  await sceneryReady;
  if(skipped||motion.matches){resolveOpening();return;}
- try{gardenPolishState=polishCurrentGarden({THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,flowerPetalGeometry,petalMaterial,flowerPositions,botanicalOccupied,meadow,host,floor:meadowFloor});paint(.12,0);banyanClearing.group.visible=true;await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
+ try{gardenPolishState=polishCurrentGarden({gloriosaTexture,THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,flowerPetalGeometry,petalMaterial,flowerPositions,botanicalOccupied,meadow,host,floor:meadowFloor});paint(.12,0);banyanClearing.group.visible=true;await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
  catch(error){console.error('Opening preparation failed',error);}
  finally{resolveOpening();}
 })();

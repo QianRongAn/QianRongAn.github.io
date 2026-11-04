@@ -17,12 +17,12 @@
         var svg = node('svg', { viewBox: '0 0 ' + data.width + ' ' + data.height, class: 'signature', 'aria-hidden': 'true' });
         var defs = node('defs'); svg.appendChild(defs);
         var total = data.letters.reduce(function (sum, letter) { return sum + letter.strokes.reduce(function (n, s) { return n + s.length; }, 0); }, 0);
-        var elapsed = .0375;
+        var elapsed = .05;
         data.letters.forEach(function (letter, index) {
             var mask = node('mask', { id: 'signature-mask-' + index, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: data.width, height: data.height });
             var shape = node('path', { d: letter.outline, fill: 'currentColor', mask: 'url(#signature-mask-' + index + ')' });
             letter.strokes.forEach(function (stroke) {
-                var duration = Math.max(.01375, stroke.length / total * .875);
+                var duration = Math.max(.0183333333333, stroke.length / total * 1.1666666666667);
                 var line = node('path', { d: stroke.d, fill: 'none', stroke: 'white', 'stroke-width': stroke.width, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', pathLength: 1 });
                 if (!reduced) {
                     line.style.strokeDasharray = '1'; line.style.strokeDashoffset = '1';
@@ -30,7 +30,7 @@
                 }
                 mask.appendChild(line); elapsed += duration;
             });
-            defs.appendChild(mask); svg.appendChild(shape); elapsed += .01375;
+            defs.appendChild(mask); svg.appendChild(shape); elapsed += .0183333333333;
         });
         title.setAttribute('aria-label', 'Nan Wang');
         title.replaceChildren(svg); title.classList.add('signature-ready');
