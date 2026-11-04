@@ -1075,7 +1075,7 @@ root.classList.add('journey-ready');
 if(skipped)skip();measure();if(motion.matches)finishReduced();else{paint(0,0);resume();}
 const previewScenes={orchids:0,sky:2,premeadow:8,signals:9,engineering:16,meadow:10,bilayer:8,meta:4,immune:11,clinic:12,ncc:13,crispr:17,papers:18};
 const previewScene=new URLSearchParams(location.search).get('scene');if(Object.hasOwn(previewScenes,previewScene)){const showScene=()=>{start();moveToBeat(previewScenes[previewScene]);};document.addEventListener('journey:reveal',()=>openingReady.then(showScene),{once:true});}
-initCrystalPages(renderer,()=>scene.environment,wings);
+initCrystalPages(renderer,()=>scene.environment);
 if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};if(document.readyState==='complete')showStudy();else addEventListener('load',showStudy,{once:true});}
 
 // Warm shader programs, geometry uploads and the static pavilion shadow behind the prelude.

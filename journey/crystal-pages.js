@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import {createApprovedCrystalWings} from './crystal-butterfly.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export function initCrystalPages(renderer,getEnvironment,originalWings){
+export function initCrystalPages(renderer,getEnvironment){
  const about=document.getElementById('about'),experience=document.getElementById('experience');if(!about||!experience)return;
  const root=document.documentElement,host=document.createElement('div');host.id='crystalPagesCanvas';host.hidden=true;document.body.prepend(host);
  const backdrop=document.createElement('canvas');backdrop.width=backdrop.height=512;const ctx=backdrop.getContext('2d'),gradient=ctx.createRadialGradient(256,256,0,256,256,345);gradient.addColorStop(0,'#cddcff');gradient.addColorStop(.35,'#dee6ff');gradient.addColorStop(1,'#fafbff');ctx.fillStyle=gradient;ctx.fillRect(0,0,512,512);const aboutBackground=new THREE.CanvasTexture(backdrop);aboutBackground.colorSpace=THREE.SRGBColorSpace;
@@ -10,7 +11,7 @@ export function initCrystalPages(renderer,getEnvironment,originalWings){
  const jewelLights=[],fillLight=new THREE.HemisphereLight('#ffffff','#b9dbe8',2);scene.add(fillLight);for(const [x,y,z,p] of [[-5,7,8,3],[6,2,5,2]]){const light=new THREE.DirectionalLight('#ffffff',p);light.position.set(x,y,z);scene.add(light);jewelLights.push(light);}
  const crystal=new THREE.MeshPhysicalMaterial({color:'#f0fbff',roughness:.008,metalness:0,transmission:1,thickness:.22,ior:1.52,transparent:true,opacity:.82,clearcoat:1,clearcoatRoughness:.025,iridescence:0,iridescenceThicknessRange:[230,350],attenuationColor:new THREE.Color('#add9ed'),attenuationDistance:40,side:THREE.DoubleSide});
  // Restore the final transparent crystal butterfly before the diamond experiment.
- const butterfly=originalWings.clone(true);butterfly.traverse(part=>{if(part.isMesh)part.material=crystal;else if(part.isLine)part.visible=false;if(part.userData.side)part.rotation.set(0,0,0);});butterfly.position.set(0,0,0);butterfly.rotation.set(-.08,.22,.12);scene.add(butterfly);
+ const butterfly=createApprovedCrystalWings(crystal);butterfly.traverse(part=>{if(part.isMesh)part.material=crystal;else if(part.isLine)part.visible=false;if(part.userData.side)part.rotation.set(0,0,0);});butterfly.position.set(0,0,0);butterfly.rotation.set(-.08,.22,.12);scene.add(butterfly);
  const branchTree=new THREE.Group();scene.add(branchTree);branchTree.visible=false;
  const section=experience.querySelector('section'),items=[...section.querySelectorAll('.content-item')].sort((a,b)=>{const key=el=>{const date=el.querySelector('.date-location')?.textContent.match(/(\d{2})\/(\d{4})/);return date?Number(date[2])*12+Number(date[1]):0;};return key(a)-key(b);}),texts=[];
  items.forEach(item=>{const role=item.querySelector('h3')?.textContent||'',date=item.querySelector('.date-location')?.textContent||'';const lines=[...item.querySelectorAll('li')];(lines.length?lines:[item.querySelector('p')]).filter(Boolean).forEach((line,i)=>texts.push({role,date,html:line.innerHTML,first:i===0}));});

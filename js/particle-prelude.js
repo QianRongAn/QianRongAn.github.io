@@ -19,7 +19,7 @@ function keys(e){if(e.key==='Escape'){e.preventDefault();skip();}else if(['PageD
 function prefetchScenery(){if(prefetched)return;prefetched=true;for(const path of ['models/watercolour-fir.glb','models/meadow-flowers.glb?v=no-lavender65','assets/space/lroc-color-2k.jpg'])fetch(path,{cache:'force-cache',priority:'low'}).then(r=>r.ok?r.arrayBuffer():null).catch(()=>{});}
 function render(now){if(!active)return;const duration=video.duration,time=video.currentTime||0;track.style.transform='scaleX('+Math.min(1,time/(Number.isFinite(duration)&&duration>0?duration:5.06))+')';
  if(!transition){if(video.ended||(Number.isFinite(duration)&&duration>0&&time>=duration-.07))handoff();else if(failedAt&&now-failedAt>1500)handoff();else if(!video.paused&&video.readyState>=2){if(time!==lastTime){lastTime=time;lastAdvance=now;}else if(lastAdvance&&now-lastAdvance>10000)handoff();}}
- if(transitionAt&&!fadeAt&&now-transitionAt>10000){abort();return;}
+ if(transitionAt&&!fadeAt&&now-transitionAt>10000)status.textContent='正在准备穿梭场景，请稍候…';
  if(fadeAt){const p=Math.min(1,(now-fadeAt)/650);overlay.style.setProperty('--prelude-fade',String(1-p*p*(3-2*p)));if(p===1){cleanup();return;}}
  frame=requestAnimationFrame(render);
 }
