@@ -1005,7 +1005,7 @@ function paint(t,time){
     moonMaterial.uniforms.opacity.value=.98*smooth(.26,.55,t)*(1-smooth(.68,.82,t));
     moon.visible=moonMaterial.uniforms.opacity.value>.001;
     const daylight=smooth(.52,.84,t);skyUniforms.daylight.value=daylight;gardenAmbient.color.lerpColors(new THREE.Color(palette.mist),new THREE.Color('#fffaf1'),daylight);gardenAmbient.intensity=.62+daylight*.6;warm.color.lerpColors(new THREE.Color(palette.gold),new THREE.Color('#fffaf1'),daylight);blueLight.intensity=3.4*(1-.75*daylight);
-    banyanClearing.update(t,time);
+    banyanClearing.update(t,time);host.dataset.banyanMode=banyanClearing.stats.mode;host.dataset.banyanTime=banyanClearing.stats.currentTime.toFixed(3);host.dataset.banyanTarget=banyanClearing.stats.targetTime.toFixed(3);host.dataset.banyanDuration=String(banyanClearing.stats.duration);
     skyUniforms.reveal.value=smooth(.072,.15,t);skyUniforms.clock.value=(performance.now()-skyStarted)/1000;host.dataset.skyTime=skyUniforms.clock.value.toFixed(3);groundClock.value=time;forestFillLevel.value=.70*smooth(.35,.60,t);forestFogLimit.value=1-.82*smooth(.35,.65,t);
     molecule.visible=t>.17&&t<.44;evidence.visible=t>.255&&t<.52;sourceTrail.visible=t>.34&&t<.49;tissue.visible=t>.37&&t<.60;structureStudies.visible=false;crisprStudy.visible=false;career.visible=t>.48&&t<.821;pavilion.visible=true;publications.visible=t>.775;dna.visible=t>.115&&t<.27;membrane.visible=false;
     const flight=flightStarted<0?0:smooth(0,3,time-flightStarted),opening=smooth(.065,.12,t),emergence=smooth(.075,.12,t);
