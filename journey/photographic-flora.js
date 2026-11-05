@@ -8,8 +8,8 @@ export function createPhotographicFlora(manager,materials){
  const atlases={},batches=[],dummy=new THREE.Object3D();
  for(const name of Object.keys(bounds)){
   const texture=new THREE.TextureLoader(manager).load('assets/worlds/flora150/'+name+'.webp');
-  texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;
-  atlases[name]=new THREE.MeshBasicMaterial({map:texture,alphaTest:.45,alphaToCoverage:true,side:THREE.DoubleSide,transparent:true,toneMapped:false});
+  texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=16;texture.magFilter=THREE.LinearFilter;texture.minFilter=THREE.LinearMipmapLinearFilter;
+  atlases[name]=new THREE.MeshBasicMaterial({map:texture,alphaTest:.015,alphaToCoverage:false,side:THREE.DoubleSide,transparent:true,depthWrite:false,toneMapped:false});
   atlases[name].userData.baseOpacity=1;materials.push(atlases[name]);
  }
  function add(name,records){

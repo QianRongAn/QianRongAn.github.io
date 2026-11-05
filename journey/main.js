@@ -116,7 +116,8 @@ import { initCrystalPages } from './crystal-pages.js';
 
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon } from './celestial-bodies.js';
-import {createRealisticWoodland} from './realistic-woodland.js';
+import {createRealisticWoodland} from './woodland156.js';
+import {advanceWingClock,breathingWingPose} from './butterfly-motion.js';
 import {createPhotographicFlora} from './photographic-flora.js';
 import { createBanyanClearing } from './banyan-clearing.js';
 
@@ -1031,14 +1032,14 @@ function paint(t,time){
     atmosphere.visible=emergence>0&&t<.975;skyObjects.visible=emergence>0&&t<.975;habitat.visible=emergence>0;dust.visible=emergence>0;
     birdFlock.forEach(({bird,wings,phase,baseY,baseZ})=>{bird.position.x=((time*.68+phase*7)%64)-32;bird.position.y=baseY+Math.sin(time*.32+phase)*.6;bird.position.z=baseZ;bird.rotation.y=Math.PI/2;bird.rotation.z=Math.sin(time*.25+phase)*.08;wings.forEach(({pivot,side})=>pivot.rotation.z=side*Math.sin(time*4.2+phase)*.63);});
     cloudBanks.forEach((bank,i)=>{bank.position.x+=(i%2?1:-1)*Math.sin(time*.025+i)*.00012;bank.visible=bank.position.distanceTo(camera.position)<150;});
-    life.position.set(3.4,Math.sin(time*.55)*.09,0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
+    life.position.set(3.4,Math.sin(time*.55)*.09*(1-opening),0);life.rotation.z=Math.sin(time*.32)*.045;scene.fog.density=0;
     const cameraU=clamp((t-.065)/.125,0,1),cameraProgress=t<.19?.19*(3*cameraU*cameraU-2*cameraU*cameraU*cameraU)+.125*(cameraU*cameraU*cameraU-cameraU*cameraU):t;
     cameraCurve.getPoint(cameraProgress,camera.position);gazeCurve.getPoint(cameraProgress,gazePoint);const clinicalClearance=t>.6625&&t<.70?1.1*Math.sin((t-.6625)/.0375*Math.PI)**2:0;camera.position.y+=clinicalClearance;gazePoint.y+=clinicalClearance*.25;camera.lookAt(gazePoint);camera.rotateZ(Math.sin(t*Math.PI*4)*.025);
     if(t<.12){const openingScene=scene;if(wings.parent!==openingScene)openingScene.add(wings);wings.position.x=THREE.MathUtils.lerp(-6,3.4,flight);}
     else if(wings.parent!==life){life.add(wings);wings.position.x=0;}
     const fade=1-smooth(.95,.998,t);world.visible=fade>0&&t>=.075;
     materials.forEach(mat=>{mat.opacity=mat.userData.baseOpacity*fade*emergence*(mat.userData.cloud?smooth(.20,.32,t):1)*(mat.userData.dna?smooth(.115,.14,t)*(1-smooth(.24,.27,t)):1)*(mat.userData.molecular?smooth(.34,.41,t):1)*(mat.userData.careerTimeline?1-smooth(.805,.82,t):1)*(mat.userData.publicationPaper?smooth(.775,.842,t):1)*(mat.userData.evidenceSheet?smooth(.255,.32,t):1)*(mat.userData.sourceSheet?smooth(.34,.395,t):1);});
-    wingClock+=Math.min(.06,Math.max(0,time-wingTime))*THREE.MathUtils.lerp(13,1,flight)*(1-opening);wingTime=time;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35, .12);wingPivots.forEach(pivot=>{const phase=wingClock-(pivot.userData.hind?.24:0);pivot.rotation.y=pivot.userData.side*(.24+Math.sin(phase)*.75*(1-opening));pivot.rotation.x=Math.sin(phase-.25)*.025*(1-opening);});wings.position.y=Math.sin(time*.9)*.09;
+    const wingWallTime=performance.now()/1000;wingClock=advanceWingClock(wingClock,wingTime?wingWallTime-wingTime:0,flight,opening);wingTime=wingWallTime;wings.scale.setScalar((1-smooth(.10,.24,t))*(t<.12?THREE.MathUtils.lerp(2,1,flight):1));wings.rotation.set(-.12,-.35,.12);wingPivots.forEach(pivot=>{const pose=breathingWingPose(wingClock,opening,pivot.userData.side,pivot.userData.hind);pivot.rotation.y=pose.y;pivot.rotation.x=pose.x;});wings.position.y=Math.sin(time*.9)*.09*(1-opening);
     if(t<.12)followOpeningLight(camera,wings,orchidGlow,openingLightPoint);
     dna.rotation.set(.08,time*.055,-.12);
     host.dataset.dnaVisible=String(dna.visible);molecule.rotation.y=Math.sin(time*.19)*.2;evidence.rotation.y=Math.sin(time*.14)*.12;
@@ -1069,7 +1070,7 @@ function paint(t,time){
     photographicFlora.update(camera);gardenPolishState?.update(t,time);if(gardenPolishState)forest.visible=false;
     if(renderer){renderer.domElement.style.filter=t<.12?`blur(${22*(1-flight)}px)`:'';if(t<.12)wings.traverse(part=>{if(part.material){part.material.opacity=(part.material.userData.baseOpacity??1)*fade*introReveal;if(part.userData.wingSurface){part.material.emissive.set("#7f72b8");part.material.emissiveIntensity=.22*introReveal*(1-opening);}}});renderer.render(scene,camera);}
     const openingText=document.getElementById('heroScreen');if(openingText&&root.classList.contains('intro-text-active')){openingText.style.opacity=String(1-opening);openingText.style.display=t<.12?'block':'none';}
-    host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.wingbeatHz=(THREE.MathUtils.lerp(13,1,flight)*(1-opening)/(Math.PI*2)).toFixed(2);host.dataset.flapping=String(opening<1);host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
+    host.dataset.butterflyClarity=flight.toFixed(3);host.dataset.wingbeatHz=(((13-12*flight)*(1-opening)+opening)/(Math.PI*2)).toFixed(2);host.dataset.flapping=String(wings.visible&&wings.scale.x>.01);host.dataset.breathing='continuous-wing-open-close156';host.dataset.introStage=t<.065?'butterfly-flight':t<.12?'orchids-opening':'journey';
 }
 if(renderer){renderer.domElement.addEventListener('webglcontextlost',()=>{host.dataset.state='context-lost';cancelAnimationFrame(frame);frame=0;});renderer.domElement.addEventListener('webglcontextrestored',()=>{host.dataset.state='ready';renderer.shadowMap.needsUpdate=true;prepareEnvironments();measure();resume();});host.dataset.state='ready';}
 function isVisible(){return host.dataset.state!=='context-lost'&&!document.hidden&&(!skipped||publicationMode())&&!motion.matches&&!root.classList.contains('hero-locked')&&!root.classList.contains('about-portal-active');}
