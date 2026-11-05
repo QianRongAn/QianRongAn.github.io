@@ -1,5 +1,7 @@
 # Meadow constraints
 
+- Permanent user archive: “the last version before ImageGen / scroll-world” means production commit `050830b5e27e4e26a59b89bd3e4a2b985ab8bfe4` (Scope135, 2026-11-04). Fixed remote branch `codex/archive-before-imagegen-scroll-world-20261104`. Never move this archive branch as new work progresses. Do not roll back production without an explicit request. A verified complete ZIP and restoration notes are in the parent workspace's `archives/` directory.
+
 - Keep the approved flower-head sizes fixed. Do not change petal geometry, blossom scale ranges, botanical world-size ranges, or near-camera size caps unless the user explicitly asks to change flower size.
 - Fix long stems by shortening stalks and lowering flower heads without scaling or distorting the blossoms. Botanical size normalization must use the original geometry extent before shortening stems.
 - Scatter the original small flowers irregularly across open ground. Plant botanical varieties in distinct, irregular clumps, with varying counts and spacing. Never arrange either kind into repeated lanes or a grid.
