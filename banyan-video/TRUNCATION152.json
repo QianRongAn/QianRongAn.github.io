@@ -1,0 +1,12 @@
+{
+  "expectedBytes": 36945353,
+  "actualBytes": 5783021,
+  "missingBytes": 31162332,
+  "metadataFrames": 193,
+  "decodedFrames": 31,
+  "metadataSeconds": 8.041666666666666,
+  "decodedSecondsApprox": 1.3,
+  "sourceRun": "18d497af-24e1-4060-a451-a5de11ed7e4b",
+  "remoteBeyondEOF": "HTTP416",
+  "status": "Original download object truncated; no complete source recovered; no new generation"
+}
