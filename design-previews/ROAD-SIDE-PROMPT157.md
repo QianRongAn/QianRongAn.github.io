@@ -1,0 +1,7 @@
+# Individual leaves157
+
+Built-in ImageGen. Source: roadside-leaves157.png, runtime assets/worlds/roadside-leaves157.webp, same 1254px resolution, quality95, original alpha preserved. Replaces branch-spray147 sampling only in woodland157.js. All180 existing anchors and height envelopes retained. Other scene content unchanged.
+
+Prompt:
+
+Create a production texture atlas for individual leaves for realistic living roadside trees in a 3D website. A truly TRANSPARENT background, exactly four individual separate simple oval broadleaf leaves in equal 2x2 quadrants, generous transparent margins, no overlap. Each quadrant contains ONLY ONE leaf, not a branch, not a spray, not a whole tree, not a cluster. Leaves are broad, tapered oval, gently pointed tips, natural slightly irregular edges and tiny petiole, realistic subtle leaf veins and smooth satin botanical surface, physically believable fine leaf texture. View nearly straight onto each leaf blade with slight natural curl variations, full leaf in frame. Four subtly different leaf silhouettes and angles. Color palette soft lavender, periwinkle blue and lilac, maintaining fantasy lavender foliage but realistic botanical anatomy and photographic surface. Soft neutral even illumination, no baked hard shadows or dramatic highlights. The leaves must read as broad distinct leaf blades rather than tiny fuzzy needles. No fur, wool, moss, fuzzy fringe, frost, snow, conifer needles, flowers, twigs, branches, tree crowns, labels, text, grid, background, shadow outside cutout.
