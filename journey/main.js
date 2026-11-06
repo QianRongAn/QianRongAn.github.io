@@ -116,7 +116,7 @@ import { initCrystalPages } from './crystal-pages.js';
 
 import { createMermaidTail } from './mermaid-tail.js';
 import { createSupermoon } from './celestial-bodies.js';
-import {createRealisticWoodland} from './woodland157.js';
+import {createRealisticWoodland} from './woodland159.js';
 import {advanceWingClock,breathingWingPose} from './butterfly-motion.js';
 import {createPhotographicFlora} from './photographic-flora.js';
 import { createBanyanClearing } from './banyan-clearing.js';
@@ -759,7 +759,7 @@ for(const t of [.12,...captions.map(c=>(c[0]+c[1])*.5)]){
 }
 host.dataset.meadowBeds=String(meadowPatches.length);host.dataset.meadowFlowers=String(plantedFlowers);host.dataset.foregroundFlowers=String(foregroundFlowers);host.dataset.featuredBlooms=String(featuredBlooms.size);
 meadow.add(stems,leaves,petals,flowerCenters,stamens);
-const meadowHeadMatrices=flowerPositions.map((_,i)=>{const matrix=new THREE.Matrix4();petals.getMatrixAt(i*petalsPerFlower,matrix);return matrix;});photographicFlora.addHeads(meadowHeadMatrices);petals.visible=flowerCenters.visible=stamens.visible=false;host.dataset.photoMeadowHeads=String(meadowHeadMatrices.length);
+const meadowHeadMatrices=flowerPositions.map((_,i)=>{const matrix=new THREE.Matrix4();petals.getMatrixAt(i*petalsPerFlower,matrix);return matrix;});photographicFlora.addHeads(meadowHeadMatrices,[petals,flowerCenters,stamens]);host.dataset.photoMeadowHeads=String(meadowHeadMatrices.length);
 const boulderGeometry=new THREE.SphereGeometry(1,48,36);
 const bp=boulderGeometry.attributes.position;
 for(let i=0;i<bp.count;i++){const x=bp.getX(i),y=bp.getY(i),z=bp.getZ(i);const r=1+.065*Math.sin(y*19+x*9)+.045*Math.cos(z*23-y*7);bp.setXYZ(i,x*r,y*r,z*r);}boulderGeometry.computeVertexNormals();
@@ -831,7 +831,7 @@ new GLTFLoader(sceneryManager).load('models/meadow-flowers.glb?v=no-lavender65',
  dummy.position.set(x,meadowFloor(x,z)-geometry.boundingBox.min.y*scale-.015,z);dummy.rotation.copy(meadowPlantRotation(x,z));dummy.scale.setScalar(scale);dummy.updateMatrix();batch.setMatrixAt(placed,dummy.matrix);photoRecords.push({x,y:meadowFloor(x,z)-.015,z,width:Math.max(photoSize.x,photoSize.z)*scale,height:photoSize.y*scale});if(!['camellia','cymbidium'].includes(part.name))batch.setColorAt(placed,new THREE.Color(blossomColors[(j+species)%blossomColors.length]).lerp(new THREE.Color('#ffffff'),.55));placed++;
  }
  batch.count=placed;botanicalCounts[part.name]=placed;
- batch.computeBoundingSphere();batch.visible=false;meadow.add(batch);photographicFlora.add(part.name,photoRecords);host.dataset.floraAsset='imagegen-ten-species-four-poses150';host.dataset.photoBotanicals=String(photographicFlora.count);
+ batch.computeBoundingSphere();batch.visible=false;meadow.add(batch);photographicFlora.add(part.name,photoRecords,[batch]);host.dataset.floraAsset='imagegen-ten-species-four-poses150';host.dataset.photoBotanicals=String(photographicFlora.count);
  });host.dataset.botanicalCounts=JSON.stringify(botanicalCounts);host.dataset.botanicalClumps=JSON.stringify(clumpCenters.map(c=>({species:c.species,count:c.members?.length||0})));host.dataset.botanicalSpecies=String(speciesCount);const occupied=[...botanicalOccupied.values()].flat();let clearance=Infinity;for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){const p=occupied[a],q=occupied[b];clearance=Math.min(clearance,Math.hypot(p.x-q.x,p.z-q.z)-p.radius-q.radius);}host.dataset.flowerClearance=clearance.toFixed(4);
 },undefined,()=>{host.dataset.botanicalSpecies='unavailable';});
 

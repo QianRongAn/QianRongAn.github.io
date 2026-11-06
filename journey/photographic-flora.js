@@ -5,14 +5,18 @@ import bounds from '../assets/worlds/flora150/atlas-bounds.json';
 // The original geometry still determines spacing, scale caps and ground anchors.
 export function createPhotographicFlora(manager,materials){
  const group=new THREE.Group();group.name='ImageGen botanical poses';
- const atlases={},batches=[],dummy=new THREE.Object3D();
+ const ready={},callbacks={},atlases={},batches=[],dummy=new THREE.Object3D();
  for(const name of Object.keys(bounds)){
-  const texture=new THREE.TextureLoader(manager).load('assets/worlds/flora150/'+name+'.webp');
+  const texture=new THREE.TextureLoader(manager).load('assets/worlds/flora150/'+name+'.webp',()=>{ready[name]=true;(callbacks[name]||[]).forEach(fn=>fn());});
   texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=16;texture.magFilter=THREE.LinearFilter;texture.minFilter=THREE.LinearMipmapLinearFilter;
-  atlases[name]=new THREE.MeshBasicMaterial({map:texture,alphaTest:.015,alphaToCoverage:false,side:THREE.DoubleSide,transparent:true,depthWrite:false,toneMapped:false});
+  atlases[name]=new THREE.MeshBasicMaterial({map:texture,alphaTest:.10,alphaToCoverage:false,side:THREE.DoubleSide,transparent:true,depthWrite:true,toneMapped:false});
   atlases[name].userData.baseOpacity=1;materials.push(atlases[name]);
  }
- function add(name,records){
+ function watch(name,batch,fallback){
+  const sync=()=>{batch.visible=!!ready[name];fallback.forEach(part=>part.visible=!ready[name]);};
+  (callbacks[name]||(callbacks[name]=[])).push(sync);sync();
+ }
+ function add(name,records,fallback=[]){
   const boxes=bounds[name];if(!boxes)throw new Error('Unknown botanical atlas '+name);
   for(let variant=0;variant<4;variant++){
    const [l,t,r,b,aspect]=boxes[variant],items=records.filter((_,i)=>(i*7+Math.floor(i/4))%4===variant);
@@ -20,17 +24,17 @@ export function createPhotographicFlora(manager,materials){
    const uv=geometry.attributes.uv;
    for(let i=0;i<uv.count;i++)uv.setXY(i,l+uv.getX(i)*(r-l),1-b+uv.getY(i)*(b-t));
    const batch=new THREE.InstancedMesh(geometry,atlases[name],items.length);
-   batch.name=name+' pose '+(variant+1);batch.frustumCulled=false;
+   batch.renderOrder=20;batch.name=name+' pose '+(variant+1);batch.frustumCulled=false;
    const plants=items.map(p=>{const height=Math.min(p.height,p.width/aspect);return {...p,height,width:height*aspect};});
-   batches.push({batch,plants});group.add(batch);
+   batches.push({batch,plants});group.add(batch);watch(name,batch,fallback);
   }
  }
- function addHeads(matrices){
+ function addHeads(matrices,fallback=[]){
   for(let variant=0;variant<4;variant++){
    const [l,t,r,b]=bounds.small_heads[variant],geometry=new THREE.PlaneGeometry(1.64,1.64,12,12),uv=geometry.attributes.uv,p=geometry.attributes.position;
    for(let i=0;i<uv.count;i++){uv.setXY(i,l+uv.getX(i)*(r-l),1-b+uv.getY(i)*(b-t));const x=p.getX(i),z=-p.getY(i);p.setXYZ(i,x,.08*Math.max(0,1-(x*x+z*z)/(.82*.82)),z);}
    geometry.computeVertexNormals();const items=matrices.filter((_,i)=>i%4===variant),batch=new THREE.InstancedMesh(geometry,atlases.small_heads,items.length);
-   items.forEach((matrix,i)=>batch.setMatrixAt(i,matrix));batch.computeBoundingSphere();batch.name='Photographic meadow blossom '+variant;group.add(batch);
+   items.forEach((matrix,i)=>batch.setMatrixAt(i,matrix));batch.computeBoundingSphere();batch.renderOrder=20;batch.name='Photographic meadow blossom '+variant;group.add(batch);watch('small_heads',batch,fallback);
   }
  }
  function update(camera){
