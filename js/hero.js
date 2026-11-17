@@ -11,7 +11,7 @@ function reveal(){if(revealing)return revealing;const ready=Promise.resolve(wind
 }
 async function begin(){
  loader=document.createElement('section');loader.className='intro-loader';loader.setAttribute('role','status');loader.setAttribute('aria-label','Preparing the opening scene');loader.innerHTML='<span class="intro-loader-mark" aria-hidden="true"></span><span>NAN WANG</span><button type="button">Skip intro ↗</button>';loader.querySelector('button').addEventListener('click',fallback);document.body.append(loader);root.classList.add('journey-preloading');
- try{await Promise.all([Promise.resolve(window.ensureJourney?.()).then(()=>window.SiteJourney?.ready),window.ParticlePrelude?.prepare?.()]);if(cancelled)return;loader.remove();root.classList.remove('journey-preloading');if(window.ParticlePrelude)window.ParticlePrelude.play(reveal);else reveal();}catch(error){fallback();}
+ try{await Promise.all([Promise.resolve(window.ensureJourney?.()).then(()=>window.SiteJourney?.ready),window.ParticlePrelude?.prepare?.()]);if(cancelled)return;loader.remove();root.classList.remove('journey-preloading');if(window.ParticlePrelude)window.ParticlePrelude.play(reveal);else reveal();}catch(error){if(cancelled)return;loader?.remove();root.classList.remove('journey-preloading');reveal();}
 }
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',begin,{once:true});else begin();
 })();
