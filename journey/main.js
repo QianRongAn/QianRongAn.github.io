@@ -43,54 +43,6 @@ function polishCurrentGarden(c){
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const r=Math.hypot((x-64)/64,(y-64)/64),k=(y*128+x)*4;ai.data[k+3]=Math.max(0,Math.pow(Math.max(0,1-r),2)*180);}
  ax.putImageData(ai,0,0);const am=c.cloudMaterial.clone();am.onBeforeCompile=()=>{};am.customProgramCacheKey=()=> 'trunk-contact-118';am.map=new T.CanvasTexture(ac);am.color.set('#171226');am.fog=false;am.depthWrite=false;am.polygonOffset=true;am.polygonOffsetFactor=-1;am.opacity=.2;am.userData={baseOpacity:.2};c.materials.push(am);
  const contacts=new T.InstancedMesh(new T.PlaneGeometry(1.7,1.7),am,c.treePlacements.length);c.treePlacements.forEach((p,i)=>{dummy.position.set(p.x,p.floor+.025,p.z);dummy.rotation.set(-Math.PI/2,0,0);dummy.scale.setScalar(.8+(i%5)*.08);dummy.updateMatrix();contacts.setMatrixAt(i,dummy.matrix);});contacts.computeBoundingSphere();c.forest.add(contacts);
- // White Gloriosa: six separate, strongly reflexed tepals; six spreading stamens.
- // Reference: SANBI botanical description and Crown Jewels' white cultivar photographs.
- const positions=[],colors=[],normals=[],ivory=new T.Color('#f7f7ee'),white=new T.Color('#ffffff'),stemColor=new T.Color('#737896'),pollen=new T.Color('#c5bf94');
- function piece(g,col,position=new T.Vector3(),rotation=new T.Vector3(),scale=new T.Vector3(1,1,1)){
-  g=g.clone();const d=new T.Object3D();d.position.copy(position);d.rotation.set(rotation.x,rotation.y,rotation.z);d.scale.copy(scale);d.updateMatrix();g.applyMatrix4(d.matrix);if(g.index)g=g.toNonIndexed();if(!g.attributes.normal)g.computeVertexNormals();const p=g.attributes.position,n=g.attributes.normal,cl=g.attributes.color;
-  for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));if(cl)colors.push(cl.getX(i),cl.getY(i),cl.getZ(i));else colors.push(col.r,col.g,col.b);}g.dispose();
- }
- function line(points,radius,color,steps=24){piece(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),steps,radius,6,false),color);}
- // A hooked pedicel holds a nodding bloom; the ovary hangs beneath the tepals.
- line([[0,0,0],[.025,.42,.008],[.045,.82,0]],.011,stemColor);
- line([[.045,.78,0],[-.10,1.12,.015],[-.06,1.25,.012],[.015,1.19,0],[0,1.075,0]],.008,stemColor);
- piece(new T.SphereGeometry(1,16,10),stemColor,new T.Vector3(0,1.055,0),new T.Vector3(),new T.Vector3(.022,.060,.022));
- const profile=new T.CatmullRomCurve3([[.025,1.075,0],[.16,1.005,0],[.35,1.14,0],[.34,1.32,0],[.19,1.43,0],[.25,1.59,0],[.405,1.50,0]].map(p=>new T.Vector3(...p)),false,'catmullrom',.35);
- for(let j=0;j<6;j++){
-  const a=j*Math.PI/3+.035*Math.sin(j*2),ps=[],cs=[],ix=[],rows=64,cols=14;
-  for(let u=0;u<=rows;u++)for(let v=0;v<=cols;v++){
-   const t=u/rows,w=v/cols*2-1,center=profile.getPoint(t),width=.075*Math.pow(Math.sin(Math.PI*t),.80)*(1+.12*Math.sin(t*13+j)),edgeWave=.007*Math.sin(t*24+j*.62)*Math.pow(Math.abs(w),2)*Math.sin(Math.PI*t),cup=.037*(1-w*w)*Math.sin(Math.PI*t),twist=.020*Math.sin(t*Math.PI*1.3+j*.42)*w;
-   const radial=center.x*.83+cup,side=w*width;ps.push(Math.cos(a)*radial-Math.sin(a)*side,center.y+edgeWave+twist-.045*(j%3)*t,Math.sin(a)*radial+Math.cos(a)*side);
-   const col=ivory.clone().lerp(white,.35+.65*t);cs.push(col.r,col.g,col.b);
-   if(u<rows&&v<cols){const k=u*(cols+1)+v;ix.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
-  }
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setAttribute('color',new T.Float32BufferAttribute(cs,3));g.setIndex(ix);g.computeVertexNormals();piece(g,white);
-  const b=a+.10,tip=new T.Vector3(Math.cos(b)*.31,.985,Math.sin(b)*.31);
-  line([[0,1.055,0],[Math.cos(b)*.13,1.015,Math.sin(b)*.13],[tip.x,tip.y,tip.z]],.0035,ivory,20);
-  // Long anthers sit across the filament tips, instead of forming a central ball.
-  piece(new T.SphereGeometry(1,16,8),pollen,tip,new T.Vector3(0,-b,0),new T.Vector3(.032,.007,.010));
- }
- // The lateral style bends away from the ovary and ends in three slender stigmas.
- const styleTip=new T.Vector3(.305,.94,.055);
- line([[0,1.015,0],[.10,.94,.02],[styleTip.x,styleTip.y,styleTip.z]],.0037,ivory,20);
- for(let k=0;k<3;k++)line([[styleTip.x,styleTip.y,styleTip.z],[.333,.944+(k-1)*.012,.055+(k-1)*.018]],.0023,ivory,10);
- // Lanceolate leaves taper into coiling tendrils, characteristic of a climbing lily.
- for(let j=0;j<4;j++){
-  const a=j*2.4,y=.20+j*.15,ps=[],ix=[];
-  for(let u=0;u<=18;u++)for(let v=0;v<=4;v++){
-   const t=u/18,w=v/4*2-1,r=.025+.19*t,width=.036*Math.sin(Math.PI*t),h=y+.12*Math.sin(t*Math.PI*.8);
-   ps.push(Math.cos(a)*r-Math.sin(a)*w*width,h+.005*(1-w*w),Math.sin(a)*r+Math.cos(a)*w*width);
-   if(u<18&&v<4){const k=u*5+v;ix.push(k,k+1,k+5,k+1,k+6,k+5);}
-  }
-  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(ps,3));g.setIndex(ix);g.computeVertexNormals();piece(g,stemColor);
-  const endY=y+.12*Math.sin(Math.PI*.8);line(Array.from({length:17},(_,k)=>{const t=k/16,r=.215+.045*t;return [Math.cos(a)*r-Math.sin(a)*Math.sin(t*Math.PI*2)*.014,endY+.023*t+Math.cos(t*Math.PI*2)*.014,Math.sin(a)*r+Math.cos(a)*Math.sin(t*Math.PI*2)*.014];}),.0023,stemColor,20);
- }
-
- const flowerGeometry=new T.BufferGeometry();flowerGeometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));flowerGeometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));flowerGeometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));flowerGeometry.computeBoundingSphere();
- const flowerMaterial=c.petalMaterial.clone();flowerMaterial.vertexColors=true;flowerMaterial.roughness=.56;flowerMaterial.sheen=.42;flowerMaterial.transmission=.06;flowerMaterial.thickness=.012;flowerMaterial.iridescence=0;flowerMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','outgoingLight=vec3(1.)-exp(-outgoingLight*.9);\n#include <opaque_fragment>');};flowerMaterial.userData.baseOpacity=1;c.materials.push(flowerMaterial);
- const lilies=new T.InstancedMesh(flowerGeometry,flowerMaterial,24);let count=0;
- for(let i=0;i<200&&count<24;i++){const x=(i%2?1:-1)*(4.2+((i*1.618)%2.8)),z=-48-((i*3.713)%34);if(Math.hypot(x-3.4,z+66)<3.5||c.treePlacements.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||placed.some(p=>Math.hypot(p.x-x,p.z-z)<2.2)||c.flowerPositions.some(p=>Math.hypot(p.x-x,p.z-z)<.45))continue;dummy.position.set(x,c.floor(x,z),z);dummy.rotation.set(0,i*2.4,0);dummy.scale.setScalar(.72+(i%4)*.07);dummy.updateMatrix();lilies.setMatrixAt(count++,dummy.matrix);}
- lilies.count=count;lilies.computeBoundingSphere();c.meadow.add(lilies);c.host.dataset.gloriosa=String(count);
 
  return {update(t){const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);},strength=smooth((t-.28)/.04)*(1-smooth((t-.54)/.04));extraTrees.visible=strength>.001;extraMaterials.forEach(([local,original])=>local.opacity=original.opacity*strength);for(const mesh of billboards){mesh.parent.getWorldQuaternion(dummy.quaternion).invert();mesh.quaternion.copy(dummy.quaternion).multiply(c.camera.quaternion);mesh.rotateZ(mesh.userData.cloudTwist||0);}}};
 }
@@ -1122,7 +1074,7 @@ if(spineStudy){const showStudy=()=>{if(window.switchPage)window.switchPage(6);};
  if(!renderer||skipped||motion.matches){resolveOpening();return;}
  await sceneryReady;
  if(skipped||motion.matches){resolveOpening();return;}
- try{gardenPolishState=polishCurrentGarden({THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,flowerPetalGeometry,petalMaterial,flowerPositions,botanicalOccupied,meadow,host,floor:meadowFloor});paint(.12,0);banyanClearing.group.visible=true;await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
+ try{gardenPolishState=polishCurrentGarden({THREE,world,camera,cameraCurve,gazeCurve,forest,detailedForest,treePlacements,rootBases,treeRoots,cloudBanks,cloudMaterial,materials,atomGeometry,botanicalOccupied,host,floor:meadowFloor});paint(.12,0);banyanClearing.group.visible=true;await renderer.compileAsync(scene,camera);renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);paint(0,0);host.dataset.openingWarmup='ready';}
  catch(error){console.error('Opening preparation failed',error);}
  finally{resolveOpening();}
 })();
