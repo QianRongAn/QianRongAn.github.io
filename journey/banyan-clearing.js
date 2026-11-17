@@ -5,7 +5,7 @@ import {createVideoScrubber} from './scroll-video.js';
 export function createBanyanClearing(camera,manager){
  const group=new THREE.Group();group.name='Scroll-scrubbed banyan camera film';
  let ready=false;const texture=new THREE.TextureLoader(manager).load('assets/worlds/banyan-daylight.webp',()=>ready=true);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;
- const source='assets/worlds/banyan-flight148.mp4',video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';video.setAttribute('playsinline','');
+ const source='assets/worlds/banyan-flight-20261118.mp4',video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';video.setAttribute('playsinline','');
  const scrubber=createVideoScrubber(video),stats={mode:'poster-loading',duration:0,currentTime:0,targetTime:0,width:0,height:0};let videoReady=false,objectUrl;
  const uniforms={videoSource:{value:0},map:{value:texture},opacity:{value:0},clock:{value:0},drift:{value:new THREE.Vector2()},crop:{value:new THREE.Vector2(1,1)}};
  const geometry=new THREE.PlaneGeometry(2,2);
